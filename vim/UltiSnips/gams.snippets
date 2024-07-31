@@ -1,0 +1,28 @@
+priority 2
+
+snippet : "tag"
+:$1: $0
+endsnippet
+
+snippet ? "Frage"
+# :FRAGE: $0
+endsnippet
+
+snippet ! "Note"
+# :NOTE: $0
+endsnippet
+
+snippet fold "fold marker pair" b
+$onFold # $1
+${2:${VISUAL}}
+$offFold$0
+endsnippet
+
+snippet foldo "fold opening marker" b
+$onFold # ${1:${VISUAL}}$0
+endsnippet
+
+snippet foldc "fold closing marker" b
+$offFold$0
+endsnippet
+

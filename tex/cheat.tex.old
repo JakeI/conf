@@ -1,0 +1,250 @@
+
+
+\newif\ifhtlatex
+\ifx\HCode\UnDeFiNeD
+  \htlatexfalse
+\else
+  \htlatextrue
+\fi
+\ifdefined\HCode
+   \def\pgfsysdriver{pgfsys-dvisvgm4ht.def}
+\fi 
+\documentclass[10pt,landscape,a4paper]{article}
+
+% Avoid `too many math alphabets error`
+\newcommand\hmmax{0}
+\newcommand\bmmax{0}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,positioning,arrows,fit,calc,graphs,graphs.standard}
+\usepackage[nosf]{kpfonts}
+\usepackage[t1]{sourcesanspro}
+\usepackage{multicol}
+\usepackage{multicolrule}
+\usepackage{wrapfig}
+\usepackage[top=5mm,bottom=5mm,left=5mm,right=5mm]{geometry}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage{microtype}
+\ifhtlatex
+\else
+\usepackage{pdfpages}
+\fi
+
+\usepackage{upgreek}
+\usepackage{bm}
+\usepackage{trfsigns}
+\usepackage{mathrsfs}
+
+\usepackage{stmaryrd} % for the ´\lightning´ 🗲 symbol
+\usepackage{tabularx, booktabs, threeparttable, caption}
+
+\usepackage{enumitem} \setlist{nosep} \setlist[description]{style=nextline}
+\setlistdepth{20}
+\renewlist{itemize}{itemize}{20}
+% initially, use dots for all levels
+\setlist[itemize]{label=$\cdot$}
+% customize the first 3 levels
+\setlist[itemize,1]{label=\textbullet}
+\setlist[itemize,2]{label=--}
+\setlist[itemize,3]{label=*}
+
+\let\bar\overline
+
+\definecolor{myblue}{cmyk}{1,.72,0,.38}
+
+\columnseprule=0.2mm
+\SetMCRule{line-style=dash-dot, color=myblue}
+
+\def\firstcircle{(0,0) circle (1.5cm)}
+\def\secondcircle{(0:2cm) circle (1.5cm)}
+
+\colorlet{circle edge}{myblue}
+\colorlet{circle area}{myblue!5}
+
+\tikzset{filled/.style={fill=circle area, draw=circle edge, thick},
+    outline/.style={draw=circle edge, thick}}
+    
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\everymath\expandafter{\the\everymath \color{myblue}}
+\everydisplay\expandafter{\the\everydisplay \color{myblue}}
+
+\renewcommand{\baselinestretch}{.8}
+\pagestyle{empty}
+
+\global\mdfdefinestyle{header}{%
+linecolor=gray,linewidth=1pt,%
+leftmargin=0mm,rightmargin=0mm,skipbelow=0mm,skipabove=0mm,
+}
+
+\newcommand{\headerText}{%
+Formelsammlung~Jochen~I.,~Seite~\thepage
+}
+\newcommand{\header}{
+\begin{mdframed}[style=header]
+\footnotesize
+\sffamily
+\headerText
+\end{mdframed}
+}
+
+\makeatletter % Author: https://tex.stackexchange.com/questions/218587/how-to-set-one-header-for-each-page-using-multicols
+\newcommand{\internalSectionHeaderStyle}[1]{%
+    \textcolor{myblue}{\hrule\vspace{.9ex}\sffamily\large\bfseries #1\vspace{.2ex}\hrule}
+}
+\renewcommand{\section}{\@startsection{section}{1}{3mm}%
+                                {.2ex}%
+                                {.2ex}%x
+                                {\internalSectionHeaderStyle}}
+\newcommand{\internalSubsectionHeaderStyle}[1]{%
+    \textcolor{myblue}{\sffamily\bfseries #1\vspace{.2ex}\hrule}
+}
+\renewcommand{\subsection}{\@startsection{subsection}{1}{3mm}%
+                                {.2ex}%
+                                {.2ex}%x
+                                {\internalSubsectionHeaderStyle}}
+\newcommand{\internalSubsubsectionHeaderStyle}[1]{%
+    \bfseries #1\vspace{.1ex}\hrule
+}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{2}{0mm}%
+                                {.0ex}%
+                                {.1ex}%x
+                                {\internalSubsubsectionHeaderStyle}}
+
+
+\def\multi@column@out{%
+   \ifnum\outputpenalty <-\@M
+   \speci@ls \else
+   \ifvoid\colbreak@box\else
+     \mult@info\@ne{Re-adding forced
+               break(s) for splitting}%
+     \setbox\@cclv\vbox{%
+        \unvbox\colbreak@box
+        \penalty-\@Mv\unvbox\@cclv}%
+   \fi
+   \splittopskip\topskip
+   \splitmaxdepth\maxdepth
+   \dimen@\@colroom
+   \divide\skip\footins\col@number
+   \ifvoid\footins \else
+      \leave@mult@footins
+   \fi
+   \let\ifshr@kingsaved\ifshr@king
+   \ifvbox \@kludgeins
+     \advance \dimen@ -\ht\@kludgeins
+     \ifdim \wd\@kludgeins>\z@
+        \shr@nkingtrue
+     \fi
+   \fi
+   \process@cols\mult@gfirstbox{%
+%%%%% START CHANGE
+\ifnum\count@=\numexpr\mult@rightbox+2\relax
+          \setbox\count@\vsplit\@cclv to \dimexpr \dimen@-1cm\relax
+\setbox\count@\vbox to \dimen@{\vbox to 1cm{\header}\unvbox\count@\vss}%
+\else
+      \setbox\count@\vsplit\@cclv to \dimen@
+\fi
+%%%%% END CHANGE
+            \set@keptmarks
+            \setbox\count@
+                 \vbox to\dimen@
+                  {\unvbox\count@
+                   \remove@discardable@items
+                   \ifshr@nking\vfill\fi}%
+           }%
+   \setbox\mult@rightbox
+       \vsplit\@cclv to\dimen@
+   \set@keptmarks
+   \setbox\mult@rightbox\vbox to\dimen@
+          {\unvbox\mult@rightbox
+           \remove@discardable@items
+           \ifshr@nking\vfill\fi}%
+   \let\ifshr@king\ifshr@kingsaved
+   \ifvoid\@cclv \else
+       \unvbox\@cclv
+       \ifnum\outputpenalty=\@M
+       \else
+          \penalty\outputpenalty
+       \fi
+       \ifvoid\footins\else
+         \PackageWarning{multicol}%
+          {I moved some lines to
+           the next page.\MessageBreak
+           Footnotes on page
+           \thepage\space might be wrong}%
+       \fi
+       \ifnum \c@tracingmulticols>\thr@@
+                    \hrule\allowbreak \fi
+   \fi
+   \ifx\@empty\kept@firstmark
+      \let\firstmark\kept@topmark
+      \let\botmark\kept@topmark
+   \else
+      \let\firstmark\kept@firstmark
+      \let\botmark\kept@botmark
+   \fi
+   \let\topmark\kept@topmark
+   \mult@info\tw@
+        {Use kept top mark:\MessageBreak
+          \meaning\kept@topmark
+         \MessageBreak
+         Use kept first mark:\MessageBreak
+          \meaning\kept@firstmark
+        \MessageBreak
+         Use kept bot mark:\MessageBreak
+          \meaning\kept@botmark
+        \MessageBreak
+         Produce first mark:\MessageBreak
+          \meaning\firstmark
+        \MessageBreak
+        Produce bot mark:\MessageBreak
+          \meaning\botmark
+         \@gobbletwo}%
+   \setbox\@cclv\vbox{\unvbox\partial@page
+                      \page@sofar}%
+   \@makecol\@outputpage
+     \global\let\kept@topmark\botmark
+     \global\let\kept@firstmark\@empty
+     \global\let\kept@botmark\@empty
+     \mult@info\tw@
+        {(Re)Init top mark:\MessageBreak
+         \meaning\kept@topmark
+         \@gobbletwo}%
+   \global\@colroom\@colht
+   \global \@mparbottom \z@
+   \process@deferreds
+   \@whilesw\if@fcolmade\fi{\@outputpage
+      \global\@colroom\@colht
+      \process@deferreds}%
+   \mult@info\@ne
+     {Colroom:\MessageBreak
+      \the\@colht\space
+              after float space removed
+              = \the\@colroom \@gobble}%
+    \set@mult@vsize \global
+  \fi}
+
+\makeatother
+\setlength{\parindent}{0pt}
+
+
+% Make Sure Figures actually show up!
+\usepackage{float}
+\floatplacement{figure}{H}
+\setkeys{Gin}{width=\columnwidth}
+
+\let\argmin\relax
+\DeclareMathOperator{\argmin}{arg\,min}
+\let\argmax\relax
+\DeclareMathOperator{\argmax}{arg\,max}
+\let\erf\relax
+\DeclareMathOperator{\erf}{erf}
+\DeclareMathOperator{\rect}{rect}
+\DeclareMathOperator{\sinc}{sinc}
+\providecommand{\ul}[1]{\underline{#1}}
+\newcommand{\ol}[1]{\overline{#1}}
+\providecommand{\pgfsyspdfmark}[3]{}

@@ -1,0 +1,291 @@
+\documentclass[
+    $if(col-count)$cols=$col-count$$else$$if(cols)$cols=$cols$$endif$$endif$,
+    $if(numbered-sections)$numbers$else$nonumbers$endif$,
+    $if(mobile)$mobile,nowidemargin$else$nomobile,widemargin$endif$,
+    $if(wide-margins)$widemargin$else$nowidemargin$endif$
+]{cheat}
+\usepackage{greek}
+
+\newcommand{\headsepline}{\,\textcolor{gray}{\faGripLinesVertical}\,}
+
+\newcommand{\theauthor}{}
+$if(author)$
+\renewcommand{\theauthor}{$author$}
+\author{\theauthor}
+$endif$
+
+\newcommand{\theemail}{}
+$if(email)$
+\renewcommand{\theemail}{$email$}
+$endif$
+
+\newcommand{\thetitle}{}
+$if(title)$
+\renewcommand{\thetitle}{$title$}
+\title{\thetitle}
+$endif$
+
+\newcommand{\theclass}{}
+$if(class)$
+\renewcommand{\theclass}{
+    $if(class.web)$
+        \href{$class.web$}{% \faGlobe
+    $endif$
+    $if(class.name)$
+        $class.name$%
+    $endif$
+    $if(class.abbreviation)$
+        ~\textcolor{myblue}{\faAngleLeft}$class.abbreviation$\textcolor{myblue}{\faAngleRight}%
+    $endif$
+    $if(class.web)$
+        }%
+    $endif$
+    \mbox{%
+    $if(class.semester)$
+        {\headsepline}$class.semester$%
+    $endif$
+    $if(class.professor)$
+        \headsepline\textcolor{myblue}{\faGraduationCap}~$class.professor$% \faChalkboardTeacher
+    $endif$
+    }%
+}
+$endif$
+
+\newcommand{\dateForamttorSeperator}[2][0.9]{%
+    \raisebox{.5ex}{%
+        {\color{myblue}%
+            \scalebox{.4}{
+                \kern-#1ex #2\kern-0.6ex%
+            }%
+        }%
+    }%
+}
+\newcommand{\dateFormattor}[3]{%
+    #1\dateForamttorSeperator[0.7]{年}%
+    #2\dateForamttorSeperator{月}%
+    #3\dateForamttorSeperator{日}%
+}
+\newcommand{\twoDigits}[1]{\ifnum#1<10 0\fi\the#1}
+\def\getlasttwo#1#2#3#4\relax{#3#4}
+\newcommand{\lastTwoOfYear}{%
+  \expandafter\getlasttwo\number\numexpr\year\relax\relax%
+}
+\newcommand{\fmtToday}{\dateFormattor{\lastTwoOfYear}{\twoDigits\month}{\twoDigits\day}}% \today
+\newcommand{\thedate}{\fmtToday}
+$if(date)$
+\renewcommand{\thedate}{\ifthenelse{\equal{$date$}{today}}{\fmtToday}{$date$}}
+$endif$
+\date{\thedate}
+
+$if(head)$
+\head{$head$}
+$else$
+\head{%
+    \newcommand{\tmpauthortext}{\textcolor{myblue}{\faEnvelope}~\theauthor}
+    \ifthenelse{\equal{\usemobilefmt}{yes}}{%
+        {\tiny%
+            \if\relax\thetitle\relax\else\mbox{\thetitle}\fi%
+            \if\relax\theclass\relax\else\mbox{\theclass}\fi%
+            \null\hfill\mbox{\if\relax\theemail\relax%
+                \if\relax\theauthor\relax\else%
+                    \tmpauthortext%
+                \fi%
+            \else%
+                \if\relax\theauthor\relax\else%
+                    \href{mailto:\theemail}{\tmpauthortext}%
+                \fi%
+            \fi%
+            \headsepline\textcolor{myblue}{\faCalendar*}~\thedate\headsepline%
+            \scriptsize\nicefrac{\thepage}{\pageref{LastPage}}}%
+        }%
+    }{%
+        \newcommand{\tmptitletext}{%cannot nest ifthenelse
+            % \ifthenelse{\equal{\thetitle}{}}{}{\thetitle}%
+            % \ifthenelse{\equal{\theclass}{}}{}{\headsepline\theclass}%
+            \if\relax\thetitle\relax\else\thetitle\headsepline\fi%
+            \if\relax\theclass\relax\else\theclass\headsepline\fi%
+        }
+        \if\relax\tmptitletext\relax\null\else\tmptitletext\fi\hfill%
+        \if\relax\theauthor\relax\else\tmpauthortext\fi
+        \if\relax\theemail\relax\else\headsepline
+            \href{mailto:\theemail}{\textcolor{myblue}{\faEnvelope}~\theemail}\fi%
+            \headsepline\textcolor{myblue}{\faCalendar*}~\thedate\headsepline%
+            \nicefrac{\thepage}{\pageref{LastPage}}%
+    }
+}
+$endif$
+
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={\thetitle}
+    pdfauthor={\theauthor}
+}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+$if(listings)$
+%\input{/home/ji/conf/tex/listings.tex}
+\newcommand{\passthrough}[1]{#1}
+% \lstset{defaultdialect=[5.3]Lua}
+% \lstset{defaultdialect=[x86masm]Assembler}
+$endif$
+$if(highlighting-macros)$
+$highlighting-macros$
+
+% hack it so there is a background for inline code
+\usepackage{xcolor}
+% \usepackage{soul}  % already included in greek.sty and adding it again breaks thins for some reason
+\definecolor{inlineBG}{HTML}{F3F3F3}  % same as GitHub Flavored Markdown
+\sethlcolor{inlineBG}
+\let\OldTexttt\texttt
+\renewcommand{\texttt}[1]{\sethlcolor{inlineBG}{\ttfamily\hl{\mbox{#1}}}}
+$endif$
+
+$if(footnotes-disable-backlinks)$
+$else$
+\usepackage{footnotebackref}
+$endif$
+
+$if(biblatex)$
+\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+$endif$
+
+$if(natbib)$
+\usepackage[$natbiboptions$]{natbib}
+\bibliographystyle{$if(biblio-style)$$biblio-style$$else$abbrvnat$endif$}
+\setcitestyle{%
+    $if(cite-style)$$cite-style$$else$numbers$endif$,%
+    open={$if(cite-begin)$$cite-begin$$else$[$endif$},%
+    close={$if(cite-end)$$cite-end$$else$]$endif$}}
+$endif$
+
+$if(csl-refs)$
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newenvironment{CSLReferences}%
+  {$if(csl-hanging-indent)$\setlength{\parindent}{0pt}%
+  \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces$endif$}%
+  {\par}
+$endif$
+
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+$if(tables)$
+%\usepackage{xtab} TODO: figure out how to get long tables using xtabular from
+%                        xtab or some equivalent
+% \usepackage{booktabs}
+% \renewenvironment{longtable}{\begin{center}\begin{tabular}}{\end{tabular}\end{center}}
+
+% \usepackage{supertabular}
+% \let\longtable\supertabular
+% \let\endlongtable\endsupertabular
+% \def\endhead{}
+
+\usepackage{tabularray}
+\let\longtable\longtblr
+\let\endlongtable\endlongtblr
+\let\endhead\empty
+\UseTblrLibrary{booktabs}
+% \let\toprule\empty  % alternative: \UseTblrLibrary{booktabs}
+% \let\midrule\empty
+% \let\bottomrule\empty  % bottomrule is removed using sed checkout potential
+% alternative to sed here https://github.com/jgm/pandoc/issues/8223 (either use
+% \noalign{} or that xparse based solution)
+% \UseTblrLibrary{functional}
+% \prgNewFunction\tabularnewline{}{\prgReturn{\\}}
+% \SetTblrOuter{
+%     evaluate=\tabularnewline
+% }
+\NewTblrTheme{headless}{
+    \DefTblrTemplate{contfoot-text}{default}{}
+    \DefTblrTemplate{conthead-text}{default}{}
+    \DefTblrTemplate{caption}{default}{}
+    \DefTblrTemplate{conthead}{default}{}
+    \DefTblrTemplate{capcont}{default}{}
+}
+\def\tabularnewline{\\}
+\SetTblrOuter[longtblr]{
+    expand=\tabularnewline,
+    entry=none,
+    label=none,
+    theme=headless,
+}
+\UseTblrLibrary{amsmath}  % allow \begin{matrix} inside table cells
+\UseTblrLibrary{varwidth}
+\SetTblrInner[longtblr]{
+  % hline{1} = {1pt, solid},
+  % hline{2} = {solid},
+  % hline{Z} = {solid},
+  row{1}   = {gray!20,valign=h},
+  row{Z}   = {valign=f},
+  row{odd} = {gray!5},
+  hspan    = minimal,
+  columns  = {valign=t},
+  column{Z} = {co=1},
+}
+\NewColumnType{l}{Q[l,t]}
+\NewColumnType{c}{Q[c,t]}
+\NewColumnType{r}{Q[r,t]}
+$endif$
+
+\newcommand{\hideFromPandoc}[1]{#1}
+\hideFromPandoc{
+    \let\Begin\begin
+    \let\End\end
+}
+\newenvironment{bigfigure}{
+    \begin{figure*}[bt]
+}{
+    \end{figure*}
+}
+\newcommand{\tinytext}[1]{{\tiny #1}}
+\newenvironment{tinysize}{\tiny}{\par}
+\newenvironment{doublecols}{
+    \begin{minipage}{\columnwidth}
+    \begin{multicols*}{2}
+}{
+    \end{multicols*}
+    \end{minipage}
+}
+
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+\begin{document}
+$for(include-before)$
+$include-before$
+$endfor$
+
+$if(toc)$
+\tableofcontents
+$endif$
+
+$body$
+
+$if(natbib)$
+$if(bibliography)$
+$if(biblio-title)$
+\renewcommand\bibname{$biblio-title$}
+$endif$
+\bibliography{$for(bibliography)$$bibliography$$sep$,$endfor$}
+$endif$
+$endif$
+
+$if(biblatex)$
+\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+$endif$
+
+$for(include-after)$
+$include-after$
+$endfor$
+
+\end{document}

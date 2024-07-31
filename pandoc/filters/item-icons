@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+from pandocfilters import toJSONFilter
+
+
+def use_item_markers(key, value, format, meta):
+    markers = [
+        "", "", "", "", "☎", "🗬", "", "", "", "⚠", "🛇", "‼", "⁉",
+        "🗁", "🗀", "", "", "", "", "", "", 
+        "", "", "⧗", "",
+        "", "🗏", "", "",
+        "⇿", "↳"
+    ]
+    markers = { k: k for k in markers }
+
+    markers["[✓]"] = "\\checkboxCheck"  # Defined in `grrek.sty`
+    markers["☒"] = "\\checkboxCheck"
+    markers["[✗]"] = "\\checkboxCross"
+    markers["[ ]"] = "\\checkboxEmpty"
+    markers["☐"] = "\\checkboxEmpty"
+    markers["[◐]"] = "\\checkboxIncompleate"
+
+    markers["[-]"] = "\\faMinus"
+    markers["[+]"] = "\\faPlus"
+
+    if format != 'latex':
+        return
+    if key == "BulletList":
+        change = False
+        for item in value:
+            if len(item) > 0:
+                it = item[0]
+                if "c" in it and len(it["c"]) > 1:
+                    first = it["c"][0]
+                    if first["t"] == "Str" and first["c"] in markers:
+                        first["t"] = "RawInline"
+                        first["c"] = ["latex", f"[{markers[first['c']]}]"]
+                        # first["c"] = "fuck"
+        if change:
+            return value
+
+if __name__ == "__main__":
+    toJSONFilter(use_item_markers)

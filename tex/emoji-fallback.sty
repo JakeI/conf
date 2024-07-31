@@ -1,0 +1,19 @@
+% lualatex add emoji support mostely for markdown+emoji in pandoc
+% see https://tex.stackexchange.com/a/572220/179740
+
+\usepackage{fontspec}
+
+\directlua{luaotfload.add_fallback
+   ("emojifallback",
+    {
+      "NotoColorEmoji:mode=harf;"
+    }
+   )}
+
+\setmainfont{texgyretermes-regular}[
+  Extension      = .otf ,
+  BoldFont       = texgyretermes-bold,
+  ItalicFont     = texgyretermes-italic,
+  BoldItalicFont = texgyretermes-bolditalic,
+  RawFeature={fallback=emojifallback}
+]

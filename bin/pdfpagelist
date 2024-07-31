@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+(echo "filename,pages"; for f in **/*.pdf; do echo "$f,$(pdfinfo $f | grep Pages | sed 's/[^0-9]//g')"; done 2> /dev/null) | rich --csv -  # TODO: update rich_cli and use --header true 

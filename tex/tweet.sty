@@ -1,0 +1,29 @@
+\newenvironment{tweet}{%
+  \newcommand{\tweetUserImage}[3]{%
+    \begingroup%
+      \includegraphics[keepaspectratio,height=1em]{##2}%
+      \quad
+    \endgroup
+  }%
+  \newcommand{\tweetUserName}[3]{\href{https://twitter.com/intent/user?user_id=##1}{##2}\quad
+    \href{https://twitter.com/intent/user?user_id=##1}{{\small
+        \color{gray}@##3}}}%
+  \newcommand{\tweetUserVerified}{\hskip 0.16667em\relax{\small
+      \color{cyan}\textcircled{\(\checkmark\)}}}%
+  \newcommand{\tweetUserEnd}{\\}%
+  \newcommand{\tweetHashtag}[2]{\href{https://twitter.com/hashtag/##1}{##2}}%
+  \newcommand{\tweetUserMention}[2]{\href{https://twitter.com/intent/user?user_id=##1}{##2}}%
+  \newcommand{\tweetUrl}[4]{\href{##2}{##3}}%
+  \newcommand{\tweetInReplyToTweet}[3]{{\small \color{gray}in reply to
+      \href{https://twitter.com/statuses/##1}{tweet} by
+      \href{https://twitter.com/intent/user?user_id=##2}{@##3}}\\}%
+  \newcommand{\tweetPhoto}[4]{\\\includegraphics[keepaspectratio]{##3}\\}%
+  \newcommand{\tweetRetweets}[1]{\flushright{\small \(\color{gray}\circlearrowright\)\color{gray}\hskip 0.16667em\relax##1}}%
+  \newcommand{\tweetFavorites}[1]{ {\small \(\color{gray}\heartsuit\)\color{gray}\hskip 0.16667em\relax##1}}%
+  \newcommand{\tweetItself}[4]{%
+    \quad\href{https://twitter.com/statuses/##1}{{\small \color{gray}##3 ##4}}}%
+  \newcommand{\tweetPlace}[3]{\flushright {\small \color{gray}\href{##3}{##1, ##2}}}%
+  \newfontfamily\emojifont{Symbola}[Scale=MatchUppercase]%
+  \begin{tcolorbox}[size=small,enhanced,breakable,autoparskip,halign=flush left]%
+    \sffamily%
+}{\end{tcolorbox}}

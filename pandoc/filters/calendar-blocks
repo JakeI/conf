@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+
+from pandocfilters import toJSONFilter, RawBlock
+import re
+from datetime import date, timedelta
+
+class Entry:
+    def __init__(self, dow, year, month, day, text):
+        self.dow = dow
+        self.year = year
+        self.month = month
+        self.day = day
+        self.text = text
+
+    def is_changed(self, other):
+        return self.year != other.year or self.month != other.month
+
+    def as_date(self):
+        return date(int(self.year), int(self.month), int(self.day))
+
+    def days_diff(self, other):
+        return (self.as_date() - other.as_date()).days
+
+    def four_digit_year(self):
+        y = int(self.year)
+        if y < 100:
+            return f"{y+2000:4d}"
+        return self.year
+
+    def named_month(self):
+        MONTHS = ["Jan", "Feb", "Mrz", "Apr", "Mai", "Jul", 
+            "Jun", "Aug", "Spt", "Oct", "Nov", "Dez"]
+        return MONTHS[int(self.month) - 1]
+
+    def year_month_str(self):
+        return f"{self.four_digit_year()} {self.named_month()}"
+
+    def as_latex_fmt_str(self):
+        return "\\calenderFmt{" + "}{".join([self.dow, self.four_digit_year(), 
+            self.year, self.month, self.named_month(), self.day]) + "}"
+
+def parse_cal_lines(lines):
+    wide_space = re.compile(r'^\s*$')
+    new_date = re.compile(r'^\s*(?:(Mo|Di|Mi|Do|Fr|Sa|So)_)(\d{4}|\d\d)-(\d\d)-(\d\d)(.*)$')
+    entries = []
+    for line in lines:
+        if wide_space.match(line):
+            continue
+        n = new_date.search(line)
+        if n is not None:
+            entries.append(Entry(*(n.group(k) for k in range(1, 5)), [n.group(5)]))
+            continue
+        entries[-1].text.append(line.strip())
+    return entries
+
+
+def render_entries_latex(entries):
+    lines = ["\\begin{calenderblock}"]
+    init = Entry(1, 1, 1, 1, "")
+    last = init
+    idx = 1
+    for entry in entries:
+        if last.is_changed(entry):
+            lines.append("\\calenderMonthStart\\multicolumn{2}{c}{" +
+                entry.year_month_str() + "} \\\\\\calenderMonthEnd")
+        diff = entry.days_diff(last)
+        if last is not init and diff > 1:
+            lines.append("\\calenderDaySkipStart\\multicolumn{2}{c}{\\calenderDaySep~~" + 
+                str(diff) + " tage~~\\calenderDaySep}\\calenderDaySkipEnd\\\\")
+        rowcolor = "Even" if idx % 2 == 0 else "Odd"
+        lines.append(f"\\calender{rowcolor}Row " + entry.as_latex_fmt_str() + 
+            " & " + f"\\\\\\calender{rowcolor}Row & ".join(entry.text) + " \\\\")
+        last = entry
+        idx += 1
+    lines.append("\\end{calenderblock}\n")
+    return "\n".join(lines)
+
+def use_item_markers(key, value, format, meta):
+    if format != 'latex':
+        return
+    if key == "CodeBlock":
+        [[indent, classes, keyvals], code] = value
+        if ".cal" in classes:
+            entries = parse_cal_lines(code.split("\n"))
+            latex = render_entries_latex(entries)
+            return RawBlock("tex", latex)
+
+if __name__ == "__main__":
+    toJSONFilter(use_item_markers)

@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+
+from pandocfilters import toJSONFilter, RawInline
+
+
+def use_item_markers(key, value, format, meta):
+    # Still missing: kiss, laugh, flushed, Angry
+    LIGATURES = {
+        ":)": "\\ligatureEmojiSmileAlt",
+        ":-)": "\\ligatureEmojiSmile",
+        ":<3": "\\ligatureEmojiSmileHearts",   # missing
+        ";)": "\\ligatureEmojiWinkAlt",
+        ";-)": "\\ligatureEmojiWink",
+        ":P": "\\ligatureEmojiTongueAlt",
+        ":-P": "\\ligatureEmojiTongue",
+        ";P": "\\ligatureEmojiTongueWinkAlt",
+        ";-P": "\\ligatureEmojiTongueWink",
+        ":D": "\\ligatureEmojiGrinAlt",
+        ":-D": "\\ligatureEmojiGrin",
+        "XD": "\\ligatureEmojiGrinBeamAlt",
+        "X-D": "\\ligatureEmojiGrinBeam",
+        ";D": "\\ligatureEmojiGrinWinkAlt",
+        ";-D": "\\ligatureEmojiGrinWink",
+        "<3D": "\\ligatureEmojiGrinHeartsAlt",
+        "<3-D": "\\ligatureEmojiGrinHearts",
+        "xD": "\\ligatureEmojiGrinStarsAlt",
+        "x-D": "\\ligatureEmojiGrinStars",
+        ":(": "\\ligatureEmojiFrownAlt",
+        ":-(": "\\ligatureEmojiFrown",
+        ":~(": "\\ligatureEmojiSadCry",
+        ":,(": "\\ligatureEmojiSadTear",
+        "X(": "\\ligatureEmojiSadSquint",  # missing
+        "X-(": "\\ligatureEmojiSadSquintAlt",  # missing
+        ":|": "\\ligatureEmojiMehAlt",
+        ":-|": "\\ligatureEmojiMeh",
+        "$-D": "\\ligatureEmojiMoneyFace",  # missing
+        "<3": "\\ligatureHeardAlt",
+        "...": "\\ligatureElipsis",
+        "<!>": "\\ligatureExclamation",
+        "(?)": "\\ligatureQuestion",
+        "()=": "\\ligatureBulb",
+        "??": "\\ligatureQuestionDouble",
+        "¿": "\\ligatureQuestionStart",
+        "?": "\\ligatureQuestionEnd",
+        "¿?": "\\ligatureQuestioinStartEnd",
+        "!!": "\\ligatureExclamationDouble",
+        "O-": "\\ligatureMagnifingy",
+        "-O": "\\ligatureMagnifingyRight",  # missing
+        "+1": "\\ligatureThumbsUp",
+        "-1": "\\ligatureThumbsDown",
+        ">": "\\ligatureDyadicGreater",
+        ">=": "\\ligatureDyadicGreaterEqual",
+        "<": "\\ligatureDyadicLess",
+        "<=": "\\ligatureDyadicLessEqual",
+        "!=": "\\ligatureDyadicNotequal",
+        "=": "\\ligatureDyadicEqual",
+        "≈": "\\ligatureDyadicApprox",
+        "+": "\\ligatureDyadicPlus",
+        "-": "\\ligatureDyadicMinus",
+        "×": "\\ligatureDyadicTimes",  # missing
+        "÷": "\\ligatureDyadicDivide",  # missing
+        "/": "\\ligatureDyadicSlash",  # missing
+        "|": "\\ligatureDyadicBar",  # missing
+        "(!=)": "\\ligatureDyadicNotequalCircled",  # missing
+        "(=)": "\\ligatureDyadicEqualCircled",  # missing
+        "(+)": "\\ligatureDyadicPlusCircled",
+        "(-)": "\\ligatureDyadicMinusCircled",
+        "(×)": "\\ligatureDyadicTimesCircled",  # missing
+        "(÷)": "\\ligatureDyadicDivideCircled",  # missing
+        "(/)": "\\ligatureDyadicSlashCircled",  # missing
+        "(|)": "\\ligatureDyadicBarCircled",  # missing
+        "||": "\\ligatureSeparatorVert",
+        "==": "\\ligatureSeparatorHorizontal",
+        "<>": "\\ligatureSeparatorDiamond",
+        "()": "\\ligatureSeparatorCircle",
+        "|>": "\\ligatureSeperatorTrinagelLeft",
+        "<|": "\\ligatureSeperatorTrinagelRight",
+        "<~": "\\ligatureArrowSquiglyLeft",
+        "~>": "\\ligatureArrowSquiglyRight",
+        # WARNING: ~~> cannot be added because ~~ means strikeout in md
+        "<~>": "\\ligatureArrowSquiglyBoth",
+        "|~>": "\\ligatureArrowSquiglyMap",  # missing
+        "<-": "\\ligatureArrowLeft",
+        "->": "\\ligatureArrowRight",
+        "<->": "\\ligatureArrowBoth",
+        "|->": "\\ligatureArrowMap",
+        "(<-)": "\\ligatureArrowCircledLeft",
+        "(->)": "\\ligatureArrowCircledRight",
+        "=>": "\\ligatureArrowDoubleRight",
+        "==>": "\\ligatureArrowDoubleRightLong",
+        "<=>": "\\ligatureArrowDoubleBoth",
+        "|=>": "\\ligatureArrowDoubleMap",  # missing
+        "<<": "\\ligatureQuoteLeft",
+        ">>": "\\ligatureQuoteRight",
+        "$": "\\ligatureCurrencyDollar",
+        "€": "\\ligatureCurrencyEuro",
+        "¥": "\\ligatureCurrencyYen",
+        "🗲": "\\ligatureUnicodeLightning",
+        "TODO:": "\\ligatureTextTodo",
+        "ERROR:": "\\ligatureTextError",
+        "WARNING:": "\\ligatureTextWarning",
+        "BUG:": "\\ligatureTextBug",
+        "IDEA:": "\\ligatureTextIdea",
+        "QUESTION:": "\\ligatureTextQuestion",
+        "INFO:": "\\ligatureTextInfo",
+        "NOTE:": "\\ligatureTextNote",
+        "BOOKMARK": "\\ligatureTextBookmark",
+        "STOP:": "\\ligatureTextStop",  # missing
+        "DATE:": "\\ligatureTextDate",
+        "CARD:": "\\ligatureTextCard",
+        "EMAIL:": "\\ligatureTextEmail",
+        "REMINDER:": "\\ligatureTextReminder",
+        "GOAL:": "\\ligatureTextGoal",
+        # TODO: Come up with icons for THOUGHT and PROBLEM
+    }
+    # TODO: add general way of making symbols inside circle
+    #       See chars like ⊕ ⊖ ⊗ ⊜ ⦷ ⦹ ⊙ ① ② ⧀ ⧁ ⨸ Ⓐ Ⓑ ⓐ ⓑ
+
+    if format != 'latex':
+        return
+    if key == "Str":
+        res = LIGATURES.get(value)
+        if res is not None:
+            return RawInline("tex", res)
+
+if __name__ == "__main__":
+    toJSONFilter(use_item_markers)

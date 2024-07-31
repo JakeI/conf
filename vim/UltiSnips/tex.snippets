@@ -1,0 +1,796 @@
+global !p
+texMathZones = ['texMathZone' + x for x in ['A', 'AS', 'B', 'BS', 'C', 'CS', 'D', 'DS', 'E', 'ES', 'F', 'FS', 'G', 'GS', 'H', 'HS', 'I', 'IS', 'J', 'JS', 'K', 'KS', 'L', 'LS', 'DS', 'V', 'W', 'X', 'Y', 'Z', 'AmsA', 'AmsB', 'AmsC', 'AmsD', 'AmsE', 'AmsF', 'AmsG', 'AmsAS', 'AmsBS', 'AmsCS', 'AmsDS', 'AmsES', 'AmsFS', 'AmsGS' ]]
+
+texIgnoreMathZones = ['texMathText']
+
+texMathZoneIds = vim.eval('map('+str(texMathZones)+", 'hlID(v:val)')")
+texIgnoreMathZoneIds = vim.eval('map('+str(texIgnoreMathZones)+", 'hlID(v:val)')")
+
+ignore = texIgnoreMathZoneIds[0]
+
+def math():
+	synstackids = vim.eval("synstack(line('.'), col('.') - (col('.')>=2 ? 1 : 0))")
+	try:
+		first = next(i for i in reversed(synstackids) if i in texIgnoreMathZoneIds or i in texMathZoneIds)
+		return first != ignore
+	except StopIteration:
+		return False
+endglobal
+
+snippet template "Basic template" b
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[dutch]{babel}
+\usepackage{amsmath, amssymb}
+
+
+% figure support
+\usepackage{import}
+\usepackage{xifthen}
+\pdfminorversion=7
+\usepackage{pdfpages}
+\usepackage{transparent}
+\newcommand{\incfig}[1]{%
+	\def\svgwidth{\columnwidth}
+	\import{./imgs/}{#1.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\begin{document}
+	$0
+\end{document}
+endsnippet
+
+snippet beg "begin{} / end{}" b
+\\begin{$1}
+	$0
+\\end{$1}
+endsnippet
+
+snippet fig "Figure environment" b
+\begin{figure}[${1:tb}]
+	\centering
+	${2:\includegraphics[width=0.9\textwidth]{$3}}
+	\caption{${4:$3}}
+	\label{fig:${5:${3/\W+/-/ga}}}
+\end{figure}
+endsnippet
+
+snippet figinp "Figure environment with input" b
+\begin{figure}[${1:tb}]
+	\centering
+	${2:\input{$3}}
+	\caption{${4:$3}}
+	\label{fig:${5:${3/\W+/-/ag}}}
+\end{figure}
+endsnippet
+
+snippet tikz "Figure environment with input" b
+\begin{figure}[${1:tb}]
+	\centering
+	\begin{tikzpicture}
+		${0:${VISUAL}}
+	\end{tikzpicture}
+	\caption{$2}
+	\label{fig:`!p snip.rv = re.sub('[^a-z0-9_\-:]', '', re.sub('\s+', '-', t[2]).lower())`}
+\end{figure}
+endsnippet
+
+snippet table "Floating table environment" b
+\begin{table}[${1:tb}]
+\centering
+	\begin{tabular}{${2:ll}}
+		\hline
+		$3
+		\hline
+		${0:${VISUAL}}
+		\hline
+	\end{tabular}
+\end{table}
+$0
+endsnippet
+
+snippet algo "algorithm"
+\begin{minipage}{\linewidth}
+	\begin{lstlisting}[mathescape=true, frame=single]
+${0:${VISUAL}}
+	\end{lstlisting}
+\end{minipage}
+endsnippet
+
+snippet code "code sample" b
+\begin{lstlisting}[caption={$1}]
+${0:${VISUAL}}
+\end{lstlisting}
+endsnippet
+
+snippet ch "chapter with label" b
+\chapter{${1:${VISUAL}}}\label{ch:`!p snip.rv = re.sub('[^a-z0-9_\-:]', '', re.sub('\s+', '-', t[1]).lower())`}
+$0
+endsnippet
+
+snippet sec "secion with label" b
+\section{${1:${VISUAL}}}\label{sec:`!p snip.rv = re.sub('[^a-z0-9_\-:]', '', re.sub('\s+', '-', t[1]).lower())`}
+$0
+endsnippet
+
+snippet ssec "subsecion with label" b
+\subsection{${1:${VISUAL}}}\label{subsec:`!p snip.rv = re.sub('[^a-z0-9_\-:]', '', re.sub('\s+', '-', t[1]).lower())`}
+$0
+endsnippet
+
+snippet sssec "subsubsecion with label" b
+\subsubsection{${1:${VISUAL}}}\label{subsubsec:`!p snip.rv = re.sub('[^a-z0-9_\-:]', '', re.sub('\s+', '-', t[1]).lower())`}
+$0
+endsnippet
+
+snippet enum "Enumerate" b
+\begin{enumerate}
+	\item ${1:${VISUAL}}
+\end{enumerate}
+$0
+endsnippet
+
+snippet item "Itemize" b
+\begin{itemize}
+	\item ${1:${VISUAL}}
+\end{itemize}
+$0
+endsnippet
+
+snippet i "Item"
+\item $0
+endsnippet
+
+snippet desc "Description" b
+\begin{description}
+	\item[$1] $0
+\end{description}
+endsnippet
+
+snippet pac "Package" b
+\usepackage[${1:options}]{${2:package}}$0
+endsnippet
+
+snippet mk "Math" w
+$${1}$`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+	snip.rv = ' '
+else:
+	snip.rv = ''
+`$2
+endsnippet
+
+snippet dm "Math" w
+\[
+${1:${VISUAL}}
+.\] $0
+endsnippet
+
+snippet ali "Align" b
+\begin{align*}
+	${1:${VISUAL}}
+.\end{align*}
+endsnippet
+
+snippet sympy "sympyblock " w
+sympy $1 sympy$0
+endsnippet
+
+priority 10000
+snippet 'sympy(.*)sympy' "sympy" wr
+`!p
+from sympy import *
+x, y, z, t = symbols('x y z t')
+k, m, n = symbols('k m n', integer=True)
+f, g, h = symbols('f g h', cls=Function)
+init_printing()
+snip.rv = eval('latex(' + match.group(1).replace('\\', '').replace('^', '**').replace('{', '(').replace('}', ')') + ')')
+`
+endsnippet
+
+priority 1000
+snippet math "mathematicablock" w
+math $1 math$0
+endsnippet
+
+priority 10000
+snippet 'math(.*)math' "math" wr
+`!p
+import subprocess
+code = match.group(1)
+code = 'ToString[' + code + ', TeXForm]'
+snip.rv = subprocess.check_output(['wolframscript', '-code', code])
+`
+endsnippet
+
+
+context "math()"
+snippet ceil "ceil" i
+\left\lceil $1 \right\rceil $0
+endsnippet
+
+context "math()"
+snippet floor "floor" i
+\left\lfloor $1 \right\rfloor$0
+endsnippet
+
+snippet pmat "pmat" i
+\begin{pmatrix} $1 \end{pmatrix} $0
+endsnippet
+
+snippet bmat "bmat" i
+\begin{bmatrix} $1 \end{bmatrix} $0
+endsnippet
+
+context "math()"
+snippet () "left( right)" i
+\left( ${1:${VISUAL}} \right) $0
+endsnippet
+
+snippet lr "left( right)" i
+\left( ${1:${VISUAL}} \right) $0
+endsnippet
+
+snippet lr( "left( right)" i
+\left( ${1:${VISUAL}} \right) $0
+endsnippet
+
+snippet lr| "left| right|" i
+\left| ${1:${VISUAL}} \right| $0
+endsnippet
+
+snippet lr{ "left\{ right\}" i
+\left\\{ ${1:${VISUAL}} \right\\} $0
+endsnippet
+
+snippet lrb "left\{ right\}" i
+\left\\{ ${1:${VISUAL}} \right\\} $0
+endsnippet
+
+snippet lr[ "left[ right]" i
+\left[ ${1:${VISUAL}} \right] $0
+endsnippet
+
+snippet lim "limit" w
+\lim_{${1:n} → ${2:\infty}} 
+endsnippet
+
+snippet limsup "limsup" w
+\limsup_{${1:n} \to ${2:\infty}} 
+endsnippet
+
+snippet prod "product" w
+\prod_{${1:n=${2:1}}}^{${3:\infty}} ${4:${VISUAL}} $0
+endsnippet
+
+snippet part "d/dx" w
+\frac{\partial ${1:V}}{\partial ${2:x}} $0
+endsnippet
+
+context "math()"
+snippet sq "\sqrt{}" i
+√{${1:${VISUAL}}} $0
+endsnippet
+
+context "math()"
+snippet sr "^2" i
+^2
+endsnippet
+
+context "math()"
+snippet cb "^3" i
+^3
+endsnippet
+
+context "math()"
+snippet td "to the ... power" i
+^{$1}$0
+endsnippet
+
+context "math()"
+snippet rd "to the ... power" i
+^{($1)}$0
+endsnippet
+
+snippet __ "subscript" i
+_{$1}$0
+endsnippet
+
+snippet ooo "\infty" i
+\infty
+endsnippet
+
+snippet rij "mrij" i
+(${1:x}_${2:n})_{${3:$2}\\in${4:\\N}}$0
+endsnippet
+
+snippet plot "Plot" w
+\begin{figure}[$1]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			xmin= ${2:-10}, xmax= ${3:10},
+			ymin= ${4:-10}, ymax = ${5:10},
+			axis lines = middle,
+		]
+			\addplot[domain=$2:$3, samples=${6:100}]{$7};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{$8}
+	\label{${9:$8}}
+\end{figure}
+endsnippet
+
+snippet nn "Tikz node" w
+\node[$5] (${1/[^0-9a-zA-Z]//g}${2}) ${3:at (${4:0,0}) }{$${1}$};
+$0
+endsnippet
+
+context "math()"
+snippet mcal "mathcal" i
+\mathcal{$1}$0
+endsnippet
+
+snippet lll "l" i
+\ell
+endsnippet
+
+context "math()"
+snippet norm "norm" i
+\|$1\|$0
+endsnippet
+
+priority 300
+context "math()"
+snippet dint "integral" w
+\int_{${1:-\infty}}^{${2:\infty}} ${3:${VISUAL}} $0
+endsnippet
+
+context "math()"
+snippet invs "inverse" i
+^{-1}
+endsnippet
+
+context "math()"
+snippet compl "complement" i
+^{c}
+endsnippet
+
+context "math()"
+snippet tra "transpose" i
+^T
+endsnippet
+
+context "math()"
+snippet \\\ "setminus" i
+\setminus
+endsnippet
+
+
+snippet ~~ "~" i
+\sim 
+endsnippet
+
+context "math()"
+snippet set "set" w
+☆\\{$1★\\} $0
+endsnippet
+
+context "math()"
+snippet cc "subset" i
+\subset 
+endsnippet
+
+snippet notin "not in " i
+\not\in 
+endsnippet
+
+context "math()"
+snippet inn "in " i
+\in 
+endsnippet
+
+snippet NN "n" i
+\N
+endsnippet
+
+snippet Nn "cap" i
+\cap 
+endsnippet
+
+snippet UU "cup" iA
+\cup 
+endsnippet
+
+snippet uuu "bigcup" i
+\bigcup_{${1:i \in ${2: I}}} $0
+endsnippet
+
+snippet nnn "bigcap" i
+\bigcap_{${1:i \in ${2: I}}} $0
+endsnippet
+
+snippet OO "emptyset" iA
+\O
+endsnippet
+
+snippet RR "real" i
+\R
+endsnippet
+
+snippet QQ "Q" i
+\Q
+endsnippet
+
+snippet ZZ "Z" i
+\Z
+endsnippet
+
+snippet <! "normal" i
+\triangleleft 
+endsnippet
+
+context "math()"
+snippet '(?<!i)sts' "text subscript" ir
+_\text{$1} $0
+endsnippet
+
+context "math()"
+snippet tt "text" i
+\text{$1}$0
+endsnippet
+
+context "math()"
+snippet case "cases" w
+\begin{cases}
+	$1
+\end{cases}
+endsnippet
+
+snippet pick "pic options" i
+☆\\{ \begin{array}{c} $0 \end{array} ★\\}
+endsnippet
+
+snippet SI "SI" i
+\SI{$1}{$2}
+endsnippet
+
+snippet cvec "column vector" i
+\begin{pmatrix} ${1:x}_${2:1}\\\\ \vdots\\\\ $1_${2:n} \end{pmatrix}
+endsnippet
+
+priority 10
+context "math()"
+snippet "bar" "bar" ri
+\overline{$1}$0
+endsnippet
+
+priority 100
+context "math()"
+snippet "([a-zA-Z])bar" "bar" ri
+\overline{`!p snip.rv=match.group(1)`}
+endsnippet
+
+priority 10
+context "math()"
+snippet "hat" "hat" ri
+\hat{$1}$0
+endsnippet
+
+priority 100
+context "math()"
+snippet "([a-zA-Z])hat" "hat" ri
+\hat{`!p snip.rv=match.group(1)`}
+endsnippet
+
+snippet HH "H" i
+\mathbb{H}
+endsnippet
+
+snippet DD "D" i
+\mathbb{D}
+endsnippet
+
+snippet frame "Frame for bemer presentation"
+\begin{frame}{$1}
+	${2:${VISUAL}}
+\end{frame}
+endsnippet
+
+snippet columns "Beamer columns environment"
+\begin{columns}
+	\column{0.5\textwidth}
+	${1:${VISUAL}}
+	\column{0.5\textwidth}
+	$2
+\end{columns}
+endsnippet
+
+snippet beg "begin and end block"
+\begin{$1}
+	${2:${VISUAL}}
+\end{$1}
+endsnippet
+
+global !p
+PARENTH_MATCH = {
+	"(": ")",
+	")": "(",
+	"[": "]",
+	"]": "[",
+	"{": "\\}",
+	"}": "\\{",
+	"|": "|",
+	"∥": "∥",
+	"⟨": "⟩",
+	"⟩": "⟨",
+	"⌊": "⌋",
+	"⌋": "⌊",
+	"⌈": "⌉",
+	"⌉": "⌈",
+}
+# FRACSCRIPTS = { k: v for (k, v) in zip("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ") }
+SUBSCRIPTS = { k: v for (k, v) in zip("0123456789aehijklmnoprstuvx", "₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ") }
+SUPSCRIPTS = { k: v for (k, v) in zip("0123456789abcdevghijklmnoprstuvwxyz", "⁰¹²³⁴⁵⁶⁷⁸⁹ᵃᵇᶜᵈᵉᵛᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ") }
+PANDOC_LATEX_INLINE_MATH = vim.eval("hlID('pandocLaTeXInlineMath')")
+PANDOC_LATEX_MATH_BLOCK = vim.eval("hlID('pandocLaTeXMathBlock')")
+# def ismath():
+# 	synstackids = vim.eval("synstack(line('.'), col('.') - (col('.')>=2 ? 1 : 0))")
+# 	try:
+# 		# see https://github.com/lervag/vimtex/issues/1863 for example content
+# 		first = next(i 
+# 			for i in reversed(synstackids) if 
+# 				i == PANDOC_LATEX_INLINE_MATH or 
+# 				i == PANDOC_LATEX_MATH_BLOCK
+# 		)
+# 		return True
+# 	except StopIteration:
+# 		return False
+endglobal
+
+snippet center "center environment"
+\\begin{center}
+${1:${VISUAL}}
+\\end{center}
+$0
+endsnippet
+
+snippet sidebyside "put two things side by side"
+\begin{minipage}{\columnwidth}
+\begin{multicols*}{2}
+${1:${VISUAL}}
+\end{multicols*}
+\end{minipage}
+endsnippet
+
+snippet tt "typewritten text" i
+\texttt{${1:${VISUAL}}} $0
+endsnippet
+
+snippet it "italic text" i
+\textit{${1:${VISUAL}}} $0
+endsnippet
+
+snippet bf "bold text" i
+\textbf{${1:${VISUAL}}} $0
+endsnippet
+
+snippet $ "inline quation" i
+$$${1:${VISUAL}}$$ $0
+endsnippet
+
+snippet $$ "dollar equation environment"
+$$$$
+	${1:${VISUAL}}
+$$$$
+$0
+endsnippet
+
+snippet eq "equation environment"
+\\begin{equation}
+	${1:${VISUAL}}
+\\end{equation}
+$0
+endsnippet
+
+snippet eq* "equation* environment"
+\\begin{equation*}
+	${1:${VISUAL}}
+\\end{equation*}
+$0
+endsnippet
+
+snippet eql "Labeled equation environment" A
+\\begin{equation}
+	\\label{eq:$2}
+	${1:${VISUAL}}
+\\end{equation}
+endsnippet
+
+snippet mat "matrix environment"
+☆${1:(}⦗${2:${VISUAL}}⦘★`!p snip.rv = PARENTH_MATCH.get(t[1], t[1])`$0
+endsnippet
+
+snippet ⦗ "matrix without parenthesis" i
+⦗${1:${VISUAL}}⦘$0
+endsnippet
+
+snippet "mat([\(\)\[\]⟨⟩∥|])" "matrix environment with deliminator" rA
+☆`!p snip.rv = match.group(1)`⦗${1:${VISUAL}}⦘★`!p snip.rv = PARENTH_MATCH.get(match.group(1), match.group(1))`$0
+endsnippet
+
+snippet { "paired curly braces properly excaped" i
+☆\\{${1:${VISUAL}}★\\}$0
+endsnippet
+
+snippet "(^|.)([()\[\]⟨⟩∥|⌊⌋⌈⌉])" "paired parenthesis" r
+`!p snip.rv = "" if match.group(1) in PARENTH_MATCH else match.group(1)
+`☆`!p snip.rv = match.group(1) if match.group(1) in PARENTH_MATCH else match.group(2)
+`${1:${VISUAL}}★`!p snip.rv = \
+	match.group(2) if match.group(1) in PARENTH_MATCH else PARENTH_MATCH.get(match.group(2), match.group(2))
+`$0
+endsnippet
+
+snippet cases "cases environment" i
+☆\\{⦗
+	$1, & ~~ & $2 \\\\
+	${3:${VISUAL}} && Ŧ{sonst}
+⦘★.
+$0
+endsnippet
+
+snippet / "fraction" i
+{${1:${VISUAL}}÷$2}$0
+endsnippet
+
+snippet '([^\$\+\-\*×÷/ ]*)/([^\$\+\-\*×÷/ ]+)' "Enter Fraction" ir
+`!p snip.rv = "{" + match.group(1) + "÷" + match.group(2) + "}"`
+endsnippet
+
+snippet "([^dn])d" "total derivative" ir
+`!p snip.rv = match.group(1)`{𝒹$1÷𝒹$2}$0
+endsnippet
+
+snippet dd "second total derivative" i
+{𝒹²$1÷𝒹$2²}$0
+endsnippet
+
+snippet nd "nth total derivative" i
+{𝒹^{$1}$2÷𝒹$3^{$1}}$0
+endsnippet
+
+snippet "([^pn∂t])(p|∂)" "partial derivative" ir
+`!p snip.rv = match.group(1)`{∂$1÷∂$2}$0
+endsnippet
+
+snippet "(p|∂)(p|∂)" "second partial derivative" ir
+{∂²$1÷∂$2²}$0
+endsnippet
+
+snippet "n(p|∂)" "nth partial derivative" ir
+{∂^{$1}$2÷∂$3^{$1}}$0
+endsnippet
+
+snippet lim "limit" i
+\\lim_{$1} $0
+endsnippet
+
+snippet sum "sum" i
+\\sum_{$1=$2}^$3 $0
+endsnippet
+
+snippet sumz "sum all numbers Z" i
+\\sum_{$1=-∞}^∞ $0
+endsnippet
+
+snippet sumn "sum all numbers N" i
+\\sum_{$1=1}^∞ $0
+endsnippet
+
+snippet sum0 "sum all numbers N and 0" i
+\\sum_{$1=0}^∞ $0
+endsnippet
+
+snippet inv "inverse of something" i
+^{-1}
+endsnippet
+
+snippet tp "Transposition" i
+^⊤
+endsnippet
+
+snippet ^{ "power of something" iA
+^{$1}$0
+endsnippet
+
+snippet _{ "subscript something" iA
+_{$1}$0
+endsnippet
+
+snippet vl "Vorlesung and slide number indecator"
+*[VL_$1-$2]* $0
+endsnippet
+
+snippet "_([0123456789aehijklmnoprstuvx])" "subscript" ir
+`!p snip.rv = SUBSCRIPTS.get(match.group(1), "_" + match.group(1))`
+endsnippet
+
+snippet "\^([0123456789abcdevghijklmnoprstuvwxyz])" "supscript" ir
+`!p snip.rv = SUPSCRIPTS.get(match.group(1), "^" + match.group(1))`
+endsnippet
+
+snippet "([a-zα-ω])([0-9])" "Letter followed by number means subscript" ri
+`!p snip.rv = match.group(1) + SUBSCRIPTS.get(match.group(2), "_" + match.group(2))`
+endsnippet
+
+snippet >_ "Greater then or equal" Ai
+≥
+endsnippet
+
+snippet <_ "Less then or equal" Ai
+≤
+endsnippet
+
+snippet array "array environment" i
+\begin{array}{rl}
+	${1:${VISUAL}}
+\end{array}
+endsnippet
+
+snippet "([∫∬∭⨌∮∯∰])" "append limits to integral" ri
+`!p snip.rv = match.group(1) + "⮃"`
+endsnippet
+
+snippet intr "integrate real numbers" i
+∫⮃_{-∞}^∞ 
+endsnippet
+
+snippet intl "integrate positive real numbers" i
+∫⮃₀^∞
+endsnippet
+
+snippet exp "exponential funtkone" i
+ℯ^{$1}$0
+endsnippet
+
+snippet sqrt "square root" i
+√{$1}$0
+endsnippet
+
+snippet "(eff|min|max)" "text subscripts" ir
+Ŧ{`!p snip.rv = match.group(1)`}
+endsnippet
+
+snippet text "insert text" i
+Ŧ{$1}$0
+endsnippet
+
+snippet day "insert day block"
+day $1 day$0
+endsnippet
+
+priority 1000
+snippet "day(.*)day" "evauluted day based on description" ri
+\``!p 
+# TODO: use arrow.utcnow().dehumanize(info) instead
+info = match.group(1).lower()
+equivalent = dict(so="sunday", mo="monday", di="tuesday", mi="wednesday", do="thursday", fr="friday", sa="saturday")
+equivalent['+'] = "next "
+equivalent['-'] = "last "
+for k, v in equivalent.items():
+	info = info.replace(k, v)
+cmd = ['date', '-d', info, '+%y-%m-%d']
+import subprocess
+snip.rv = subprocess.check_output(cmd).decode("utf-8").rstrip()
+`\`
+endsnippet
+priority 1
+
+
+
+# vim:ft=snippets

@@ -1,0 +1,1243 @@
+% Consider replacing this with https://github.com/kiwi0fruit/sugartex/blob/master/sugartex.md
+% this also supports new infix notations e.g. so ⏟{a}_{b} could be written as
+% {a}⏟{b} instead making things a lot nicer still this isn't ideal e.g. because
+% it won't handle modifier chars ẋ x⃗ at all using pre/postfix notations instead
+
+% Cosidere writing some preprocessor to handle multiple superscripts x⃗̇ and add an alternative pre-fix
+% notation for accent marks. Add support for soem sugertex features like
+% ˹text˺ as an alternative for Ŧ{text} and other notations and like ⋲ for cases
+% and some {top_text}→⢈{bottom_text} for a long arrow with text and support
+% other chars licke ← ⇒ = ≡ ⇔ etc.
+
+% perhaps implement something like a⏟ b using this technique https://tex.stackexchange.com/a/142749/179740
+
+% TODO: delte this it's all replaced by overset and using overgroup
+% \let\arrowvert\relax
+% \let\Arrowvert\relax
+% \let\bracevert\relax
+% \let\Bracevert\relax
+% \usepackage[minimal,nowidering]{yhmath}  % \wideparen and others
+% % \usepackage{mathabx}  % \overgroup ... but there is to much overlap with other packages use a custom definition instead
+% \let\overgroup\wideparen
+
+\usepackage{logix}  % for Tortoise Brakcets and other special symbols include before unicode-math because it includes mathtools
+\usepackage{mathtools}
+
+% linewidth for non 10pt font size in over/underpace
+\let\underbrace\LaTeXunderbrace
+\let\overbrace\LaTeXoverbrace
+% If abraces ever works correctly it could replaces this though the overload
+% option
+
+\ifcsname erf\endcsname\let\erf\relax\fi % remove erf if it exists so physics can define it once more
+\usepackage{physics}
+\usepackage{iftex}
+\ifLuaTeX
+\usepackage{unicode-math}
+% See https://tex.stackexchange.com/a/456225
+% and https://tex.stackexchange.com/a/591011
+\protected\def\afteracc{\directlua{
+    local nest = tex.nest[tex.nest.ptr]
+    local last = nest.tail
+    if not (last and last.id == 18) then
+      error'I can only put accents on simple noads.'
+    end
+    if last.sub or last.sup then
+      error'If you want accents on a superscript or subscript, please use braces.'
+    end
+    local acc = node.new(21, 1)
+    acc.nucleus = last.nucleus
+    last.nucleus = nil
+    local is_bottom = token.scan_keyword'bot' and 'bot_accent' or 'accent'
+    acc[is_bottom] = node.new(23)
+    acc[is_bottom].fam, acc[is_bottom].char = 0, token.scan_int()
+    nest.head = node.insert_after(node.remove(nest.head, last), nil, acc)
+    nest.tail = acc
+    node.flush_node(last)
+  }}
+\AtBeginDocument{
+\begingroup
+  \def\UnicodeMathSymbol#1#2#3#4{%
+    \ifx#3\mathaccent
+      \def\mytmpmacro{\afteracc#1 }%
+      \global\letcharcode#1=\mytmpmacro
+      \global\mathcode#1="8000
+    \else\ifx#3\mathbotaccentwide
+      \def\mytmpmacro{\afteracc bot#1 }%
+      \global\letcharcode#1=\mytmpmacro
+      \global\mathcode#1="8000
+    \fi\fi
+  }
+  \input{unicode-math-table}
+\endgroup
+}
+\fi
+
+\usepackage{newunicodechar}
+% Using newunicodechar instead of \DeclareUnicodeCharacter
+% because that works independently of {xe,lua}latex vs pdflatex
+
+\usepackage{bbm} % for double struck digigits
+
+
+\usepackage{xcolor}
+\usepackage{stmaryrd} % for the ´\lightning´ 🗲 symbol
+\usepackage{wasysym}
+\makeatletter
+\newcommand{\colorprovide}[3]{%
+    \@ifundefined{\string\color@#1}{\definecolor{#1}{#2}{#3}}{}}
+\makeatother
+\colorprovide{highlight}{rgb}{1.0,0.7,0}  % TODO: Move this somewhere else
+\newcommand{\il}[1]{~\textcolor{highlight}{\refstepcounter{equation}(\theequation)\label{#1}}}
+
+\usepackage{soul}  % needs to be loaded before defining the `\ul` command so just load it to avoid things breaking in case something needs the package later on
+\providecommand{\uuline}[1]{\underline{\underline{#1}}} % needed for combining-chars.hs pandoc filter
+% \providecommand{\ul}[1]{\underline{#1}}
+\let\ul\underline
+
+\usepackage{nicefrac}
+\newcommand{\sgnesqrt}{{\mathrm{sgn}_{\varepsilon}^{\nicefrac{1}{2}}}}
+\newcommand{\sgnsqrt}{{\mathrm{sgn}^{\nicefrac{1}{2}}}}
+
+\usepackage{ulem} % for strikethrough text with combining-chars.hs
+\normalem  % loading ulem underlines em (reverse `\normalem` with `\ULforem`)
+\newcommand{\msout}[1]{\text{\sout{\ensuremath{#1}}}}
+\usepackage{slashed} % for dirac-slash with combining-chars.hs
+
+\usepackage{mathrsfs}  % for mathscr
+
+\DeclareMathOperator*{\diag}{diag}
+% \DeclareMathOperator*{\argmin}{arg\,min}
+% \DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\ld}{ld}
+\DeclareMathOperator*{\Var}{Var}
+\DeclareMathOperator*{\sign}{sign}
+% \DeclareMathOperator*{\rank}{rank}
+\DeclareMathOperator*{\eig}{eig}
+
+% Circled Symbol
+\makeatletter
+\newcommand{\osim}{\sim\mkern-19mu\bigcirc}
+% \newcommand{\skp}{% symmetric kroneker product
+%     \mkern1mu%
+%     \mathrel{\rotatebox[origin=c]{67.5}{$\sim$}}\mkern-15mu%
+%     \mathrel{\rotatebox[origin=c]{-22.5}{$\sim$}}\mkern-14.4mu%
+%     \mathrel{\raisebox{-0.08ex}{$\bigcirc$}}%
+%     \mkern-1mu%
+% }
+\makeatother
+\let\skp\boxtimes  % symmetric kroneker product see also ⊠
+\usepackage{scalerel}
+\DeclareMathOperator*{\skpop}{\scalerel*{\skp}{\textstyle\sum}}  % skp operator
+
+% for other possible choices of special parens see https://www.compart.com/en/unicode/block/U+3000
+\providecommand{\symc}[2]{\OpnTortoise #1 , #2 \ClsTortoise}
+\newunicodechar{〔}{\OpnTortoise}  % §([  〔A,B〕
+\newunicodechar{〕}{\ClsTortoise}  % §])
+
+% Special vector arrows -> Not needed use package overarrows instead
+% \makeatletter
+% \def\rightharpoonupfill@{\arrowfill@\relbar\relbar\rightharpoonup}
+% \newcommand{\overrightharpoonup}{\mathpalette{\overarrow@\rightharpoonupfill@}}
+% \def\leftharpoonupfill@{\arrowfill@\relbar\relbar\leftharpoonup}
+% \newcommand{\overleftharpoonup}{\mathpalette{\overarrow@\leftharpoonupfill@}}
+% \makeatother
+
+% \DeclareMathOperator*{\dim}{dim}
+
+\newcommand{\hmat}{\raisebox{0.4ex}{\scalebox{0.55}{\boxed{\nicefrac{1}{2}}}}} % half mat
+
+\makeatletter
+\@ifpackageloaded{fontspec}{}{
+    \usepackage[T1]{fontspec}
+    \providefontfamily{\lucillianFamily}{Lucillian-Binary}[Extension = .ttf]
+    \newcommand{\lucillian}[1]{{\lucillianFamily #1}}
+}
+\makeatother
+
+% for some reason this won't work
+% \usepackage[overload]{abraces} % for overgoup braces
+% \newcommand{\overgroup}[1]{\aoverbrace[L1R]{#1}[U]}
+% \newcommand{\groupdot}[1]{\aoverbrace[l1r]{#1}[U]^{\cdot}}
+
+\newunicodechar{←}{\leftarrow}  % §<-
+\newunicodechar{↓}{\downarrow}  % §v|
+\newunicodechar{↑}{\uparrow}    % §^|
+\newunicodechar{→}{\rightarrow} % §->
+
+% TODO: use julia symbols to expand this list https://docs.julialang.org/en/v1/manual/unicode-input/
+
+% TODO: add support for variable length compose sequences (cannot be loaded by
+% vim digraphs but will still work in XCompose)
+% This would allow for e.g. multikey <~> for ↭
+% Might no longer be useful: because my ligatures filter will already do that
+
+% remove accent marks from hyperlink texts but keep them everywhere else. So
+% avoid using it for now
+\newcommand*\udot[1]{\underset{\cdot}{#1}}
+% consider adding some more general modifier technique for adding under accents
+% perhaps even use \accentset with an appropriate modifier to allow for
+% arbitrary accent markers like \circ or \star
+
+% Vim cannot load combining chars so those are repeated ~/.vimrc
+% \newunicodechar{̅}{}            % §-- a̅  Note: Combining Macron ↓
+% \newunicodechar{̄}{}            % §^_ ā Combining Macron (in latex it meanders as \bar for now)
+% \newunicodechar{̲}{}            % §__  a̲
+% \newunicodechar{̆}{}            % §^U  ă̲
+% \newunicodechar{̊}{}            % §^O  å \r
+% \newunicodechar{̋}{}            % §^/  a̋ todo: \dacute command for this \H in text but what about math
+% \newunicodechar{́}{}            % disabled ^^  á \'
+% \newunicodechar{́}{}            % §''  á Same as above ↑  Unfortunately ´ has to be defined as a compose sequence already and therefore cannot be used
+% \newunicodechar{̇}{}            % §^.  ȧ
+% \newunicodechar{̈}{}            % §::  ä
+% \newunicodechar{⃛}{}            % §:3  a⃛   % TODO: add \dddot
+% \newunicodechar{⃜}{}            % §:4  a⃜   % TODO: add \ddddot
+% \newunicodechar{⃗}{}            % §^>  a⃗
+% \newunicodechar{⃖}{}            % §^<  a⃖   % TODO: add \overleftarrow
+% \newunicodechar{̃}{}            % §^~  ã \~
+% \newunicodechar{̀}{}            % §``  à \`
+% \newunicodechar{̂}{}            % §^^  â \^
+% \newunicodechar{⃒}{}            % §|   a⃒   % TODO: add \vertoverlay
+% \newunicodechar{⃐}{}            % §hl  a⃐   % TODO: add \leftharpoonaccent (or maybe using stuff from \hm (half matrix))
+% \newunicodechar{⃑}{}            % §hr  a⃑   % TODO: add \rightharpoonaccent (or maybe using stuff from \hv (half vector))
+
+% TODO: Add remaining accent marks starting at 0x030B
+
+% Chinese Tones (alternatives for some of the above)
+% \newunicodechar{̄}{}            % §11 ā
+% \newunicodechar{́}{}            % §22 á
+% \newunicodechar{̆}{}            % §33 ă̲
+% \newunicodechar{̀}{}            % §44 à
+ 
+
+\newunicodechar{ß}{\ss}            % ß  §ss
+\newunicodechar{ö}{\"{o}}           % §oo
+\newunicodechar{ü}{\"{u}}           % §uu
+\newunicodechar{ä}{\"{a}}           % §aa
+\newunicodechar{Ö}{\"{O}}           % §OO
+\newunicodechar{Ü}{\"{U}}           % §UU
+\newunicodechar{Ä}{\"{A}}           % §AA
+
+% \newunicodechar{¡}{}           % §!!
+% \newunicodechar{¿}{}           % §??
+\newunicodechar{á}{\'{a}}        % §,a
+\newunicodechar{é}{\'{e}}        % §,e
+\newunicodechar{í}{\'{i}}        % §,i
+\newunicodechar{ó}{\'{o}}        % §,o
+\newunicodechar{ú}{\'{u}}        % §,u
+\newunicodechar{ñ}{\~{n}}        % §,n
+\newunicodechar{Á}{\'{A}}        % §,A
+\newunicodechar{É}{\'{E}}        % §,E
+\newunicodechar{Í}{\'{I}}        % §,I
+\newunicodechar{Ó}{\'{O}}        % §,O
+\newunicodechar{Ú}{\'{U}}        % §,U
+\newunicodechar{Ñ}{\~{N}}        % §,N
+
+\newunicodechar{à}{\`{a}}        % §`a
+\newunicodechar{è}{\`{e}}        % §`e
+\newunicodechar{ì}{\`{i}}        % §`i
+\newunicodechar{ò}{\`{o}}        % §`o
+\newunicodechar{ù}{\`{u}}        % §`u
+\newunicodechar{À}{\`{A}}        % §`A
+\newunicodechar{È}{\`{E}}        % §`E
+\newunicodechar{Ì}{\`{I}}        % §`I
+\newunicodechar{Ò}{\`{O}}        % §`O
+\newunicodechar{Ù}{\`{U}}        % §`U
+
+\newunicodechar{Γ}{\Gamma}         % Γ  0393  §gG
+\newunicodechar{Δ}{\Delta}         % Δ  0394  §gD
+\newunicodechar{Θ}{\Theta}         % Θ  0398  §gJ
+\newunicodechar{Λ}{\Lambda}        % Λ  039B  §gL
+\newunicodechar{Ξ}{\Xi}            % Ξ  039E  §gX
+\newunicodechar{Π}{\Pi}            % Π  03A0  §gP
+\newunicodechar{Σ}{\Sigma}         % Σ  03A3  §gS
+\newunicodechar{Υ}{\Upsilon}       % Υ  03A5  §gU
+\newunicodechar{Φ}{\Phi}           % Φ  03A6  §gF
+\newunicodechar{Ψ}{\Psi}           % Ψ  03A8  §gY
+\newunicodechar{Ω}{\Omega}         % Ω  03A9  §gW
+
+\newunicodechar{α}{\alpha}         % α  03B1  §ga
+\newunicodechar{β}{\beta}          % β  03B2  §gb
+\newunicodechar{γ}{\gamma}         % γ  03B3  §gg
+\newunicodechar{δ}{\delta}         % δ  03B4  §gd
+\newunicodechar{ε}{\varepsilon}    % ε textepsilon/varepsilon  03B5  §ge
+\newunicodechar{ζ}{\zeta}          % ζ  03B6  §gz
+\newunicodechar{η}{\eta}           % η  03B7  §gh
+\newunicodechar{θ}{\theta}         % θ  03B8  §gj
+\newunicodechar{𝜗}{\vartheta}      % for backward compatibility vj
+\newunicodechar{ι}{\iota}          % ι  03B9  §gi
+\newunicodechar{κ}{\kappa}         % κ  03BA  §gk
+\newunicodechar{λ}{\lambda}        % λ  03BB  §gl
+\newunicodechar{μ}{\mu}            % μ  03BC  §gm
+\newunicodechar{ν}{\nu}            % ν  03BD  §gn
+\newunicodechar{ξ}{\xi}            % ξ  03BE  §gx
+\newunicodechar{π}{\pi}            % π  03C0  §gp
+\newunicodechar{ρ}{\rho}           % ρ  03C1  §gr
+\newunicodechar{ς}{\varsigma}      % ς  03C2
+\newunicodechar{σ}{\sigma}         % σ  03C3  §gs
+\newunicodechar{τ}{\tau}           % τ  03C4  §gt
+\newunicodechar{υ}{\upsilon}       % υ  03C5  §gu
+\newunicodechar{φ}{\varphi}        % φ textphi/varphi  03C6 §gf
+\newunicodechar{χ}{\chi}           % χ  03C7  §gq
+\newunicodechar{ψ}{\psi}           % ψ  03C8  §gy
+\newunicodechar{ω}{\omega}         % ω  03C9  §gw
+
+\newunicodechar{ϑ}{\vartheta}   % ϑ  03D1        §Gj
+\newunicodechar{ϕ}{\phi}     % ϕ $\phi$  03D5 §Gf
+\newunicodechar{ϖ}{\pisymbol}      % ϖ  03D6
+\newunicodechar{ϝ}{\digamma}       % ϝ  03DD
+\newunicodechar{ϱ}{\rhosymbol}     % ϱ  03F1   §Gr
+\newunicodechar{ϵ}{\epsilon} % ϵ $\epsilon$  03F5  §Ge
+
+% consider adding some other more unsual letters
+% https://tex.stackexchange.com/questions/663560/using-the-greek-letters-koppa-stigma-sampi-digamma-heta-san-in-cm-font
+
+\newunicodechar{𝛑}{\uppi}          % multi m π §pm
+
+\newunicodechar{⋯}{\cdots}         % ⋯  22ee  multi c . .  §.c
+\newunicodechar{…}{\dots}          % …  2026               §..
+\newunicodechar{⋮}{\vdots}         % ⋮        multi v . .  §.v
+\newunicodechar{⋱}{\ddots}         % ⋱        multi . \ .  §.d
+
+% \newunicodechar{Ñ}{\tilde{N}}      % Ñ  00D1  §N~
+% \newunicodechar{ñ}{\tilde{n}}      % ñ  00F1  §n~
+
+\newunicodechar{ṁ}{\dot{m}}          % ṁ  1E41 §.m
+
+% TODO: decide if \mathrm should use this script or cursive double struck
+\newunicodechar{ℯ}{\mathrm{e}}     % §ee   ℮
+% \newunicodechar{𝒾}{\mathrm{i}}     % ii
+% \newunicodechar{𝒿}{\mathrm{j}}     % jj
+% \newunicodechar{𝓀}{\mathrm{k}}     % kk
+% \newunicodechar{𝒹}{\mathrm{d}}     % dD
+
+% Using cursive instead of upright to distinguage from \mathbb below
+\newunicodechar{ⅈ}{\mathrm{i}}     % ⅈ  2148  §ii
+\newunicodechar{ⅉ}{\mathrm{j}}     % ⅉ  2149  §jj
+% \newunicodechar{}{\mathrm{k}}     %          kk  % unfortunately this doesn't exist
+\newunicodechar{ⅆ}{\mathrm{d}}     % ⅆ  2146  §dD
+
+\newunicodechar{∂}{\partial}        % ∂  2202  §dd
+\newunicodechar{⇔}{\Leftrightarrow} % ⇔  21D4  §<>
+\newunicodechar{⇕}{\UpDownarrow}    % §v^
+\newunicodechar{↕}{\updownarrow}    % §V^
+\newunicodechar{⇐}{\Leftarrow}      % §=<
+\newunicodechar{⇒}{\Rightarrow}     % ⇒  21D2  §=>
+\newunicodechar{⇓}{\Downarrow}      % §=v
+\newunicodechar{⇑}{\Uparrow}        % §=^
+\newunicodechar{ħ}{\hbar}           % ħ  0127  §-h
+\newunicodechar{≈}{\approx}         % ≈  2248  §~~
+\newunicodechar{≡}{\equiv}          % ≡  2261  §==
+\newunicodechar{≠}{\neq}            % ≠  2260  §/=
+\newunicodechar{≫}{\gg}             % ≫  compose +>  226B  §+>
+\newunicodechar{≪}{\ll}             % ≪  compose +<  226A  §+<
+\newunicodechar{·}{\cdot}           % ·  compose .-  00B7  §.-
+\newunicodechar{±}{\pm}             % ±  00B1  §+-
+\newunicodechar{∓}{\mp}             % ∓  2213  §-+
+\newunicodechar{∇}{\nabla}          % ∇  2207  §na
+\newunicodechar{∞}{\infty}          % ∞  221E  §88
+\newunicodechar{∈}{\in}             % ∈  2208        §in
+\newunicodechar{∉}{\notin}          % §ni
+\newunicodechar{×}{\times}          % ×  00D7        §xx
+\newunicodechar{∀}{\forall}         % ∀  2200    §aA
+\newunicodechar{≤}{\leq}            % ≤  2264    §<_
+\newunicodechar{≥}{\geq}            % ≥  2265    §>_
+\newunicodechar{∃}{\exists}         % ∃  2203    §EE
+\newunicodechar{∄}{\not\exists}     % ∄          §/E
+
+\newunicodechar{∪}{\cup}      % ∪ compose {u  §{u
+\newunicodechar{∩}{\cap}      % ∩ compose {^  §{^
+
+\newunicodechar{⊕}{\oplus}         % Circled Plus U+02295                §O+
+\newunicodechar{⊖}{\ominus}        % Circled Minus U+02296               §O-
+\newunicodechar{⊗}{\otimes}        % Circled Times U+02297               §Ox
+\newunicodechar{⊘}{\oslash}        % Circled Division Slash U+02298      §O/
+\newunicodechar{⊙}{\odot}          % Circled Dot Operator U+02299        §O.
+\newunicodechar{⊚}{\circledcirc}   % Circled Ring Operator U+0229A       §Oo
+\newunicodechar{⊛}{\circledast}    % Circled Asterisk Operator U+0229B   §O*
+\newunicodechar{⊜}{\circledequal}  % Circled Equals U+0229C              §O=
+\newunicodechar{⊝}{\circleddash}   % Circled Dash U+0229D                §O_
+\newunicodechar{⊞}{\boxplus}       % Squared Plus U+0229E                §L+
+\newunicodechar{⊟}{\boxminus}      % Squared Minus U+0229F               §L-
+\newunicodechar{⊠}{\boxtimes}      % Squared Times U+022A0               §Lx
+\newunicodechar{⊡}{\boxdot}        % Squared Dot Operator U+022A1        §L.  % Not to be confused with ⚀ (\dicei) from the dice series ⚀ ⚁ ⚂ ⚃ ⚄ ⚅ (\dicei \diceii \diceii \diceiv \dicev \dicevi)
+\newunicodechar{◫}{\boxbar}        % §L|
+\newunicodechar{◧}{\sqfl}          % §Ll
+\newunicodechar{◨}{\sqfr}          % §Lr
+\newunicodechar{◩}{\squareulblack} % §Lu
+\newunicodechar{◪}{\sqfse}         % §Lb
+
+\newunicodechar{∅}{\varnothing}      % ∅ §{0  or maybe use O/  ? No O/ is already in use for ⊘
+
+\newunicodechar{⊂}{\subset}      % ⊂ compose {(  §{(
+\newunicodechar{⊆}{\subseteq}    % ⊆ compose {=( §{=
+\newunicodechar{⊄}{\not\subset}  % ⊄ compose /{( §{/
+
+\newunicodechar{⊃}{\supset}      % ⊂ compose {)  §})
+\newunicodechar{⊇}{\supseteq}    % ⊇ compose {=) §}=
+\newunicodechar{⊅}{\not\supset}  % ⊅ compose /{) §}/
+
+\newunicodechar{⌽}{\obar}      % §O|
+
+\newunicodechar{÷}{\over }         % ÷  00F7  §-:
+
+\newunicodechar{√}{\sqrt}          % √  221A  §q2
+\newunicodechar{∛}{\sqrt[3]}       % ∛        §q3
+
+\newunicodechar{∫}{\int}           % ∫  222B  §i1
+\newunicodechar{∬}{\iint}          % §i2
+\newunicodechar{∭}{\iiint}         % §i3
+\newunicodechar{⨌}{\iiiint}        % §i4
+\newunicodechar{∮}{\oint}          % ∮  222E  §o1
+\newunicodechar{∯}{\oiint}         % §o2
+\newunicodechar{∰}{\oiiint}        % §o3
+\newunicodechar{⮃}{\limits}        % §il
+
+\newunicodechar{⟨}{\langle}        % ⟨  27E8  §<(
+\newunicodechar{⟩}{\rangle}        % ⟩  27E9  §>)
+
+\newunicodechar{⌣}{\smile} % §-u see also ⌢ \frown as a counter part
+
+\newunicodechar{◍}{\null}         % ◍  25CD   §|.
+\newunicodechar{▤}{\hfill}        % ▤  25A4   §|:
+\newunicodechar{Ŧ}{\text}         % Ŧ  0166 compose TT  §TT
+\newunicodechar{Ɨ}{\mathit}       % Ɨ §II  % use to typeset something like J_Ɨ{max}
+
+
+% Consider switching this again to ☾ ☽  just because ☾(a+b☽) would look cool
+% This would free up those squiggly arrows and stars for their actual functions
+% Even nicer would be one single char so ˚(a+b)˚ would use left or right
+% depending on wether ˚ comes befor or after the parens. Perhaps implement this
+% using \futurelet or \WithSuffix (suffix package) to get the neccesary one
+% token lookahead
+\newunicodechar{⇝}{\left}          % ⇝  21DD  §~>
+\newunicodechar{⇜}{\right}         % ⇜  21DC  §<~
+\newunicodechar{☆}{\left}          % ☆  2606  §So
+\newunicodechar{★}{\right}         % ★  2605  §Sf
+
+\newunicodechar{∥}{\Vert}          % ∥  2225  §||
+\newunicodechar{⟂}{\perp}          % §_|
+
+\newunicodechar{⦗}{\begin{matrix}}  % ⦗ multi ( [  2997  §([
+\newunicodechar{⦘}{\end{matrix}}    % ⦘ multi ) ]  2998  §)]
+
+\newunicodechar{₀}{_0}    %  §_0
+\newunicodechar{₁}{_1}    %  §_1
+\newunicodechar{₂}{_2}    %  §_2
+\newunicodechar{₃}{_3}    %  §_3
+\newunicodechar{₄}{_4}    %  §_4
+\newunicodechar{₅}{_5}    %  §_5
+\newunicodechar{₆}{_6}    %  §_6
+\newunicodechar{₇}{_7}    %  §_7
+\newunicodechar{₈}{_8}    %  §_8
+\newunicodechar{₉}{_9}    %  §_9
+
+\newunicodechar{ₐ}{_a}    %  §_a
+\newunicodechar{ₑ}{_e}    %  §_e
+\newunicodechar{ₕ}{_h}    %  §_h
+\newunicodechar{ᵢ}{_i}    %  §_i
+\newunicodechar{ⱼ}{_j}    %  §_j
+\newunicodechar{ₖ}{_k}    %  §_k
+\newunicodechar{ₗ}{_l}    %  §_l
+\newunicodechar{ₘ}{_m}    %  §_m
+\newunicodechar{ₙ}{_n}    %  §_n
+\newunicodechar{ₒ}{_o}    %  §_o
+\newunicodechar{ₚ}{_p}    %  §_p
+\newunicodechar{ᵣ}{_r}    %  §_r
+\newunicodechar{ₛ}{_s}    %  §_s
+\newunicodechar{ₜ}{_t}    %  §_t
+\newunicodechar{ᵤ}{_u}    %  §_u
+\newunicodechar{ᵥ}{_v}    %  §_v
+\newunicodechar{ₓ}{_x}    %  §_x
+
+\newunicodechar{₊}{_+}             % ₊  208A  §_+
+\newunicodechar{₋}{_-}             % ₋  208B  §_-
+
+\newunicodechar{ᵃ}{^a}             %  §^a
+\newunicodechar{ᵇ}{^b}             %  §^b
+\newunicodechar{ᶜ}{^c}             %  §^c
+\newunicodechar{ᵈ}{^d}             %  §^d
+\newunicodechar{ᵉ}{^e}             %  §^e
+\newunicodechar{ᵛ}{^v}             %  §^v
+\newunicodechar{ᵍ}{^g}             %  §^g
+\newunicodechar{ʰ}{^h}             %  §^h
+\newunicodechar{ⁱ}{^i}             %  §^i
+\newunicodechar{ʲ}{^j}             %  §^j
+\newunicodechar{ᵏ}{^k}             %  §^k
+\newunicodechar{ˡ}{^l}             %  §^l
+\newunicodechar{ᵐ}{^m}             %  §^m
+\newunicodechar{ⁿ}{^n}             %  §^n
+\newunicodechar{ᵒ}{^o}             %  §^o
+\newunicodechar{ᵖ}{^p}             %  §^p
+\newunicodechar{ʳ}{^r}             %  §^r
+\newunicodechar{ˢ}{^s}             %  §^s
+\newunicodechar{ᵗ}{^t}             %  §^t
+\newunicodechar{ᵘ}{^u}             %  §^u
+\newunicodechar{ʷ}{^w}             %  §^w
+\newunicodechar{ˣ}{^x}             %  §^x
+\newunicodechar{ʸ}{^y}             %  §^y
+\newunicodechar{ᶻ}{^z}             %  §^z
+
+\newunicodechar{⁰}{^0}             % ⁰  2070  §^0
+\newunicodechar{¹}{^1}             % ¹  00B9  §^1
+\newunicodechar{²}{^2}             % ²  00B2  §^2
+\newunicodechar{³}{^3}             % ³  00B3  §^3
+\newunicodechar{⁴}{^4}             % ⁴  2074  §^4
+\newunicodechar{⁵}{^5}             % ⁵  2075  §^5
+\newunicodechar{⁶}{^6}             % ⁶  2076  §^6
+\newunicodechar{⁷}{^7}             % ⁷  2077  §^7
+\newunicodechar{⁸}{^8}             % ⁸  2078  §^8
+\newunicodechar{⁹}{^9}             % ⁹  2079  §^9
+
+\newunicodechar{⁺}{^+}             % ⁺  207A  §^+
+\newunicodechar{⁻}{^-}             % ⁻  207B  §^-
+\newunicodechar{⁼}{^=}             % ⁼  207C  §^=
+\newunicodechar{⁽}{^(}             % ⁼  207D  §^(
+\newunicodechar{⁾}{^)}             % ⁼  207E  §^)
+
+\newunicodechar{Ⅰ}{\mathrm{I}}    % multi % 0 1  §R1
+\newunicodechar{Ⅱ}{\mathrm{II}}   %  §R2
+\newunicodechar{Ⅲ}{\mathrm{III}}  %  §R3
+\newunicodechar{Ⅳ}{\mathrm{IV}}   %  §R4
+\newunicodechar{Ⅴ}{\mathrm{V}}    %  §R5
+\newunicodechar{Ⅵ}{\mathrm{VI}}   %  §R6
+\newunicodechar{Ⅶ}{\mathrm{VII}}  %  §R7
+\newunicodechar{Ⅷ}{\mathrm{VIII}} %  §R8
+\newunicodechar{Ⅸ}{\mathrm{IX}}   %  §R9
+\newunicodechar{Ⅹ}{\mathrm{X}}    % multi % 0 x  §Rx
+\newunicodechar{Ⅺ}{\mathrm{XI}}    % §Rb
+\newunicodechar{Ⅻ}{\mathrm{XII}}    % §Rc
+
+% Consider using logix symbols instead (seams to be a more complete set, that
+% includes lower case letters)
+
+% Mathematical Fraktur
+\newunicodechar{𝔄}{\mathfrak{A}}  %  §fA
+\newunicodechar{𝔅}{\mathfrak{B}}  %  §fB
+\newunicodechar{ℭ}{\mathfrak{C}}  %  §fC
+\newunicodechar{𝔇}{\mathfrak{D}}  %  §fD
+\newunicodechar{𝔈}{\mathfrak{E}}  %  §fE
+\newunicodechar{𝔉}{\mathfrak{F}}  %  §fFnsert literal % in command
+\newunicodechar{𝔊}{\mathfrak{G}}  %  §fG
+\newunicodechar{ℌ}{\mathfrak{H}}  %  §fH
+\newunicodechar{ℑ}{\mathfrak{I}}  %  §fI
+\newunicodechar{𝔍}{\mathfrak{J}}  %  §fJ
+\newunicodechar{𝔎}{\mathfrak{K}}  %  §fK
+\newunicodechar{𝔏}{\mathfrak{L}}  %  §fL
+\newunicodechar{𝔐}{\mathfrak{M}}  %  §fM
+\newunicodechar{𝔑}{\mathfrak{N}}  %  §fN
+\newunicodechar{𝔒}{\mathfrak{O}}  %  §fO
+\newunicodechar{𝔓}{\mathfrak{P}}  %  §fP
+\newunicodechar{𝔔}{\mathfrak{Q}}  %  §fQ
+\newunicodechar{ℜ}{\mathfrak{R}}  %  §fR
+\newunicodechar{𝔖}{\mathfrak{S}}  %  §fS
+\newunicodechar{𝔗}{\mathfrak{T}}  %  §fT
+\newunicodechar{𝔘}{\mathfrak{U}}  %  §fU
+\newunicodechar{𝔙}{\mathfrak{V}}  %  §fV
+\newunicodechar{𝔚}{\mathfrak{W}}  %  §fW
+\newunicodechar{𝔛}{\mathfrak{X}}  %  §fX
+\newunicodechar{𝔜}{\mathfrak{Y}}  %  §fY
+\newunicodechar{ℨ}{\mathfrak{Z}}  %  §fZ
+\newunicodechar{𝔞}{\mathfrak{a}}  %  §fa
+\newunicodechar{𝔟}{\mathfrak{b}}  %  §fb
+\newunicodechar{𝔠}{\mathfrak{c}}  %  §fc
+\newunicodechar{𝔡}{\mathfrak{d}}  %  §fd
+\newunicodechar{𝔢}{\mathfrak{e}}  %  §fe
+\newunicodechar{𝔣}{\mathfrak{f}}  %  §ff
+\newunicodechar{𝔤}{\mathfrak{g}}  %  §fg
+\newunicodechar{𝔥}{\mathfrak{h}}  %  §fh
+\newunicodechar{𝔦}{\mathfrak{i}}  %  §fi
+\newunicodechar{𝔧}{\mathfrak{j}}  %  §fj
+\newunicodechar{𝔨}{\mathfrak{k}}  %  §fk
+\newunicodechar{𝔩}{\mathfrak{l}}  %  §fl
+\newunicodechar{𝔪}{\mathfrak{m}}  %  §fm
+\newunicodechar{𝔫}{\mathfrak{n}}  %  §fn
+\newunicodechar{𝔬}{\mathfrak{o}}  %  §fo
+\newunicodechar{𝔭}{\mathfrak{p}}  %  §fp
+\newunicodechar{𝔮}{\mathfrak{q}}  %  §fq
+\newunicodechar{𝔯}{\mathfrak{r}}  %  §fr
+\newunicodechar{𝔰}{\mathfrak{s}}  %  §fs
+\newunicodechar{𝔱}{\mathfrak{t}}  %  §ft
+\newunicodechar{𝔲}{\mathfrak{u}}  %  §fu
+\newunicodechar{𝔳}{\mathfrak{v}}  %  §fv
+\newunicodechar{𝔴}{\mathfrak{w}}  %  §fw
+\newunicodechar{𝔵}{\mathfrak{x}}  %  §fx
+\newunicodechar{𝔶}{\mathfrak{y}}  %  §fy
+\newunicodechar{𝔷}{\mathfrak{z}}  %  §fz
+
+% Generate with:
+% :r! python3 -c "import sys; print('\n'.join([f'\\\\newunicodechar{{{special}}}{{\\{sys.argv[1]}{{{ordenary}}}}} \% §{sys.argv[2]}{ordenary}' for special, ordenary in [(chr(ord(sys.argv[3][0]) + i), chr(ord('A') + i + 6*(i//26))) for i in range(2*26)]]))" mathcal c 𝒜
+% adjust command line args at end
+
+% Mathematical Script
+\newunicodechar{𝒜}{\mathcal{A}} % §cA
+\newunicodechar{𝒝}{\mathcal{B}} % §cB
+\newunicodechar{𝒞}{\mathcal{C}} % §cC
+\newunicodechar{𝒟}{\mathcal{D}} % §cD
+\newunicodechar{𝒠}{\mathcal{E}} % §cE
+\newunicodechar{𝒡}{\mathcal{F}} % §cF
+\newunicodechar{𝒢}{\mathcal{G}} % §cG
+\newunicodechar{𝒣}{\mathcal{H}} % §cH
+\newunicodechar{𝒤}{\mathcal{I}} % §cI
+\newunicodechar{𝒥}{\mathcal{J}} % §cJ
+\newunicodechar{𝒦}{\mathcal{K}} % §cK
+\newunicodechar{𝒧}{\mathcal{L}} % §cL
+\newunicodechar{𝒨}{\mathcal{M}} % §cM
+\newunicodechar{𝒩}{\mathcal{N}} % §cN
+\newunicodechar{𝒪}{\mathcal{O}} % §cO
+\newunicodechar{𝒫}{\mathcal{P}} % §cP
+\newunicodechar{𝒬}{\mathcal{Q}} % §cQ
+\newunicodechar{𝒭}{\mathcal{R}} % §cR
+\newunicodechar{𝒮}{\mathcal{S}} % §cS
+\newunicodechar{𝒯}{\mathcal{T}} % §cT
+\newunicodechar{𝒰}{\mathcal{U}} % §cU
+\newunicodechar{𝒱}{\mathcal{V}} % §cV
+\newunicodechar{𝒲}{\mathcal{W}} % §cW
+\newunicodechar{𝒳}{\mathcal{X}} % §cX
+\newunicodechar{𝒴}{\mathcal{Y}} % §cY
+\newunicodechar{𝒵}{\mathcal{Z}} % §cZ
+\newunicodechar{𝒶}{\mathcal{a}} % §ca
+\newunicodechar{𝒷}{\mathcal{b}} % §cb
+\newunicodechar{𝒸}{\mathcal{c}} % §cc
+\newunicodechar{𝒹}{\mathcal{d}} % §cd
+\newunicodechar{𝒺}{\mathcal{e}} % §ce
+\newunicodechar{𝒻}{\mathcal{f}} % §cf
+\newunicodechar{𝒼}{\mathcal{g}} % §cg
+\newunicodechar{𝒽}{\mathcal{h}} % §ch
+\newunicodechar{𝒾}{\mathcal{i}} % §ci
+\newunicodechar{𝒿}{\mathcal{j}} % §cj
+\newunicodechar{𝓀}{\mathcal{k}} % §ck
+\newunicodechar{𝓁}{\mathcal{l}} % §cl
+\newunicodechar{𝓂}{\mathcal{m}} % §cm
+\newunicodechar{𝓃}{\mathcal{n}} % §cn
+\newunicodechar{𝓄}{\mathcal{o}} % §co
+\newunicodechar{𝓅}{\mathcal{p}} % §cp
+\newunicodechar{𝓆}{\mathcal{q}} % §cq
+\newunicodechar{𝓇}{\mathcal{r}} % §cr
+\newunicodechar{𝓈}{\mathcal{s}} % §cs
+\newunicodechar{𝓉}{\mathcal{t}} % §ct
+\newunicodechar{𝓊}{\mathcal{u}} % §cu
+\newunicodechar{𝓋}{\mathcal{v}} % §cv
+\newunicodechar{𝓌}{\mathcal{w}} % §cw
+\newunicodechar{𝓍}{\mathcal{x}} % §cx
+\newunicodechar{𝓎}{\mathcal{y}} % §cy
+\newunicodechar{𝓏}{\mathcal{z}} % §cz
+
+% Mathematical Bold Script
+\newunicodechar{𝓐}{\mathscr{A}} % §mA
+\newunicodechar{𝓑}{\mathscr{B}} % §mB
+\newunicodechar{𝓒}{\mathscr{C}} % §mC
+\newunicodechar{𝓓}{\mathscr{D}} % §mD
+\newunicodechar{𝓔}{\mathscr{E}} % §mE
+\newunicodechar{𝓕}{\mathscr{F}} % §mF
+\newunicodechar{𝓖}{\mathscr{G}} % §mG
+\newunicodechar{𝓗}{\mathscr{H}} % §mH
+\newunicodechar{𝓘}{\mathscr{I}} % §mI
+\newunicodechar{𝓙}{\mathscr{J}} % §mJ
+\newunicodechar{𝓚}{\mathscr{K}} % §mK
+\newunicodechar{𝓛}{\mathscr{L}} % §mL
+\newunicodechar{𝓜}{\mathscr{M}} % §mM
+\newunicodechar{𝓝}{\mathscr{N}} % §mN
+\newunicodechar{𝓞}{\mathscr{O}} % §mO
+\newunicodechar{𝓟}{\mathscr{P}} % §mP
+\newunicodechar{𝓠}{\mathscr{Q}} % §mQ
+\newunicodechar{𝓡}{\mathscr{R}} % §mR
+\newunicodechar{𝓢}{\mathscr{S}} % §mS
+\newunicodechar{𝓣}{\mathscr{T}} % §mT
+\newunicodechar{𝓤}{\mathscr{U}} % §mU
+\newunicodechar{𝓥}{\mathscr{V}} % §mV
+\newunicodechar{𝓦}{\mathscr{W}} % §mW
+\newunicodechar{𝓧}{\mathscr{X}} % §mX
+\newunicodechar{𝓨}{\mathscr{Y}} % §mY
+\newunicodechar{𝓩}{\mathscr{Z}} % §mZ
+\newunicodechar{𝓪}{\mathscr{a}} % §ma
+\newunicodechar{𝓫}{\mathscr{b}} % §mb
+\newunicodechar{𝓬}{\mathscr{c}} % §mc
+\newunicodechar{𝓭}{\mathscr{d}} % §md
+\newunicodechar{𝓮}{\mathscr{e}} % §me
+\newunicodechar{𝓯}{\mathscr{f}} % §mf
+\newunicodechar{𝓰}{\mathscr{g}} % §mg
+\newunicodechar{𝓱}{\mathscr{h}} % §mh
+\newunicodechar{𝓲}{\mathscr{i}} % §mi
+\newunicodechar{𝓳}{\mathscr{j}} % §mj
+\newunicodechar{𝓴}{\mathscr{k}} % §mk
+\newunicodechar{𝓵}{\mathscr{l}} % §ml
+\newunicodechar{𝓶}{\mathscr{m}} % §mm
+\newunicodechar{𝓷}{\mathscr{n}} % §mn
+\newunicodechar{𝓸}{\mathscr{o}} % §mo
+\newunicodechar{𝓹}{\mathscr{p}} % §mp
+\newunicodechar{𝓺}{\mathscr{q}} % §mq
+\newunicodechar{𝓻}{\mathscr{r}} % §mr
+\newunicodechar{𝓼}{\mathscr{s}} % §ms
+\newunicodechar{𝓽}{\mathscr{t}} % §mt
+\newunicodechar{𝓾}{\mathscr{u}} % §mu
+\newunicodechar{𝓿}{\mathscr{v}} % §mv
+\newunicodechar{𝔀}{\mathscr{w}} % §mw
+\newunicodechar{𝔁}{\mathscr{x}} % §mx
+\newunicodechar{𝔂}{\mathscr{y}} % §my
+\newunicodechar{𝔃}{\mathscr{z}} % §mz
+
+% Double Struck ― Blackboard bold
+\newunicodechar{𝔸}{\mathbb{A}} % §|A
+\newunicodechar{𝔹}{\mathbb{B}} % §|B
+\newunicodechar{ℂ}{\mathbb{C}}     % ℂ  2102    §|C
+\newunicodechar{𝔻}{\mathbb{D}} % §|D
+\newunicodechar{𝔼}{\mathbb{E}} % §|E
+\newunicodechar{𝔽}{\mathbb{F}} % §|F
+\newunicodechar{𝔾}{\mathbb{G}} % §|G
+\newunicodechar{ℍ}{\mathbb{H}}     % ℍ  210D    §|H
+\newunicodechar{𝕀}{\mathbb{I}} % §|I
+\newunicodechar{𝕁}{\mathbb{J}} % §|J
+\newunicodechar{𝕂}{\mathbb{K}} % §|K
+\newunicodechar{𝕃}{\mathbb{L}} % §|L
+\newunicodechar{𝕄}{\mathbb{M}} % §|M
+\newunicodechar{ℕ}{\mathbb{N}}     %            §|N
+\newunicodechar{𝕆}{\mathbb{O}} % §|O
+\newunicodechar{𝕇}{\mathbb{P}} % §|P
+\newunicodechar{ℚ}{\mathbb{Q}}     % ℚ  211A    §|Q
+\newunicodechar{ℝ}{\mathbb{R}}     % ℝ  211D    §|R
+\newunicodechar{𝕊}{\mathbb{S}} % §|S
+\newunicodechar{𝕋}{\mathbb{T}} % §|T
+\newunicodechar{𝕌}{\mathbb{U}} % §|U
+\newunicodechar{𝕍}{\mathbb{V}} % §|V
+\newunicodechar{𝕎}{\mathbb{W}} % §|W
+\newunicodechar{𝕏}{\mathbb{X}} % §|X
+\newunicodechar{𝕐}{\mathbb{Y}} % §|Y
+\newunicodechar{ℤ}{\mathbb{Z}}     % ℤ  2124    §|Z
+\newunicodechar{𝕒}{\mathbb{a}} % §|a
+\newunicodechar{𝕓}{\mathbb{b}} % §|b
+\newunicodechar{𝕔}{\mathbb{c}} % §|c
+\newunicodechar{𝕕}{\mathbb{d}} % §|d
+\newunicodechar{𝕖}{\mathbb{e}} % §|e
+\newunicodechar{𝕗}{\mathbb{f}} % §|f
+\newunicodechar{𝕘}{\mathbb{g}} % §|g
+\newunicodechar{𝕙}{\mathbb{h}} % §|h
+\newunicodechar{𝕚}{\mathbb{i}} % §|i
+\newunicodechar{𝕛}{\mathbb{j}} % §|j
+\newunicodechar{𝕜}{\mathbb{k}} % §|k
+\newunicodechar{𝕝}{\mathbb{l}} % §|l
+\newunicodechar{𝕞}{\mathbb{m}} % §|m
+\newunicodechar{𝕟}{\mathbb{n}} % §|n
+\newunicodechar{𝕠}{\mathbb{o}} % §|o
+\newunicodechar{𝕡}{\mathbb{p}} % §|p
+\newunicodechar{𝕢}{\mathbb{q}} % §|q
+\newunicodechar{𝕣}{\mathbb{r}} % §|r
+\newunicodechar{𝕤}{\mathbb{s}} % §|s
+\newunicodechar{𝕥}{\mathbb{t}} % §|t
+\newunicodechar{𝕦}{\mathbb{u}} % §|u
+\newunicodechar{𝕧}{\mathbb{v}} % §|v
+\newunicodechar{𝕨}{\mathbb{w}} % §|w
+\newunicodechar{𝕩}{\mathbb{x}} % §|x
+\newunicodechar{𝕪}{\mathbb{y}} % §|y
+\newunicodechar{𝕫}{\mathbb{z}} % §|z
+
+% TODO: add parentheized symbols, circled symbols (there are a lot more)
+
+\newunicodechar{①}{\textcircled{1}} % §(1
+\newunicodechar{②}{\textcircled{2}} % §(2
+\newunicodechar{③}{\textcircled{3}} % §(3
+\newunicodechar{④}{\textcircled{4}} % §(4
+\newunicodechar{⑤}{\textcircled{5}} % §(5
+\newunicodechar{⑥}{\textcircled{6}} % §(6
+\newunicodechar{⑦}{\textcircled{7}} % §(7
+\newunicodechar{⑧}{\textcircled{8}} % §(8
+\newunicodechar{⑨}{\textcircled{9}} % §(9
+% \newunicodechar{⑪}{\textcircled{:}} % (:  % maybe switch to (10) instead of just digrams
+
+
+
+% Autogen
+% :r! python3 -c "import sys; print('\n'.join([f'\\\\newunicodechar{{{special}}}{{\\{sys.argv[1]}{{{ordenary}}}}} \% §{sys.argv[2]}{ordenary}' for special, ordenary in [(chr(ord(sys.argv[3][0]) + i), chr(ord('0') + i)) for i in range(10)]]))" mathbbm "|" 𝟘
+\newunicodechar{𝟘}{\mathbbm{0}} % §|0
+\newunicodechar{𝟙}{\mathbbm{1}} % §|1
+\newunicodechar{𝟚}{\mathbbm{2}} % §|2
+\newunicodechar{𝟛}{\mathbbm{3}} % §|3
+\newunicodechar{𝟜}{\mathbbm{4}} % §|4
+\newunicodechar{𝟝}{\mathbbm{5}} % §|5
+\newunicodechar{𝟞}{\mathbbm{6}} % §|6
+\newunicodechar{𝟟}{\mathbbm{7}} % §|7
+\newunicodechar{𝟠}{\mathbbm{8}} % §|8
+\newunicodechar{𝟡}{\mathbbm{9}} % §|9
+
+% Segmented Digits
+\def\NotImplemented#1{#1}
+% mybe \usepackage{ifsym} and \textifsym{01234} for this
+\newunicodechar{🯰}{\NotImplemented{0}} % §'0
+\newunicodechar{🯱}{\NotImplemented{1}} % §'1
+\newunicodechar{🯲}{\NotImplemented{2}} % §'2
+\newunicodechar{🯳}{\NotImplemented{3}} % §'3
+\newunicodechar{🯴}{\NotImplemented{4}} % §'4
+\newunicodechar{🯵}{\NotImplemented{5}} % §'5
+\newunicodechar{🯶}{\NotImplemented{6}} % §'6
+\newunicodechar{🯷}{\NotImplemented{7}} % §'7
+\newunicodechar{🯸}{\NotImplemented{8}} % §'8
+\newunicodechar{🯹}{\NotImplemented{9}} % §'9
+
+\newunicodechar{∠}{\angle} % §/_
+\newunicodechar{∢}{\ifdefined\angelsign\angelsign\else\varangle\fi} % §/|
+
+\newunicodechar{⊤}{\top}          % transpose   multi _!_  §_!
+\newunicodechar{ℓ}{\ell}  % §ll
+
+\DeclareMathOperator*{\laplaceop}{\laplace}
+\DeclareMathOperator*{\Laplaceop}{\Laplace}
+\newunicodechar{⊶}{\displaystyle\laplaceop}  % multi - 0  §-0
+\newunicodechar{⊷}{\displaystyle\Laplaceop}  % multi 0 -  §0-
+
+\newunicodechar{⏟}{\underbrace}  % multi _ ,   §_,
+% This is based on https://tex.stackexchange.com/a/142749/179740
+% Would be a really cool however it doesn't seam to be fully working. Somehow
+% ⏟ just isn't accepted as defined hier
+% Also: not sure how to handle backward compatability when going to an infix
+% notation
+% \catcode`⏟=\active
+% \catcode`⏟ = 13
+% \def #1⏟#2{\underbrace{#1}_{#2}}
+\newunicodechar{⏞}{\overbrace}   % multi ^ ,   §^,
+
+\newunicodechar{▲}{\blacktriangle}  % multi ^ v  §^v
+
+\newunicodechar{⟼}{\mapsto}  %  §|>
+\newunicodechar{∝}{\propto}  %  §oc
+
+\newunicodechar{∧}{\wedge}  % §&^
+\newunicodechar{∨}{\vee}    % §&v
+\newunicodechar{¬}{\neg}    % §&/
+
+\newunicodechar{≟}{\overset{?}{=}}    % §?=
+\newunicodechar{≝}{\overset{def}{=}}  % §d=
+\newunicodechar{≔}{\coloneqq}         % §:=
+\newunicodechar{≕}{\eqqcolon}         % §=:
+\newunicodechar{❢}{\overset{!}}       % §^!
+
+\newunicodechar{½}{\nicefrac{1}{2}}  % §12
+\newunicodechar{⅓}{\nicefrac{1}{3}}  % §13
+\newunicodechar{⅔}{\nicefrac{2}{3}}  % §23
+\newunicodechar{¼}{\nicefrac{1}{4}}  % §14
+\newunicodechar{¾}{\nicefrac{3}{4}}  % §34
+\newunicodechar{⅕}{\nicefrac{1}{5}}  % §15
+\newunicodechar{⅖}{\nicefrac{2}{5}}  % §25
+\newunicodechar{⅗}{\nicefrac{3}{5}}  % §35
+\newunicodechar{⅘}{\nicefrac{4}{5}}  % §45
+\newunicodechar{⅙}{\nicefrac{1}{6}}  % §16
+\newunicodechar{⅚}{\nicefrac{5}{6}}  % §56
+\newunicodechar{⅐}{\nicefrac{1}{7}}  % §17
+\newunicodechar{⅛}{\nicefrac{1}{8}}  % §18
+\newunicodechar{⅑}{\nicefrac{1}{9}}  % §19
+\newunicodechar{†}{\dagger}    % §++
+
+\newunicodechar{🗲}{\lightning}    % 🗲  1F5F2  §lb
+\newunicodechar{✗}{\texttimes} % §no
+\newunicodechar{○}{\Circle}  % §0O
+\newunicodechar{◐}{\LEFTcircle} % §0D
+\newunicodechar{●}{\CIRCLE} % §0F
+\newunicodechar{✓}{\checkmark} % §ys
+
+\newcommand{\notimplemented}{NOT_IMPLEMENTED_CHAR}
+\newunicodechar{•}{\bullet}  % §bl
+\newunicodechar{‣}{\notimplemented}  % §tt
+
+\newunicodechar{∘}{\circ}  % §00
+
+\def\bf#1{{\symbf{#1}}}  % \symbf from unicode-math
+\newunicodechar{⧪}{\bf} % §bb
+
+\newunicodechar{𝐀}{\bf{A}} % §BA
+\newunicodechar{𝐁}{\bf{B}} % §BB
+\newunicodechar{𝐂}{\bf{C}} % §BC
+\newunicodechar{𝐃}{\bf{D}} % §BD
+\newunicodechar{𝐄}{\bf{E}} % §BE
+\newunicodechar{𝐅}{\bf{F}} % §BF
+\newunicodechar{𝐆}{\bf{G}} % §BG
+\newunicodechar{𝐇}{\bf{H}} % §BH
+\newunicodechar{𝐈}{\bf{I}} % §BI
+\newunicodechar{𝐉}{\bf{J}} % §BJ
+\newunicodechar{𝐊}{\bf{K}} % §BK
+\newunicodechar{𝐋}{\bf{L}} % §BL
+\newunicodechar{𝐌}{\bf{M}} % §BM
+\newunicodechar{𝐍}{\bf{N}} % §BN
+\newunicodechar{𝐎}{\bf{O}} % §BO
+\newunicodechar{𝐏}{\bf{P}} % §BP
+\newunicodechar{𝐐}{\bf{Q}} % §BQ
+\newunicodechar{𝐑}{\bf{R}} % §BR
+\newunicodechar{𝐒}{\bf{S}} % §BS
+\newunicodechar{𝐓}{\bf{T}} % §BT
+\newunicodechar{𝐔}{\bf{U}} % §BU
+\newunicodechar{𝐕}{\bf{V}} % §BV
+\newunicodechar{𝐖}{\bf{W}} % §BW
+\newunicodechar{𝐗}{\bf{X}} % §BX
+\newunicodechar{𝐘}{\bf{Y}} % §BY
+\newunicodechar{𝐙}{\bf{Z}} % §BZ
+\newunicodechar{𝐚}{\bf{a}} % §Ba
+\newunicodechar{𝐛}{\bf{b}} % §Bb
+\newunicodechar{𝐜}{\bf{c}} % §Bc
+\newunicodechar{𝐝}{\bf{d}} % §Bd
+\newunicodechar{𝐞}{\bf{e}} % §Be
+\newunicodechar{𝐟}{\bf{f}} % §Bf
+\newunicodechar{𝐠}{\bf{g}} % §Bg
+\newunicodechar{𝐡}{\bf{h}} % §Bh
+\newunicodechar{𝐢}{\bf{i}} % §Bi
+\newunicodechar{𝐣}{\bf{j}} % §Bj
+\newunicodechar{𝐤}{\bf{k}} % §Bk
+\newunicodechar{𝐥}{\bf{l}} % §Bl
+\newunicodechar{𝐦}{\bf{m}} % §Bm
+\newunicodechar{𝐧}{\bf{n}} % §Bn
+\newunicodechar{𝐨}{\bf{o}} % §Bo
+\newunicodechar{𝐩}{\bf{p}} % §Bp
+\newunicodechar{𝐪}{\bf{q}} % §Bq
+\newunicodechar{𝐫}{\bf{r}} % §Br
+\newunicodechar{𝐬}{\bf{s}} % §Bs
+\newunicodechar{𝐭}{\bf{t}} % §Bt
+\newunicodechar{𝐮}{\bf{u}} % §Bu
+\newunicodechar{𝐯}{\bf{v}} % §Bv
+\newunicodechar{𝐰}{\bf{w}} % §Bw
+\newunicodechar{𝐱}{\bf{x}} % §Bx
+\newunicodechar{𝐲}{\bf{y}} % §By
+\newunicodechar{𝐳}{\bf{z}} % §Bz
+
+
+% \newunicodechar{€}{\notimplemented}  % §C=
+% \newunicodechar{元}{\notimplemented}  % §P=
+% \newunicodechar{£}{\notimplemented}  % §L-
+% \newunicodechar{¥}{\notimplemented}  % §Y=
+
+% Sparkline drawing (inpuere latex prefere the spark package over the spark script)
+% TODO: Add all the other box drawing charactes
+%
+% Problem `\textblock` command form `pmboxdraw` (bull box char) confilicts with `textpos` textblock
+\ifcsname textblock\endcsname\let\textblockbeforepm\textblock\fi
+\usepackage{pmboxdraw}
+\let\textblockpm\textblock
+\ifcsname textblockbeforepm\endcsname\let\textblock\textblockbeforepm\fi
+
+\newunicodechar{▁}{\pmboxdraw{2581}} % §#1
+\newunicodechar{▂}{\pmboxdraw{2582}} % §#2
+\newunicodechar{▃}{\pmboxdraw{2583}} % §#3
+\newunicodechar{▄}{\pmboxdraw{2584}} % §#4
+\newunicodechar{▅}{\pmboxdraw{2585}} % §#5
+\newunicodechar{▆}{\pmboxdraw{2586}} % §#6
+\newunicodechar{▇}{\pmboxdraw{2587}} % §#7
+\newunicodechar{█}{\pmboxdraw{2588}} % §#8
+
+\newunicodechar{⌊}{\lfloor} % §{_
+\newunicodechar{⌋}{\rfloor} % §}_
+\newunicodechar{⌈}{\lceil} % §{-
+\newunicodechar{⌉}{\rceil} % §}-
+
+% Those tow look the same in constant width fonts not ideal so just define them
+% to be the same thisn
+\newunicodechar{―}{---} % §hb  % Horizontal bar
+\newunicodechar{–}{---} % §-_  % EM Dash
+
+
+% Consider using some units
+%   ㎀	㎁	㎂	㎃	㎄	㎅	㎆	㎇	㎈	㎉	㎊	㎋	㎌	㎍	㎎	㎏	㎐	㎑	㎒	㎓	㎔	㎕	㎖	㎗	㎘	㎙	㎚	㎛	㎜	㎝	㎞	㎟
+%   ㎠	㎡	㎢	㎣	㎤	㎥	㎦	㎧	㎨	㎩	㎪	㎫	㎬	㎭	㎮	㎯	㎰	㎱	㎲	㎳	㎴	㎵	㎶	㎷	㎸	㎹	㎺	㎻	㎼	㎽	㎾	㎿
+%   ㏀	㏁	㏂	㏃	㏄	㏅	㏆	㏇	㏈	㏉	㏊	㏋	㏌	㏍	㏎	㏏	㏐	㏑	㏒	㏓	㏔	㏕	㏖	㏗	㏘	㏙	㏚	㏛	㏜	㏝	㏞	㏟
+\newunicodechar{㏑}{\ln} % §ln
+\newunicodechar{㏒}{\ln} % §lg
+
+\usepackage{iftex}
+\ifLuaTeX
+\usepackage{emoji}  % https://texdoc.org/serve/emoji/0
+\usepackage{emoji-fallback}  % custom package
+\usepackage{fontawesome5}  % [doc](https://ftp.mpi-inf.mpg.de/pub/tex/mirror/ftp.dante.de/pub/tex/fonts/fontawesome5/doc/fontawesome5.pdf)
+% Maybe also fontmfizz lots of programming language icons
+\else
+\def\emoji#1{#1}
+\fi
+% \newunicodechar{🇬🇧}{\emoji{flag-united-kindom}} %uk
+% \newunicodechar{🇺🇸}{\emoji{flag-united-states}} %us
+% \newunicodechar{🇩🇪}{\emoji{flag-germany}} %de
+
+\def\emojipre{F}  % T or F
+\newcommand{\iconChoice}[2]{\ifthenelse{\equal{\emojipre}{T}}{\emoji{#1}}{\faIcon{#2}}}
+
+% Office and notes
+\newunicodechar{📁}{\iconChoice{file-folder}{folder}} %  % folder
+\newunicodechar{📂}{\iconChoice{open-file-folder}{folder-open}} %   % open folder
+\newunicodechar{🗀}{\iconChoice{file-folder}{folder}} % §Of
+\newunicodechar{🗁}{\iconChoice{open-file-folder}{folder-open}} % §Oo
+% \newunicodechar{🖿}{} %
+\newunicodechar{🗂}{\emoji{card-index}} % §Oi 📇
+\newunicodechar{}{\emoji{clipboard}} % §Oy  % yank      📋
+\newunicodechar{}{\iconChoice{pencil}{pen}} % §Op  ✎
+\newunicodechar{}{\iconChoice{envelope}{envelope}} % §Om  % message
+\newunicodechar{}{\emoji{label}} % §Ol
+\newunicodechar{}{\faStickyNote[regular]} % §On
+% \newunicodechar{}{\emoji{stickynote}} % §Os  % apparently there are no emoji for notes and stickynotes :,-(
+
+% Time
+\newunicodechar{}{\emoji{newspaper}} % §Tn
+\newunicodechar{}{\emoji{calendar}} % §Td  % day
+\newunicodechar{⧗}{\iconChoice{hourglass}{hourglass}} % §Tg
+\newunicodechar{}{\emoji{alarm-clock}} % §Tc
+
+% Symbol
+\newunicodechar{}{\iconChoice{bulb}{lightbulb}} % §Sb  see also ligature ()=
+\newunicodechar{}{\emoji{mag}} % §Sm  % magnifying-glass  see ligature -O
+\newunicodechar{}{\emoji{camera}} % §Sc
+\newunicodechar{}{\emoji{movie}} % §SM
+\newunicodechar{☎}{\emoji{phone}} % §Sp
+\newunicodechar{🗬}{\emoji{thought-balloon}} % §St
+\newunicodechar{}{\iconChoice{bomb}{bomb}} % §SB
+\newunicodechar{}{\iconChoice{+1}{thumbs-up}} % §S+  ligature +1
+\newunicodechar{}{\iconChoice{-1}{thumbs-down}} % §S-  ligature -1
+\newunicodechar{⚠}{\iconChoice{warning}{exclamation-triangle}} % §Sw see also ligature <!>
+\newunicodechar{🛇}{\iconChoice{prohibited}{ban}} % §SP
+\newunicodechar{‼}{\emoji{double-exclamation-mark}} % §S!   see ligature !!
+\newunicodechar{⁉}{\emoji{exclamation-question-mark}} % §S?  see ligature ??
+
+% \faQuoteLeft
+% \faQuoteRight
+% \faRadiation
+
+% maybe ♫ ☼ ✄ ✘ ✪ ✰ ✧ ✦ ❆ ❅ ♤ ♡ ✣ ⮱
+
+% Books
+\newunicodechar{}{\emoji{bookmark}} % §Lm
+\newunicodechar{🗏}{\emoji{page-facing-up}} % §Lp
+\newunicodechar{}{\emoji{book}} % §Lb
+\newunicodechar{}{\emoji{books}} % §Ll  % library
+% \newunicodechar{}{\emoji{orange-book}} % Bo
+% \newunicodechar{}{\emoji{green-book}} % Bg
+% \newunicodechar{}{\emoji{blue-book}} % Bk
+% \newunicodechar{}{\emoji{closed-book}} % Br  % red book
+
+
+% Consequence arrows
+\newunicodechar{⇿}{\faArrowsAltH}  % §_?
+\newunicodechar{⇾}{\faLongArrowAltRight}  % §_>
+\newunicodechar{⇽}{\faLongArrowAltLeft}  % §_<
+
+% \newcommand{\ensureblackmath}[1]{\ifmmode#1\else$\begingroup\color{black}#1\endgroup$\fi}
+% \newunicodechar{↳}{\ensureblackmath{\mathbf{\hookrightarrow}}} % |_    \rotatebox[origin=c]{180}{$\Lsh$}
+\newcommand{\downarrowwithtiprightwards}{%
+    \tikz[baseline=-0.26em,y=3em,x=3em]{%
+        \draw[->, >=latex', line width=1] (0,0.1) |- (0.25,0); }%
+    % \raisebox{0.5em}{\rotatebox{-90}{\raisebox{-0.5em}{\faLevelUp*}}}
+}
+\newunicodechar{↳}{\downarrowwithtiprightwards} % §|_
+
+
+% Checklist Chars working with item-icons pandoc filter
+% \newcommand{\checkboxCheck}{\faCheckCircle[regular]}
+% \newcommand{\checkboxCross}{\faTimesCircle[regular]}
+% \newcommand{\checkboxEmpty}{\faCircle[regular]}
+% % \newcommand{\checkboxIncompleate}{\faStopCircle[regular]}
+% \newcommand{\checkboxIncompleate}{\faClock[regular]}
+
+\newcommand{\insideSquare}[2][0.13em]{%
+    \rlap{\raisebox{0.13em}{%
+        \hspace{#1}\fontsize{6}{10}\selectfont #2}}%
+    \faSquare[regular]}
+\newcommand{\checkboxCheck}{\insideSquare{\faCheck}}
+\newcommand{\checkboxCross}{\insideSquare[0.24em]{\faTimes}}
+\newcommand{\checkboxEmpty}{\insideSquare{}}
+\newcommand{\checkboxIncompleate}{\insideSquare[0.18em]{\faPlus}}
+
+% BQN programming
+
+\newcommand{\BQN}[1]{#1}
+
+% Commented lines were already defined and BQN just adds/reserves an alias
+% digraph for them without changing the latex definition
+
+% ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬─────────┐
+% │~ ¬ │! ⎉ │@ ⚇ │# ⍟ │$ ◶ │% ⊘ │^ ⎊ │& ⍎ │* ⍕ │( ⟨ │) ⟩ │_ √ │+ ⋆ │Backspace│
+% │` ˜ │1 ˘ │2 ¨ │3 ⁼ │4 ⌜ │5 ´ │6 ˝ │7   │8 ∞ │9 ¯ │0 • │- ÷ │= × │         │
+% ├────┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬──────┤
+% │Tab    │Q ↙ │W 𝕎 │E ⍷ │R 𝕣 │T ⍋ │Y   │U   │I ⊑ │O ⊒ │P ⍳ │{ ⊣ │} ⊢ │|     │
+% │       │q ⌽ │w 𝕨 │e ∊ │r ↑ │t ∧ │y   │u ⊔ │i ⊏ │o ⊐ │p π │[ ← │] → │\     │
+% ├───────┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴──────┤
+% │Caps    │A ↖ │S 𝕊 │D   │F 𝔽 │G 𝔾 │H « │J   │K ⌾ │L » │: · │" ˙ │Enter     │
+% │lock    │a ⍉ │s 𝕤 │d ↕ │f 𝕗 │g 𝕘 │h ⊸ │j ∘ │k ○ │l ⟜ │; ⋄ │' ↩ │          │
+% ├────────┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──────────┤
+% │Shift      │Z ⋈ │X 𝕏 │C   │V ⍒ │B ⌈ │N   │M ≢ │< ≤ │> ≥ │? ⇐ │Shift       │
+% │           │z ⥊ │x 𝕩 │c ↓ │v ∨ │b ⌊ │n   │m ≡ │, ∾ │. ≍ │/ ≠ │            │
+% └───────────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────────────┘
+
+\newunicodechar{˜}{\BQN{˜}}  % ˜ § `
+\newunicodechar{˘}{\BQN{˘}}  % ˘ § 1
+\newunicodechar{¨}{\BQN{¨}}  % ¨ § 2
+% \newunicodechar{⁼}{\BQN{⁼}}  % ⁼ § 3
+\newunicodechar{⌜}{\BQN{⌜}}  % ⌜ § 4  % table
+% \newunicodechar{´}{\BQN{´}}  % ´ § 5
+\newunicodechar{˝}{\BQN{˝}}  % ˝ § 6
+% \newunicodechar{∞}{\BQN{∞}}  % ∞ § 8
+\newunicodechar{¯}{\BQN{¯}}  % ¯ § 9
+% \newunicodechar{•}{\BQN{•}}  % • § 0
+% \newunicodechar{÷}{\BQN{÷}}  % ÷ § -
+% \newunicodechar{×}{\BQN{×}}  % × § =
+% \newunicodechar{¬}{\BQN{¬}}  % ¬ § ~
+\newunicodechar{⎉}{\BQN{⎉}}  % ⎉ § !
+\newunicodechar{⚇}{\BQN{⚇}}  % ⚇ § @
+\newunicodechar{⍟}{\BQN{⍟}}  % ⍟ § #
+\newunicodechar{◶}{\BQN{◶}}  % ◶ § $
+\newunicodechar{⊘}{\BQN{⊘}}  % ⊘ § %
+\newunicodechar{⎊}{\BQN{⎊}}  % ⎊ § ^
+\newunicodechar{⍎}{\BQN{⍎}}  % ⍎ § &
+\newunicodechar{⍕}{\BQN{⍕}}  % ⍕ § *
+% \newunicodechar{⟨}{\BQN{⟨}}  % ⟨ § (
+% \newunicodechar{⟩}{\BQN{⟩}}  % ⟩ § )
+% \newunicodechar{√}{\BQN{√}}  % √ § _
+\newunicodechar{⋆}{\BQN{⋆}}  % ⋆ § +  % power
+% \newunicodechar{⌽}{\BQN{⌽}}  % ⌽ § q  % reverse  % O|
+% \newunicodechar{𝕨}{\BQN{𝕨}}  % 𝕨 § w
+\newunicodechar{∊}{\BQN{∊}}  % ∊ § e  % Note this is different from ∈
+% \newunicodechar{↑}{\BQN{↑}}  % ↑ § r
+% \newunicodechar{∧}{\BQN{∧}}  % ∧ § t
+\newunicodechar{⊔}{\BQN{⊔}}  % ⊔ § u
+\newunicodechar{⊏}{\BQN{⊏}}  % ⊏ § i
+\newunicodechar{⊐}{\BQN{⊐}}  % ⊐ § o
+% \newunicodechar{π}{\BQN{π}}  % π § p
+% \newunicodechar{←}{\BQN{←}}  % ← § [
+% \newunicodechar{→}{\BQN{→}}  % → § ]
+\newunicodechar{↙}{\BQN{↙}}  % ↙ § Q
+% \newunicodechar{𝕎}{\BQN{𝕎}}  % 𝕎 § W
+\newunicodechar{⍷}{\BQN{⍷}}  % ⍷ § E
+% \newunicodechar{𝕣}{\BQN{𝕣}}  % 𝕣 § R
+\newunicodechar{⍋}{\BQN{⍋}}  % ⍋ § T
+\newunicodechar{⊑}{\BQN{⊑}}  % ⊑ § I
+\newunicodechar{⊒}{\BQN{⊒}}  % ⊒ § O
+\newunicodechar{⍳}{\BQN{⍳}}  % ⍳ § P
+\newunicodechar{⊣}{\BQN{⊣}}  % ⊣ § {
+\newunicodechar{⊢}{\BQN{⊢}}  % ⊢ § }
+\newunicodechar{⍉}{\BQN{⍉}}  % ⍉ § a
+% \newunicodechar{𝕤}{\BQN{𝕤}}  % 𝕤 § s
+% \newunicodechar{↕}{\BQN{↕}}  % ↕ § d % V^
+% \newunicodechar{𝕗}{\BQN{𝕗}}  % 𝕗 § f
+% \newunicodechar{𝕘}{\BQN{𝕘}}  % 𝕘 § g
+\newunicodechar{⊸}{\BQN{⊸}}  % ⊸ § h
+% \newunicodechar{∘}{\BQN{∘}}  % ∘ § j
+% \newunicodechar{○}{\BQN{○}}  % ○ § k
+\newunicodechar{⟜}{\BQN{⟜}}  % ⟜ § l
+\newunicodechar{⋄}{\BQN{⋄}}  % ⋄ § ;
+\newunicodechar{↖}{\BQN{↖}}  % ↖ § A
+% \newunicodechar{𝕊}{\BQN{𝕊}}  % 𝕊 § S
+% \newunicodechar{𝔽}{\BQN{𝔽}}  % 𝔽 § F
+% \newunicodechar{𝔾}{\BQN{𝔾}}  % 𝔾 § G
+\newunicodechar{«}{\BQN{«}}  % « § H
+\newunicodechar{⌾}{\BQN{⌾}}  % ⌾ § K  % see also ⊚ circledcirc (circled ring operator)
+\newunicodechar{»}{\BQN{»}}  % » § L
+% \newunicodechar{·}{\BQN{·}}  % · § :
+\newunicodechar{˙}{\BQN{˙}}  % ˙ § "
+\newunicodechar{⥊}{\BQN{⥊}}  % ⥊ § z
+% \newunicodechar{𝕩}{\BQN{𝕩}}  % 𝕩 § x
+% \newunicodechar{↓}{\BQN{↓}}  % ↓ § c
+% \newunicodechar{∨}{\BQN{∨}}  % ∨ § v
+% \newunicodechar{⌊}{\BQN{⌊}}  % ⌊ § b
+% \newunicodechar{≡}{\BQN{≡}}  % ≡ § m
+\newunicodechar{∾}{\BQN{∾}}  % ∾ § ,   % join
+\newunicodechar{≍}{\BQN{≍}}  % ≍ § .
+% \newunicodechar{≠}{\BQN{≠}}  % ≠ § /
+\newunicodechar{⋈}{\BQN{⋈}}  % ⋈ § Z
+% \newunicodechar{𝕏}{\BQN{𝕏}}  % 𝕏 § X
+\newunicodechar{⍒}{\BQN{⍒}}  % ⍒ § V
+% \newunicodechar{⌈}{\BQN{⌈}}  % ⌈ § B
+\newunicodechar{≢}{\BQN{≢}}  % ≢ § M
+% \newunicodechar{≤}{\BQN{≤}}  % ≤ § <
+% \newunicodechar{≥}{\BQN{≥}}  % ≥ § >
+% \newunicodechar{⇐}{\BQN{⇐}}  % ⇐ § ?
+\newunicodechar{‿}{\BQN{‿}}  % ‿ §     % Don't confuse this with ⌣ (\smile) ◡ (\botsemicircle)
+\newunicodechar{↩}{\BQN{↩}}  % ↩ § '
+
+% Check for repeated characters
+% awk 'match($0, /^\\newunicodechar{(.)}/, arr) {chars[arr[1]] += 1} END{ for(k in chars) if (chars[k] > 1) print k ',' chars[k] }' ~/conf/tex/greek.sty
+
+% Old Chinese counting rods
+% See http://users.dickinson.edu/~richesod/math301-401/chinese.pdf
+% use \Cnum{|x|x|x|}{\Chone & \Czero & \Chtwo} to generate a counting board
+
+% Horizontal -> single digits
+\newunicodechar{𝍠}{\Chone} % §c1
+\newunicodechar{𝍡}{\Chtwo} % §c2
+\newunicodechar{𝍢}{\Chthree} % §c3
+\newunicodechar{𝍣}{\Chfour} % §c4
+\newunicodechar{𝍤}{\Chfive} % §c5
+\newunicodechar{𝍥}{\Chsix} % §c6
+\newunicodechar{𝍦}{\Chseven} % §c7
+\newunicodechar{𝍧}{\Cheight} % §c8
+\newunicodechar{𝍨}{\Chnine} % §c9
+
+% Vertical Tens
+\newunicodechar{𝍩}{\Cvone} % §C1
+\newunicodechar{𝍪}{\Cvtwo} % §C2
+\newunicodechar{𝍫}{\Cvthree} % §C3
+\newunicodechar{𝍬}{\Cvfour} % §C4
+\newunicodechar{𝍭}{\Cvfive} % §C5
+\newunicodechar{𝍮}{\Cvsix} % §C6
+\newunicodechar{𝍯}{\Cvseven} % §C7
+\newunicodechar{𝍰}{\Cveight} % §C8
+\newunicodechar{𝍱}{\Cvnine} % §C9
+
+% Chinese Tally mark encoded as themselves: should already work in XeLaTeX
+% \newunicodechar{𝍲}{} % §T1
+% \newunicodechar{𝍳}{} % §T2
+% \newunicodechar{𝍴}{} % §T3
+% \newunicodechar{𝍵}{} % §T4
+% \newunicodechar{𝍶}{} % §T5
+
+% Use ifsym \StrokeOne \StrokeTwo \StrokeThree \StrokeFour \StrokeFive instead
+% Or use an font in this way: https://tex.stackexchange.com/a/102073/179740
+% Or in this way: https://tex.stackexchange.com/a/623345/179740
+% \newunicodechar{𝍷}{\NotImplemented} % §t1
+% others need to be defined in ~/conf/comp/... because those compose sequences
+% are made up of multiple letters this defines t2 ― tF as hex digits
+% \newunicodechar{𝍸}{\NotImplemented} % §t5
+
+% Quotation marks
+\newunicodechar{„}{\glqq}   % §",
+\newunicodechar{“}{\grqq{}} % §"'
+\newunicodechar{«}{\frqq}   % §"<
+\newunicodechar{»}{\flqq{}} % §">
+\newunicodechar{‚}{\glq} % §`,
+\newunicodechar{‘}{\grq{}} % §`'
+\newunicodechar{‹}{\frq} % §`<
+\newunicodechar{›}{\flq{}} % §`>
+
+\newunicodechar{⮰}{\newline} % §nl
+\newunicodechar{¶}{\NotImplemented} % §np  % for some reason defining this as `\par` throwes an error
+
+
+% APL codes already defined in names.compose
+% Prefix with double compose key
+% ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬─────────┐
+% │~ ⌺ │! ⌶ │@ ⍫ │# ⍒ │$ ⍋ │% ⌽ │^ ⍉ │& ⊖ │* ⍟ │( ⍱ │) ⍲ │_ ! │+ ⌹ │Backspace│
+% │` ⋄ │1 ¨ │2 ¯ │3 < │4 ≤ │5 = │6 ≥ │7 > │8 ≠ │9 ∨ │0 ∧ │- × │= ÷ │         │
+% ├────┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬──────┤
+% │Tab    │Q   │W   │E ⍷ │R   │T ⍨ │Y   │U   │I ⍸ │O ⍥ │P ⍣ │{ ⍞ │} ⍬ │| ⊣   │
+% │       │q ? │w ⍵ │e ∊ │r ⍴ │t ~ │y ↑ │u ↓ │i ⍳ │o ○ │p * │[ ← │] → │\ ⊢   │
+% ├───────┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴──────┤
+% │Caps    │A   │S   │D   │F   │G   │H   │J ⍤ │K ⌸ │L ⌷ │: ≡ │" ≢ │Enter     │
+% │Lock    │a ⍺ │s ⌈ │d ⌊ │f _ │g ∇ │h ∆ │j ∘ │k ' │l ⎕ │; ⍎ │' ⍕ │          │
+% ├────────┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──────────┤
+% │Shift      │Z ⊆ │X   │C   │V   │B   │N   │M   │< ⍪ │> ⍙ │? ⍠ │Shift       │
+% │           │z ⊂ │x ⊃ │c ∩ │v ∪ │b ⊥ │n ⊤ │m | │, ⍝ │. ⍀ │/ ⌿ │            │
+% └───────────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────────────┘
+
+
+% Box drawing chars single line
+% \newunicodechar{│}{} % §,|
+% \newunicodechar{─}{} % §,-
+% \newunicodechar{┌}{} % §,7
+% \newunicodechar{┬}{} % §,8
+% \newunicodechar{┐}{} % §,9
+% \newunicodechar{├}{} % §,4
+% \newunicodechar{┼}{} % §,5
+% \newunicodechar{┤}{} % §,6
+% \newunicodechar{└}{} % §,1
+% \newunicodechar{┴}{} % §,2
+% \newunicodechar{┘}{} % §,3
+% Double line box drawing 
+% \newunicodechar{║}{} % §;|
+% \newunicodechar{═}{} % §;-
+% \newunicodechar{╔}{} % §;7
+% \newunicodechar{╦}{} % §;8
+% \newunicodechar{╗}{} % §;9
+% \newunicodechar{╠}{} % §;4
+% \newunicodechar{╬}{} % §;5
+% \newunicodechar{╣}{} % §;6
+% \newunicodechar{╚}{} % §;1
+% \newunicodechar{╩}{} % §;2
+% \newunicodechar{╝}{} % §;3

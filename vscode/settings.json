@@ -1,0 +1,107 @@
+{
+    "editor.rulers": [80, 120],
+    "editor.minimap.enabled": false,
+    "editor.fontSize": 12,
+    "ltex.language": "en-US",
+    "window.zoomLevel": 2,
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "workbench.colorTheme": "Gruvbox Dark Hard",
+    "window.menuBarVisibility": "toggle",
+    "terminal.integrated.tabs.enabled": true,
+    "terminal.integrated.commandsToSkipShell": [
+        "workbench.action.focusLeftGroup",
+        "workbench.action.focusRightGroup",
+        "workbench.action.focusAboveGroup",
+        "workbench.action.focusBelowGroup",
+        "workbench.action.nextEditorInGroup",
+        "workbench.action.previousEditorInGroup",
+    ],
+    "editor.detectIndentation": true,
+    "[markdown]": {
+        "editor.tabSize": 2,
+    },
+    "pasteImage.defautName": "${currentFileNameWithoutExt}-YY-MM-DD-HH-mm-ss",
+    "pasteImage.forceUnixStyleSeperator": true,
+    "pasteImage.basePath": "${currentFileDir}",
+    "pasteImage.path": "${currentFileDir}/img",
+    "vim.easymotion": true,
+    "vim.incsearch": true,
+    "vim.useSystemClipboard": false,
+    "vim.useCtrlKeys": true,
+    "vim.hlsearch": true,
+    "vim.leader": "<space>",
+    "vim.foldfix": true,
+    "vim.insertModeKeyBindings": [
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": [ "<leader>", "d" ],
+            "after": [ "d", "d" ]
+        },
+        {
+            "before": [ "<C-n>" ],
+            "commands": [ ":nohl" ]
+        },
+        {
+            "before": [ "K" ],
+            "commands": [ "lineBreakInsert" ],
+            "silent": true
+        },
+        {
+            "before": [ "<leader>", "t" ],
+            "commands": [ "workbench.action.toggleSidebarVisibility" ]
+        },
+        {
+            "before": [ "<leader>", "f", "f" ],
+            "commands": [ "workbench.action.quickOpen" ]
+        },
+        {
+            "before": [ "<leader>", "f", "b" ],
+            "commands": [ "workbench.action.quickOpen" ]
+        },
+        {
+            "before": [ "<leader>", "f", "s" ],
+            "commands": [ "workbench.action.showAllSymbols" ]
+        },
+        {
+            "before": [ "<leader>", "f", "e" ],
+            "commands": [ "revealInExplorer" ],
+        },
+        {
+            "before": [ "<leader>", "r", "f" ], 
+            "commands": [ "fileutils.renameFile" ]
+        },
+        {
+            "before": [ "<C-w>", "J" ],
+            "commands": [ "workbench.action.moveActiveEditorGroupDown" ]
+        },
+        {
+            "before": [ "<C-w>", "K" ],
+            "commands": [ "workbench.action.moveActiveEditorGroupUp" ]
+        },
+        {
+            "before": [ "<C-w>", "H" ],
+            "commands": [ "workbench.action.moveActiveEditorGroupLeft" ]
+        },
+        {
+            "before": [ "<C-w>", "L" ],
+            "commands": [ "workbench.action.moveActiveEditorGroupRight" ]
+        },
+        {
+            "before": [ "<C-w>", "N" ],
+            "commands": [ "workbench.action.moveEditorRightInGroup" ]
+        },
+        {
+            "before": [ "<C-w>", "P" ],
+            "commands": [ "workbench.action.moveEditorLeftInGroup" ]
+        },
+        {
+            "before": [ "s" ], 
+            "commands": [ "workbench.action.files.save" ]
+        },
+    ],
+    "vim.handleKeys": {
+        "<C-a>": false,
+        "<C-f>": false
+    },
+}

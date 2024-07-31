@@ -1,0 +1,2613 @@
+set nocompatible
+set path+=**
+set autoread
+
+let host        = substitute(system('hostname'), '\n', '', '')
+let fullconfigs = ["pop-os", "think"]
+let full        = index(fullconfigs, host) >= 0
+
+let g:tcomment_maps      = 0
+let g:gitgutter_map_keys = 0
+
+" Define if vimade should be used or if the vim Build in NormalNC is enough
+"let g:vimade = {}
+
+let g:pandoc#syntax#style#use_definition_lists = 0  " load plugin if setting already active
+
+let g:use_pandoc_istead_of_markdwon = 0
+
+if full
+    " Specify a directory for plugins
+    " TODO: switch to a more modern lua based plugin manager see:
+    "  • packer.nvim: fully featured
+    "  •
+    "  • Plug isn't the worst choise though ⇒ Low priority
+    call plug#begin('~/.vim/plugged')
+
+    Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+
+    Plug 'liuchengxu/vim-which-key'
+    " Plug 'folke/which-key.nvim'  " Purely nvim written in lua
+
+    if exists('g:vimade')
+        Plug 'TaDaa/vimade'  " NormalNC won't work nicely with which-key popup windows
+                             " Truns out this plugin isn't much better
+    endif
+    
+    Plug 'tpope/vim-sleuth'  " change tab size based on file contents
+
+    Plug 'powerman/vim-plugin-AnsiEsc'
+
+    Plug 'itchyny/vim-cursorword'  " Underline occurrences of current word
+
+    Plug 'gyim/vim-boxdraw'
+    " Plug 'vim-scripts/boxdraw'  " unfortunately really outdated won't work
+
+    " TODO: Maybe add or change to:
+    "  • SnipRun: Just Runs snippets or lines (no where near as flexible as
+    "             magma-nvim but might be good if there is no jupyter kernel
+    "             for the language I'm using)
+    "  • magma-nvim: super cool way to get Jupiter lab/notebook functionality
+    "                might even work with the imatlab kernel…
+    "  • codi.vim: cool! Adds output of line as LSP issue to end of line
+    Plug 'jpalardy/vim-slime'
+
+    Plug 'preservim/tagbar'
+
+    Plug 'matze/vim-move'
+    Plug 'terryma/vim-expand-region'  " expand/shrink Selection using '+' and '-'
+    Plug 'vim-scripts/vis'
+    Plug 'Yggdroot/indentLine'
+
+    Plug 'MarcWeber/vim-addon-qf-layout'  " Properly format quickfix list
+
+    " Plug 'itchyny/calendar.vim'
+    Plug 'mattn/calendar-vim'
+
+    Plug 'segeljakt/vim-isotope' " Exchange chars for Unicode Fonts
+    Plug 'chrisbra/unicode.vim'  " search for unicde
+
+    Plug 'tpope/vim-sensible'
+
+    Plug 'nvim-pack/nvim-spectre'  " Search and Replace UI
+
+    " Don't use plugin file trees: turns out netrw is enouth for me
+    Plug 'tpope/vim-vinegar'  " some very light weight additions to netrw
+    " if has('nvim')
+    "     " Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
+    "     Plug 'kyazdani42/nvim-web-devicons' " for file icons
+    "     Plug 'kyazdani42/nvim-tree.lua'
+    " else
+    "     Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
+    "     Plug 'tiagofumo/vim-nerdtree-syntax-highlight', { 'on': 'NERDTreeToggle'}
+    "     Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle'}
+    " end
+
+    Plug 'airblade/vim-gitgutter'
+    " Plug 'f-person/git-blame.nvim'
+
+    Plug 'wfxr/minimap.vim', {'do': ':!cargo install --locked code-minimap'}
+
+    Plug 'vim-scripts/folddigest.vim'
+    Plug 'clarke/vim-renumber'
+
+    Plug 'JakeI/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
+
+    Plug 'tomtom/tcomment_vim'
+    Plug 'junegunn/vim-easy-align'
+    " Plug 'https://github.com/tommcdo/vim-lion'
+
+    " TODO: Add some proper note taking system
+    "       consider the zettelkasten Methode to properly link/atomic notes
+    "       Unfortunately most existing solutions don't seem to be quite what I
+    "       am looking for. `neorg`, `org`, or `vimwiki` might be quite useful
+    "       some time. Small/Atomic notes are a cool idea but the linking system
+    "       would have to work very well in order to make sense
+    "
+    "       Consider Telekasten.nvim: might be perfect!!
+    if g:use_pandoc_istead_of_markdwon
+        Plug 'vim-pandoc/vim-pandoc'
+        Plug 'vim-pandoc/vim-pandoc-syntax'
+    else
+        " Unfortunately vim-markdown seams to conflict with vim-pandoc
+        " TODO: Switch form vim-pandoc to vim-markdown
+        Plug 'godlygeek/tabular'
+        Plug 'mipmip/vim-scimark'
+        Plug 'preservim/vim-markdown'
+    endif
+
+    Plug 'jceb/vim-orgmode'
+    Plug 'img-paste-devs/img-paste.vim'
+    " Plug 'chmp/mdnav'  " follow markdown formatted links
+    Plug 'jeetsukumaran/vim-pursuit'
+    Plug 'dhruvasagar/vim-table-mode'
+    Plug 'retorillo/airline-tablemode.vim'
+    Plug 'gpanders/vim-medieval'  " Evaluate Code Blocks in markdown buffers
+
+    " TODO: Consider replacing this with `lists.vim` might be a more mature
+    "       replacement
+    Plug 'dkarter/bullets.vim'
+
+    Plug 'nvim-lua/plenary.nvim'  " Utilities for todo-comments
+    Plug 'folke/todo-comments.nvim'  " Populate Quickfix list with todo comments
+
+    Plug 'inkarkat/vim-ingo-library'  " Required by SpellCheck
+    Plug 'inkarkat/vim-SpellCheck'  " Populate Quickfix list with spelling errors
+
+    Plug 'kevinhwang91/nvim-bqf'  " Improve Quickfix list with fzf and preview
+
+    " Plug 'vim-scripts/AutomaticLaTexPlugin'
+    Plug 'lervag/vimtex'
+    " TODO: Add [VimRoom](https://mikewest.github.io/vimroom/)
+    "       so lines of tex won't get infinitely long and wrap in the center
+
+    Plug 'liuchengxu/space-vim-theme'
+
+    Plug 'SirVer/ultisnips'
+    " Plug 'honza/vim-snippets'  " Adds snippets that can be expanded by ultisnips
+
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+    " Sehr nützlch: <C-T>, <C-X>, <C-V>: to open in new Tab, Split, Vertical Split
+
+    Plug 'Kazark/vim-SimpleSmoothScroll'
+
+    " Not officially supported for nvim
+    " Plug 'Valloric/YouCompleteMe', { 'do': './install.py --all' }
+
+    " Slow, run js in background, super resource hungry
+    " Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    " Plug 'antoinemadec/coc-fzf'
+
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+    if has('nvim')
+    "     Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+    "     Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
+    "     Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
+
+        " Plug 'barreiroleo/ltex_extra.nvim'
+
+        Plug 'williamboman/mason.nvim'
+        Plug 'williamboman/mason-lspconfig.nvim'
+        Plug 'neovim/nvim-lspconfig'
+
+        Plug 'p00f/clangd_extensions.nvim'
+    endif
+
+    Plug 'rust-lang/rust.vim'
+    Plug 'neovimhaskell/haskell-vim'
+    " Plug 'ajpaulson/julia-syntax.vim'
+    Plug 'JuliaEditorSupport/julia-vim'
+    Plug 'andymass/vim-matlab'
+    Plug 'chrisbra/csv.vim'
+    Plug 'justin2004/vim-apl'
+    Plug 'mlochbaum/BQN', {'rtp': 'editors/vim'}
+
+    " Plug 'https://github.com/adelarsq/vim-matchit'  " Extendet % operator
+    Plug 'andymass/vim-matchup'
+
+    Plug 'tpope/vim-surround'
+
+    Plug 'lambdalisue/suda.vim'
+
+    Plug 'elzr/vim-json'
+    Plug 'tikhomirov/vim-glsl'
+
+    Plug 'voldikss/vim-floaterm'
+    Plug 'voldikss/fzf-floaterm'
+
+    Plug 'vifm/vifm.vim'
+
+    Plug 'kmonad/kmonad-vim'
+
+    Plug 'tpope/vim-commentary'  " comment lines using `gc` mapping
+
+    " Plug 'edluffy/hologram.nvim'  " This will be so cool once it's working
+
+    " non-github sources
+    " let g:plug_url_format = "%s"
+    " Plug 'https://git.sr.ht/~sircmpwn/vimspeak'
+
+    " Initialize plugin system
+
+    " Plug 'skyuplam/broot.nvim'
+    " Plug 'rbgrouleff/bclose.vim'
+
+    Plug 'lambdalisue/fern.vim'  " netrw style split window file tree
+    Plug 'lambdalisue/fern-renderer-devicons.vim'
+    Plug 'LumaKernel/fern-mapping-fzf.vim'
+    Plug 'yuki-yano/fern-preview.vim'
+    Plug 'lambdalisue/fern-hijack.vim'
+
+    Plug 'ryanoasis/vim-devicons'  " WARINING: always load this last
+
+    call plug#end()
+endif
+
+" Leader key and which key
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+let g:leader_keymap = {}
+let g:window_keymap = {}
+let g:zkey_keymap   = {}
+let g:gkey_keymap   = {}
+let g:next_keymap   = {}
+let g:prev_keymap   = {}
+let g:empty_keymap  = {}
+" TODO: find some way to apply patch from desktop to all machines
+if full
+    autocmd! FileType which_key
+    autocmd  FileType which_key set laststatus=0 noshowmode noruler
+      \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+
+    " let g:which_key_vertical               = 0
+    " let g:which_key_timeout                = 500
+    " let g:which_key_use_floating_win       = 1
+    " let g:which_key_floating_relative_win  = 0
+    let g:which_key_fallback_to_native_key = 1
+    " let g:which_key_sort_horizontal        = 0
+    " let g:which_key_disable_default_offset = 0
+
+    nnoremap <silent> <leader> :<C-u>WhichKey '<space>'<CR>
+    vnoremap <silent> <leader> :<C-u>WhichKeyVisual '<space>'<CR>
+    call which_key#register(' ', "g:leader_keymap")
+
+    nnoremap <silent> z :<C-u>WhichKey 'z'<CR>
+    vnoremap <silent> z :<C-u>WhichKeyVisual 'z'<CR>
+    call which_key#register('z', "g:zkey_keymap")
+    " The g key seams to be broken right now maybe it's worth checking again in
+    " later versions
+    " nnoremap <silent> g :<C-u>WhichKey 'g'<CR>
+    " vnoremap <silent> g :<C-u>WhichKeyVisual 'g'<CR>
+    " call which_key#register('g', "g:gkey_keymap")
+    nnoremap <silent> [ :<C-u>WhichKey '['<CR>
+    call which_key#register('[', "g:prev_keymap")
+    nnoremap <silent> ] :<C-u>WhichKey ']'<CR>
+    call which_key#register(']', "g:next_keymap")
+
+    " unfortunately this fix doesn't work
+    " https://github.com/liuchengxu/vim-which-key/issues/178#issuecomment-804834287
+    " This is not a real fix but it seems to work reasonably well in practice
+    function WhichKeyStartCtrlW()
+        " This is the Control Character (ascii 23) enter using <C-v><C-w>
+        WhichKey ''
+    endfunction
+    nnoremap <silent> <C-w> :<C-u>call WhichKeyStartCtrlW()<CR>
+    call which_key#register('', "g:window_keymap")
+
+    nnoremap <silent> <leader>sh :<C-u>WhichKey ''<CR>
+    call which_key#register('', "g:empty_keymap")
+endif
+
+let g:leader_keymap.name = "+leader key: general commands <space>"
+let g:leader_keymap.f = { 'name': '+Fzf'           }
+let g:leader_keymap.s = { 'name': "+Specific"      }
+let g:leader_keymap.g = { 'name': "+Git"           }
+let g:leader_keymap.n = { 'name': "+Navigation"    }
+let g:leader_keymap.c = { 'name': "+Configuration" }
+let g:leader_keymap.b = { 'name': "+Buffer"        }
+let g:leader_keymap.e = { 'name': "+Edit"          }
+let g:leader_keymap.r = { 'name': "+Run"           }
+let g:leader_keymap.w = { 'name': "+Window"        }
+let g:leader_keymap.d = { 'name': "+Boxdraw"       }
+set timeout timeoutlen=1000
+
+let g:leader_keymap.l = {'name': '+Location'}
+let g:leader_keymap.q = {'name': '+Quickfix'}
+
+let g:leader_keymap.s.h = "show help for leaderless keys"
+
+let g:window_keymap.name = "+window commands <C-w>"
+
+let g:zkey_keymap.name = "+z key"
+let g:zkey_keymap.z = "Center current line in screen"
+let g:zkey_keymap.a = "Open/Close current fold"
+let g:zkey_keymap.g = "Add current word to dictionary"
+let g:zkey_keymap.G = "Add current word to non permanent dictionary «internal-wordlist»"
+let g:zkey_keymap.w = "Mark current word as wrong"
+let g:zkey_keymap.u = "Remove words marked zg or zw"
+
+let g:gkey_keymap.name = "+g key"
+let g:gkey_keymap.f = "Open path under cursor"
+let g:gkey_keymap.c = "Comment next text object"
+
+let g:next_keymap.name = "+next key ]"
+let g:next_keymap[']'] = "next section"
+let g:next_keymap['*'] = "go to next C comment"
+
+let g:prev_keymap.name = "+prev key ["
+let g:prev_keymap['['] = "prev section"
+let g:prev_keymap['*'] = "go to previous C comment"
+
+let g:empty_keymap.name = "+Leaderless commands"
+let g:empty_keymap.H = "Jump to top (home) of window"
+let g:empty_keymap.M = "Jump to middle of window"
+let g:empty_keymap.L = "Jump to bottom of window"
+
+" better quickfix menue
+let g:zkey_keymap.f = 'fuzy sarch quickfix list'
+
+" list
+scriptencoding utf-8
+set encoding=utf-8
+set fileencodings=utf-8
+"set listchars=eol:\u00b6,tab:|,trail:\u2022,extends:\u00bb,precedes:\u00ab,nbsp:\u00d7
+"let &listchars="listchars=eol:$,tab:>-,trail:~,extends:>,precedes:< "
+"set list
+set showbreak=↪\
+" set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+set list
+set listchars=tab:▶‒,nbsp:∙,eol:↲,nbsp:␣,trail:∙,extends:▶,precedes:◀
+" set clipboard=unnamedplus
+set showcmd
+
+" Cursor Visibility
+nmap <leader>cv :setlocal cursorcolumn!<CR>
+let g:leader_keymap.c.v = "Toggle column highlighting [:setlocal coursorcolumn!]"
+
+" Mouse interaction
+set mouse=a
+
+" gitgutter
+set updatetime=100
+
+" medieval Evaluate code blocks in markdown
+let g:medieval_langs = ['python=python3', 'sh', 'console=bash', 'zsh', 'julia', 'R']
+autocmd! FileType pandoc,markdown nmap <buffer> ! <Plug>(medieval-eval)
+
+" bullet properly Handels lists
+let g:bullets_set_mappings = 1
+" This plugin was hard to customize. You can't customize the mappings directly.
+" You can disable them or ad some extra leader key. So I made some adjustments
+" to ~/.vim/plugged/bullets.vim/plugin/bullets.vim:998 directly in the code
+let g:bullets_pad_right = 1
+let g:gkey_keymap.N = 'renumber list or selection [:RenumberList, :RenumberSelection]'
+let g:gkey_keymap.y = 'toggle checkbox [:ToggleCheckbox]'
+" anayingly [#95](https://github.com/dkarter/bullets.vim/issues/95) is still
+" open, let's hope for this to get fixed, so that Items are properly aligned
+" with variable length padding
+" let g:bullets_checkbox_markers = ' .oOX'
+let g:bullets_checkbox_markers = '✗◐✓'
+let g:bullets_checkbox_partials_toggle = 1
+let g:bullets_outline_levels = ['num', 'std-']
+
+" table-mode settings
+let g:leader_keymap.t = {'name': '+Table'}
+function! TableModeGridTable()
+    let g:table_mode_corner          = '+'
+    let g:table_mode_corner_corner   = '+'
+    let g:table_mode_header_fillchar = '='
+    let g:table_mode_align_char      = ':'
+endfunction
+command! TableModeGridTable call TableModeGridTable()
+nmap <leader>tg :TableModeEnable<CR>:TableModeGridTable<CR>
+let g:leader_keymap.t.g = 'Format grid table [:TableModeGridTable]'
+function! TableModePipeTable()
+    let g:table_mode_corner          = '|'
+    let g:table_mode_corner_corner   = '|'
+    let g:table_mode_header_fillchar = '-'
+    let g:table_mode_align_char      = ':'
+endfunction
+command! TableModePipeTable call TableModePipeTable()
+nmap <leader>tp :TableModeEnable<CR>:TableModePipeTable<CR>
+let g:leader_keymap.t.p = 'Format pipe table [:TableModePipeTable]'
+
+
+let g:table_mode_disable_mappings = 0
+
+let g:table_mode_motion_up_map = '<up>'
+let g:table_mode_motion_down_map = '<down>'
+let g:table_mode_motion_left_map = '<left>'
+let g:table_mode_motion_right_map = '<right>'
+
+let g:table_mode_cell_text_object_a_map = 'a<Bar>'
+let g:table_mode_cell_text_object_i_map = 'i<Bar>'
+
+let g:table_mode_realign_map = '<Leader>tr'
+let g:leader_keymap.t.r = 'realigne table'
+let g:table_mode_delete_row_map = '<Leader>tdd'
+let g:leader_keymap.t.d = {'name': '+delete'}
+let g:leader_keymap.t.d.d = 'delete table row'
+let g:table_mode_delete_column_map = '<Leader>tdc'
+let g:leader_keymap.t.d.c = 'delete table col'
+let g:table_mode_insert_column_before_map = '<Leader>tiC'
+let g:leader_keymap.t.i = {'name': '+insert'}
+let g:leader_keymap.t.i.C = 'insert table column before'
+let g:table_mode_insert_column_after_map = '<Leader>tic'
+let g:leader_keymap.t.i.c = 'insert table column after'
+let g:table_mode_add_formula_map = '<Leader>tfa'
+let g:leader_keymap.t.f = {'name': '+formula'}
+let g:leader_keymap.t.f.a = 'add table formula'
+let g:table_mode_eval_formula_map = '<Leader>tfe'
+let g:leader_keymap.t.f.e = 'evaluate table formula'
+let g:table_mode_echo_cell_map = '<Leader>t?'
+let g:leader_keymap.t['?'] = 'Echo cell map'
+let g:table_mode_sort_map = '<Leader>ts'
+let g:leader_keymap.t.s = 'sort table'
+let g:table_mode_tableize_map = '<Leader>tt'
+let g:leader_keymap.t.t = 'convert selection to table'
+let g:table_mode_tableize_d_map = '<Leader>tT'
+let g:leader_keymap.t.T = 'ask for deliminator and convert selection to table'
+
+let g:table_mode_syntax = 1
+
+" scimark -> open markdown tables in sc-im for easy eaditing
+let g:scimCommand = 'sc-im'
+nmap <leader>te :OpenInScim<CR>
+let g:leader_keymap.t.e = "Open Markdown table in sc-im [:OpenInScim]"
+
+" Setup for conceal with UNICODE Chars
+" https://github.com/dhruvasagar/vim-table-mode/issues/193#issuecomment-766356051
+" Unfortunately I this won't work for some reason
+
+" let g:vimspeak_speed = "-s 180"
+
+" git search merge conflicts
+map <leader>gg /^[>=<][>=<][>=<][>=<][>=<][>=<][>=<]<CR>
+let g:leader_keymap.g.g = "Search next merge conflict"
+" TODO: Populate Quickfix list with merge conflicts
+nmap <leader>gf :GFiles<CR>
+let g:leader_keymap.g.f = 'Git Files git ls-files'
+nmap <leader>gs :GFiles?<CR>
+let g:leader_keymap.g.s = 'Git Files git status'
+nmap <leader>gG :GitGutterToggle<CR>
+let g:leader_keymap.g.u = 'Tooggle Git Gutter Visibility'
+nmap <leader>gu :GitGutterUndoHunk<CR>
+let g:leader_keymap.g.u = 'Git undo current Hunk'
+nmap <leader>gp :GitGutterPreviewHunk<CR>
+let g:leader_keymap.g.p = 'Git preview current Hunk'
+nmap <leader>gF :GitGutterFold<CR>
+let g:leader_keymap.g.F = 'Git Fold all unchanged parts'
+nmap [c <Plug>(GitGutterPrevHunk)
+let g:prev_keymap.c = 'Jump to previous git gutter Hunk'
+nmap ]c <Plug>(GitGutterNextHunk)
+let g:next_keymap.c = 'Jump to next git gutter Hunk'
+omap ic <Plug>(GitGutterTextObjectInnerPending)
+omap ac <Plug>(GitGutterTextObjectOuterPending)
+xmap ic <Plug>(GitGutterTextObjectInnerVisual)
+xmap ac <Plug>(GitGutterTextObjectOuterVisual)
+
+
+if full
+    " add tagbar support
+    let g:tagbar_type_gams = {
+        \ 'ctagstype': 'gams',
+        \ 'kinds': [
+            \ 'm:Marker:0:0',
+            \ 's:Section:1:1'
+        \ ],
+        \ 'sro': '.',
+        \ 'kind2scope': {
+            \ 's': 'Section',
+            \ 'm': 'Marker'
+        \ },
+        \ 'scope2kind': {
+            \ 'Section': 's',
+            \ 'Marker': 'm'
+        \ }
+    \ }
+    let g:tagbar_type_pandoc = {
+        \ 'kinds' : [
+            \ 'c:chapter',
+            \ 's:section',
+            \ 'S:subsection',
+            \ 't:subsubsection',
+            \ 'T:l3subsection',
+            \ 'u:l4subsection',
+            \ '?:unknown',
+        \ ],
+    \ }
+endif
+
+" command for migrating {{{/}}} style folds to $onFold/$offFold
+" %s/^\*\([^{]*\){{{/\$onFold #\1/|%s/^\*\s*}}}\(.*\)$/\$offFold #\1/|%s/^\(\s*\)#\([^{]*\){{{/$onFold\1 #\2/|%s/^\(\s*\)#\s*}}}\(.*\)$/\$offFold\1 #\2/
+autocmd! BufNewFile,BufRead *.gms setl ft=gams fdm=marker cms=#%s fmr=$onFold,$offFold
+autocmd! BufNewFile,BufRead *.lst setl ft=gamslst bt=nowrite nospell nofen nowrap
+autocmd! FileType gams,gamslst nmap <leader>se /\*\*\*\*\s*\(\$[0-9,]*\s*\)\+\s*$<CR>
+let g:leader_keymap.s.e = "GAMS search for error"
+" TODO: Replace searching with the quick-fix list
+autocmd! FileType gams nmap <leader>ss :edit %:r.lst<CR>
+autocmd! FileType gamslst nmap <leader>ss :edit %:r.gms<CR>
+let g:leader_keymap.s.s = 'Edit lst/gms'
+
+command GamsMakeSetup set efm=%f;%l;%c;%n;%m makeprg=gamserror\ %:r.lst
+nmap <leader>sg :GamsMakeSetup<CR>
+let g:leader_keymap.s.g = 'Setup make for GAMS [:GamsMakeSetup]'
+
+
+
+syntax on
+filetype on
+
+" airline TODO: replace with much faster lualine in neovim (to improve performance)
+" let g:airline_theme                         = 'light'
+let g:airline_theme                                = 'distinguished'
+" let g:airline#extensions#bufferline#enabled = 1
+let g:airline#extensions#tabline#enabled           = 1
+let g:airline#extensions#tabline#exclude_preview   = 1
+let g:airline#extensions#tabline#show_close_button = 1
+let g:airline#extensions#tabline#tabs_label        = ''
+let g:airline#extensions#tabline#show_tab_count    = 2
+let g:airline#extensions#csv#enabled               = 1
+let g:airline#extensions#csv#column_display        = 'Name'
+let g:airline#extensions#cursormode#enabled        = 1  " wont work in most terminals
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+let g:airline#parts#ffenc#skip_expected_string = 'utf-8[unix]'  " Only show Charset if it's unusual
+
+" unicode symbols
+let g:airline_left_sep           = '»'
+let g:airline_left_sep           = '▶'
+let g:airline_right_sep          = '«'
+let g:airline_right_sep          = '◀'
+let g:airline_symbols.crypt      = '🔒'
+let g:airline_symbols.linenr     = '☰'
+let g:airline_symbols.linenr     = '␊'
+let g:airline_symbols.linenr     = '␤'
+let g:airline_symbols.linenr     = '¶'
+let g:airline_symbols.branch     = '⎇'
+" let g:airline_symbols.paste      = 'ρ'
+" let g:airline_symbols.paste      = 'Þ'
+let g:airline_symbols.paste      = '∥'
+let g:airline_symbols.spell      = 'Ꞩ'
+let g:airline_symbols.notexists  = 'Ɇ'
+let g:airline_symbols.whitespace = 'Ξ'
+let g:airline_powerline_fonts    = 1
+let g:airline_left_sep           = ''
+let g:airline_left_alt_sep       = ''
+let g:airline_right_sep          = ''
+let g:airline_right_alt_sep      = ''
+let g:airline_symbols.branch     = ''
+let g:airline_symbols.readonly   = ''
+let g:airline_symbols.linenr     = ''
+" let g:airline_symbols.maxlinenr  = ''
+" let g:airline_symbols.maxlinenr  = '㏑'
+let g:airline_symbols.maxlinenr  = ''
+let g:airline_symbols.colnr      = ':'
+let g:airline_symbols.dirty      = '⚡'
+
+let g:airline_detect_spell       = 1
+let g:airline_detect_spelllang   = 'flag'
+
+let g:airline#extensions#hunks#enabled = 0
+let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
+
+let g:airline#extensions#tagbar#enabled = 0
+let g:airline#extensions#tagbar#flags = ''
+
+let g:airline#extensions#wordcount#filetypes =
+  \ ['asciidoc', 'help', 'mail', 'markdown', 'rmd', 'nroff', 'org', 'plaintex', 'rst', 'tex', 'text', 'pandoc']
+
+let g:airline_focuslost_inactive = 1
+
+let g:airline#extensions#csv#enabled = 1
+let g:airline#extensions#csv#column_display = 'Name'
+
+" let g:airline_section_a = "%#__accent_bold#%{airline#util#wrap(airline#parts#mode(),0)}%#__restore__#%{airline#util#append(airline#parts#crypt(),0)}%{airline#util#append(airline#parts#paste(),0)}%{airline#util#append(airline#extensions#keymap#status(),0)}%{airline#util#append(airline#parts#spell(),0)}%{airline#util#append("",0)}%{airline#util#append("",0)}%{airline#util#append(airline#parts#iminsert(),0)}%{airline#util#wrap(airline#extensions#tablemode#check(),0)}"
+" let g:airline_section_b = "%{airline#util#wrap(airline#extensions#hunks#get_hunks(),100)}"
+" let g:airline_section_c = "%<%f%m %#__accent_red#%{airline#util#wrap(airline#parts#readonly(),0)}%#__restore__#%#__accent_bold#%#__restore__#%#__accent_bold#%#__restore__#"
+" let g:airline_section_x = "%#__accent_bold#%#__restore__#%{airline#util#prepend("",0)}%{airline#util#prepend(airline#extensions#tagbar#currenttag(),0)}%{airline#util#prepend("",0)}%{airline#util#prepend("",0)}%{airline#util#prepend("",0)}%{airline#util#prepend("",0)}%{airline#util#wrap(airline#parts#filetype(),0)}"
+" let g:airline_section_y = "%{airline#util#wrap(airline#parts#ffenc(),0)}"
+" let g:airline_section_z = "%p%%%#__accent_bold#%{g:airline_symbols.linenr}%l%#__restore__#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#%#__accent_bold#%{g:airline_symbols.colnr}%v%#__restore__#"
+
+" function AirlinePartSpell()
+"     return
+" endfunction
+
+" let g:airline_section_a = "%#__accent_bold#%{airline#util#wrap(airline#parts#mode(),0)}%#__restore__#%{airline#util#append(airline#parts#crypt(),0)}%{airline#util#append(airline#parts#paste(),0)}%{airline#util#append(airline#extensions#keymap#status(),0)}%{airline#util#append(AirlinePartsSpell(),0)}%{airline#util#append("",0)}%{airline#util#append("",0)}%{airline#util#append(airline#parts#iminsert(),0)}%{airline#util#wrap(airline#extensions#tablemode#check(),0)}"
+" let g:airline_section_b = "%{airline#util#wrap(airline#extensions#hunks#get_hunks(),100)}"
+" let g:airline_section_c = "%<%f%m %#__accent_red#%{airline#util#wrap(airline#parts#readonly(),0)}%#__restore__#%#__accent_bold#%#__restore__#%#__accent_bold#%#__restore__#"
+" let g:airline_section_x = "%#__accent_bold#%#__restore__#%{airline#util#prepend("",0)}%{airline#util#prepend(airline#extensions#tagbar#currenttag(),0)}%{airline#util#prepend("",0)}%{airline#util#prepend("",0)}%{airline#util#prepend("",0)}%{airline#util#prepend("",0)}%{airline#util#wrap(airline#parts#filetype(),0)}"
+" let g:airline_section_y = "%{airline#util#wrap(airline#parts#ffenc(),0)}"
+" let g:airline_section_z = "%p%%%#__accent_bold#%{g:airline_symbols.linenr}%l%#__restore__#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#%#__accent_bold#%{g:airline_symbols.colnr}%v%#__restore__#"
+
+" let g:airline_section_z = ''
+
+" use space-vim-theme
+set background=dark
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
+if full
+    " let g:space_vim_filetype_hi_groups = 1
+    " let g:space_vim_italic             = 1
+    " let g:space_vim_italicize_strings  = 1
+    " let g:space_vim_plugin_hi_groups   = 1
+    " let g:space_vim_transp_bg          = 1
+    " colorscheme space_vim_theme
+
+    " colorscheme blue
+
+    colorscheme atom
+
+    " Some Changes to the theme
+    hi texMathSuper ctermfg=174 ctermbg=NONE guifg=#d78787 guibg=NONE guisp=NONE cterm=NONE gui=NONE
+endif
+
+" fix for blinking cursor
+if &term =~ "xterm" || &term =~ "screen-256color"
+  let &t_SI = "\e[6 q"
+  let &t_EI = "\e[2 q"
+endif
+
+"set fillchars=stl:^,stlnc:=,vert:\ ,fold:-,diff:-
+highlight VertSplit guibg=#777777 guifg=#eeeeee ctermbg=255 ctermfg=0
+
+" Highlight column 80 and beyond
+"let &colorcolumn="80,100,".join(range(120,999),",")
+let &colorcolumn=join(range(80, 2000, 20), ',')
+autocmd BufWinEnter quickfix,netrw let &colorcolumn=''
+autocmd FileType help let &colorcolumn=''
+" let &colorcolumn=join(range(81,999),",")
+"highlight ColorColumn ctermbg=235 guibg=#2c2d27
+highlight ColorColumn ctermbg=235 guibg=#30353C
+
+" Work around for background rendering issues in kitty
+let &t_ut=''
+
+" also pretty nice
+" colorscheme zeller
+
+set tw=80
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set shellslash
+set joinspaces
+
+set completeopt=longest,menuone,preview
+set wildmenu
+set wildmode=list:longest,full
+
+set wildignore+=*.o,*.obj,.git,.hg,*.rbc,*.pyc,*.zip,*.gz,*.bz,*.tar
+set wildignore+=*.jpg,*.png,*.gif,*.avi,*.wmv,*.ogg,*.mp3,*.mov,*~
+set wildignore+=tags,cscope.out,*.db,*.pdf
+set wildignore+=GTAGS,GRTAGS,GPATH,.tmp,*.exe
+set wildignore+=*.lst,*.gdx
+
+set foldmethod=marker
+
+" Select spaces that don't yet exist in visual block mode
+set virtualedit="all"
+
+set spellsuggest=fast,10
+nnoremap ü z=
+let g:empty_keymap['ü'] = 'Sugest spelling [z=]'
+set spell spelllang=en_us,de_de
+nmap <leader>co :setlocal spell!<CR>
+let g:leader_keymap.c.o = "Toggle Spell checking [:setlocal spell!]"
+" set dictionary="spell"  " Also use spell dictionaries for suggestions TODO: figure out why this won't work
+
+" Used for searching with <C-w>
+set dictionary=/usr/share/dict/words,/usr/share/dict/ngerman
+
+set number relativenumber
+nmap <leader>cr :setlocal relativenumber!<CR>
+let g:leader_keymap.c.r = "toggle relative line numbering [:setloacal relativenumber!]"
+set nowrap
+nmap <leader>cw :setlocal wrap!<CR>
+let g:leader_keymap.c.w = "toggle line wrapping [:setlocal wrap!]"
+set linebreak
+set cursorline
+nmap <leader>cl :source ~/.vimrc<CR>
+let g:leader_keymap.c.l = "reload configuration [:source ~/.vimrc]"
+
+" map <F7> :w!<CR>:!aspell check %<CR>:e! %<CR>
+
+" Quickfix lits
+nmap ]q :cn<CR>
+let g:next_keymap.q = 'jump to next quick fix entry [:cn]'
+nmap [q :cp<CR>
+let g:prev_keymap.q = 'jump to previous quick fix entry [:cp]'
+nmap <leader>qn :cn<CR>
+let g:leader_keymap.q.n = 'Next in Quickfix list [:cn] ]q'
+nmap <leader>qp :cp<CR>
+let g:leader_keymap.q.p = 'Previous in Quickfix list [:cp] [q'
+nmap <leader>qo :copen<CR>
+let g:leader_keymap.q.o = 'Open/Jump to Quickfix list [:copen]'
+nmap <leader>qc :cclose<CR>
+let g:leader_keymap.q.c = 'Close Quickfix list [:cclose]'
+nmap <leader>qC :call setqflist([])<CR>
+let g:leader_keymap.q.C = 'Clear Quickfix list [:call setqflist([])]'
+nmap <leader>qm :make<CR>
+let g:leader_keymap.q.m = 'Run make [:make]'
+autocmd FileType quickfix,qf setlocal nospell
+
+" vim-addon-qf-layout quickfix FileType formatter
+let g:vim_addon_qf_layout = {}
+let g:vim_addon_qf_layout.quickfix_formatters = [
+    \'vim_addon_qf_layout#DefaultFormatter',
+    \'vim_addon_qf_layout#FormatterNoFilename',
+    \'vim_addon_qf_layout#Reset',
+    \'NOP' ]
+let g:vim_addon_qf_layout.lhs_cycle = '<buffer> \v'
+let g:vim_addon_qf_layout.file_name_align_max_width = 60
+
+" Location List
+nmap ]l :lnext<CR>
+let g:next_keymap.l = 'jump to next location [:lnext]'
+nmap [l :lprevious<CR>
+let g:prev_keymap.l = 'jump to previous location [:lnext]'
+nmap <leader>ln :lnext<CR>
+let g:leader_keymap.l.n = 'jump to next location [:lnext] ]l'
+nmap <leader>lp :lprevious<CR>
+let g:leader_keymap.l.p = 'jump to previous location [:lnext] [l'
+nmap <leader>lo :lopen<CR>
+let g:leader_keymap.l.o = 'Open/Jump to location list [:lopen]'
+nmap <leader>lc :lclose<CR>
+let g:leader_keymap.l.c = 'Close Location list [:lclose]'
+nmap <leader>lC :call setloclist([])<CR>
+let g:leader_keymap.l.C = 'Clear Location list [:call setloclist([])]'
+
+" small help: make sure to write if buffer has bin changed do nothing otherwise
+nmap s :update<CR>
+let g:empty_keymap.s = "update current Buffer from disk [:update]"
+
+if full && has('nvim')
+" Mason LSP config
+lua << EOF
+    require("mason").setup({
+        ui = {
+            icons = {
+                package_installed   = "✓",
+                package_pending     = "➜",
+                package_uninstalled = "✗"
+            }
+        }
+    })
+
+    require("mason-lspconfig").setup({
+        ensure_installed = {
+            "ltex", "clangd", "julia"
+            -- "awk_ls", "bashls", "html", "pyright",
+            -- "rust_analyzer", "vimls", "marksman", "jdtls"
+        }
+    })
+
+    -- Mappings.
+    -- See `:help vim.diagnostic.*` for documentation on any of the below functions
+    local opts = { noremap=true, silent=true }
+    vim.api.nvim_set_keymap('n', '<space>bo', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+    vim.g.leader_keymap.b.o = 'open lsp diagnostics in float'
+    vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+    vim.g.prev_keymap.d = 'previous lsp diagnostic'
+    vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+    vim.g.next_keymap.d = 'next lsp diagnostic'
+    vim.api.nvim_set_keymap('n', '<space>ld', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+    vim.g.leader_keymap.l.d = 'populate with lsp diagnostics'
+    -- Use an on_attach function to only map the following keys
+    -- after the language server attaches to the current buffer
+    local on_attach = function(client, bufnr)
+        -- Enable completion triggered by <c-x><c-o>
+        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+        -- Mappings.  TODO: make this consistent with g:leader_keymap
+        -- See `:help vim.lsp.*` for documentation on any of the below functions
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+        vim.g.gkey_keymap.D = 'goto lsp declaration'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+        vim.g.gkey_keymap.d = 'goto lsp definition'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+        vim.g.empty_keymap.K = 'Show lsp info'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+        vim.g.gkey_keymap.i = 'show implementations'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+        vim.g.empty_keymap['<C-k>'] = 'show lsp object signature'
+        -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+        -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+        -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gy', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+        vim.g.gkey_keymap.y = 'show lsp type_definition'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>er', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+        vim.g.leader_keymap.e.r = 'rename lsp symbol'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-,>', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+        vim.g.empty_keymap['<C-,>'] = 'applay lsp fix'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+        vim.g.gkey_keymap.r = 'show lsp references'
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ef', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+        vim.g.leader_keymap.e.f = 'format using lsp formatter'
+        if client.resolved_capabilities.document_highlight then
+            vim.cmd [[
+            hi! LspReferenceRead cterm=bold ctermbg=red guibg=#6565cf
+            hi! LspReferenceText cterm=bold ctermbg=red guibg=#6565cf
+            hi! LspReferenceWrite cterm=bold ctermbg=red guibg=#6565cf
+            augroup lsp_document_highlight
+                autocmd! * <buffer>
+                autocmd! CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+                autocmd! CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+            augroup END
+            ]]
+        end
+    end
+
+    require("lspconfig").ltex.setup({
+        settings = {
+            ltex = {
+                language = "de-DE",
+                disabledRules = {
+                    ["de-DE"] = {
+                        -- find using: ~/bin/grammar.xml
+                        -- file is from ~/bin/ltex-ls-15.2.0-linux-x64/lib/language-de-5.5.jar
+                        --              > /org/languagetool/rules/de/grammar.xml
+                        "LEERZEICHEN_VOR_AUSRUFEZEICHEN_ETC",
+                        "LEERZEICHEN_HINTER_DOPPELPUNKT",
+                    }
+                },
+            },
+        },
+        cmd = {"ltex-ls"},
+        filetypes = {"tex"},  -- "markdown" cann't handel math properly
+        on_attach = on_attach
+    })
+
+    require("lspconfig").clangd.setup({
+        on_attach = on_attach
+    })
+
+    require("clangd_extensions").setup()
+EOF
+
+"     " nvim-lspconfig
+"     autocmd BufWinEnter lspinfo nmap q ZZ
+" lua << EOF
+
+" -- Use a loop to conveniently call 'setup' on multiple servers and
+" -- map buffer local keybindings when the language server attaches
+" local servers = {
+"     'pyright',
+"     'rust_analyzer',
+"     'clangd',
+"     'bashls',
+"     'julials',
+" }
+" for _, lsp in pairs(servers) do
+"   require('lspconfig')[lsp].setup(require('coq').lsp_ensure_capabilities({
+"     on_attach = on_attach,
+"     autostart = true,
+"     flags = {
+"       -- This will be the default in neovim 0.7+
+"       debounce_text_changes = 150,
+"     }
+"   }))
+" end
+
+" require("lspconfig").ltex.setup {
+"     -- capabilities = your_capabilities,
+"     on_attach = function(client, bufnr)
+"         -- your other on_attach functions.
+"         on_attach(client, bufnr)
+"         require("ltex_extra").setup{
+"             load_langs = { "de-DE", "en-US" }, -- table <string> : languages for witch dictionaries will be loaded
+"             init_check = true, -- boolean : whether to load dictionaries on startup
+"             path = nil, -- string : path to store dictionaries. Relative path uses current working directory
+"             log_level = "info", -- string : "none", "trace", "debug", "info", "warn", "error", "fatal"
+"         }
+"     end,
+"     settings = {
+"         ltex = {
+"             language = {"de-DE", "en-US"}
+"         }
+"     }
+" }
+
+" -- -- ltex spellcheck for markdown and LaTeX
+" -- -- TODO: do something like this:
+" -- --  * https://github.com/tiagovla/.dotfiles/blob/0f664e30def1e460dd04fc8276f0d12f1ee2e88b/neovim/.config/nvim/lua/plugins/config/lsp/custom_servers/ltex.lua
+" -- --  * https://gist.github.com/lbiaggi/a3eb761ac2fdbff774b29c88844355b8
+" -- local language_id_mapping = {
+" --   bib = 'bibtex',
+" --   plaintex = 'tex',
+" --   rnoweb = 'sweave',
+" --   rst = 'restructuredtext',
+" --   tex = 'latex',
+" --   xhtml = 'xhtml',
+" --   pandoc = 'markdown'
+" -- }
+" -- -- Unfortunately there is no way to reload this
+" -- -- local words = {}
+" -- -- for i, lang in pairs({"en", "de"}) do
+" -- --     -- In future move config to ~/.config/nvim/ where it belongs and use
+" -- --     -- vim.fn.stdpath("config") instead of getenv
+" -- --     local path =  os.getenv("HOME") .. "/.vim/spell/" .. lang .. ".utf-8.add"
+" -- --     local file = io.open(path, "r")
+" -- --     if file then
+" -- --         for word in file:lines() do
+" -- --             table.insert(words, word)
+" -- --         end
+" -- --     end
+" -- -- end
+" -- local dicts = {}  -- hopefully I'll get this to work some day
+" -- local words = {}
+" -- for i, lang in pairs({"en", "de"}) do
+" --     -- In future move config to ~/.config/nvim/ where it belongs and use
+" --     -- vim.fn.stdpath("config") instead of getenv
+" --     local path = os.getenv("HOME") .. "/.vim/spell/" .. lang .. ".utf-8.add"
+" --     table.insert(dicts, ":" .. path)
+" --     local file = io.open(path, "r");
+" --     if file then
+" --         for line in file:lines() do
+" --             table.insert(words, line)
+" --         end
+" --         io.close(file)
+" --     end
+" -- end
+" -- require('lspconfig')['ltex'].setup(require('coq').lsp_ensure_capabilities{
+" --     on_attach = on_attach,
+" --     autostart = false,
+" --     flags = {
+" --         debounce_text_changes = 150,
+" --         },
+" --     filetypes = {
+" --         'bib',
+" --         'gitcommit',
+" --         'markdown',
+" --         'org',
+" --         'plaintex',
+" --         'rst',
+" --         'rnoweb',
+" --         'tex',
+" --         'pandoc'
+" --         },
+" --     get_language_id = function(_, filetype)
+" --         local language_id = language_id_mapping[filetype]
+" --         if language_id then
+" --             return language_id
+" --         else
+" --             return filetype
+" --         end
+" --     end,
+" --     settings = {
+" --         checkFrequency     = "save",
+" --         language           = "de-DE",
+" --         setenceCacheSize   = 5000,
+" --         additionalRules = {
+" --         enablePickyRules = true,
+" --         motherTongue     = "de-DE"
+" --         },
+" --     configurationTarget = {
+" --         dictionary = "user",
+" --         disabledRules = "user",
+" --         hiddenFalsePositives = "user"
+" --         },
+" --     dictionary = {
+" --         -- This should work but doesn't for some reason
+" --         -- ['de-DE'] = dicts, -- words
+" --         -- ['en-US'] = dicts, -- words
+" --         -- https://gist.github.com/lbiaggi/a3eb761ac2fdbff774b29c88844355b8
+" --         -- https://github.com/valentjn/ltex-ls/issues/68
+" --         -- so apparently neovim isn't fully implemented (yet) let's hope for the future
+" --         ['de-DE'] = words,
+" --         ['en-US'] = words,
+" --         },
+" --     disabledRules = {
+" --         -- Find names using /home/ji/bin/ltex-ls-15.2.0-linux-x64/bin/ltex-cli example-file
+" --         -- dosent seem to work
+" --         ['de-DE'] = {"WHITESPACE_RULE", "DE_CASE"},
+" --         ['en-US'] = {}
+" --         },
+" --     }
+" -- })
+" EOF
+endif
+
+
+" File tree
+" - just stick to the build in netrw
+" - So some day there might even be icon support but until that happens
+"   - hope for [vim-devicons](https://github.com/ryanoasis/vim-devicons) to fix
+"     [#272](https://github.com/ryanoasis/vim-devicons/issues/272)
+" - Consider using [vim-vinegar](https://github.com/tpope/vim-vinegar)
+"   - Some useful additions to netrw might be cool at some point
+nmap <leader>nn :Exp<CR>
+let g:leader_keymap.n.n = 'Explore in netrw [:Exp]'
+" [Hints on how to configure this](https://alpha2phi.medium.com/neovim-for-beginners-file-explorer-a0b2e5cf6c57)
+let g:netrw_liststyle = 3  " use tree-style listing (cycle through options using <i>)
+let g:netrw_banner    = 0  " hide banner by default (display using <I>)
+let g:netrw_list_hide = netrw_gitignore#Hide() . '.*\.swp$'
+function Netrwtooglehide()
+    if g:netrw_hide == 0
+        let netrw_hide = 1
+    else
+        let netrw_hied = 0
+    endif
+endfunction
+command! NetrwToggleHiede call Netrwtooglehide()
+autocmd FileType netrw nmap <buffer><silent> <leader>nh :NetrwToggleHiede<CR>
+let g:leader_keymap.n.h = "Netrw Toggle Hide [:NetrwToggleHiede]"
+let g:netrw_localcopydircmd = 'cp -r'  " Allow recursive copy of directory
+
+"" if full
+"    " if has('nvim')
+"        " " CHADTree
+"        " nmap <leader>nn :CHADopen<CR>
+"        " let g:leader_keymap.n.n = 'Toggle CHADTree [:CHADopen]'
+"        " autocmd FileType CHADTree nmap <silent> <buffer> B :cd ..<CR>
+"        " let g:chadtree_settings = {
+"        "             \ 'view.window_options': {
+"        "                 \ 'wrap': v:false,
+"        "                 \ 'spell': v:false
+"        "                 \ }
+"        "             \ }
+
+"        "" nvim-tree
+"        "" nnoremap <leader>nn :NvimTreeToggle<CR>
+"        "nnoremap <leader>nn :lua require"nvim-tree".open_replacing_current_buffer()<CR>
+"        "let g:leader_keymap.n.n = 'Toggle NvimTree'
+"        "" nnoremap <leader>r :NvimTreeRefresh<CR>
+"        "" nnoremap <leader>n :NvimTreeFindFile<CR>
+"        "" More available functions:
+"        "" NvimTreeOpen
+"        "" NvimTreeClose
+"        "" NvimTreeFocus
+"        "" NvimTreeFindFileToggle
+"        "" NvimTreeResize
+"        "" NvimTreeCollapse
+"        "" NvimTreeCollapseKeepBuffers
+
+"        "let g:nvim_tree_git_hl = 1 "0 by default, will enable file highlight for git attributes (can be used without the icons).
+"        "let g:nvim_tree_highlight_opened_files = 1 "0 by default, will enable folder and file icon highlight for opened files/directories.
+"        "let g:nvim_tree_root_folder_modifier = ':~' "This is the default. See :help filename-modifiers for more options
+"        "let g:nvim_tree_add_trailing = 1 "0 by default, append a trailing slash to folder names
+"        "let g:nvim_tree_group_empty = 1 " 0 by default, compact folders that only contain a single folder into one node in the file tree
+"        "let g:nvim_tree_icon_padding = ' ' "one space by default, used for rendering the space between the icon and the filename. Use with caution, it could break rendering if you set an empty string depending on your font.
+"        "let g:nvim_tree_symlink_arrow = ' >> ' " defaults to ' ➛ '. used as a separator between symlinks' source and target.
+"        "let g:nvim_tree_respect_buf_cwd = 1 "0 by default, will change cwd of nvim-tree to that of new buffer's when opening nvim-tree.
+"        "let g:nvim_tree_create_in_closed_folder = 1 "0 by default, When creating files, sets the path of a file when cursor is on a closed folder to the parent folder when 0, and inside the folder when 1.
+"        "let g:nvim_tree_special_files = { 'README.md': 1, 'Makefile': 1, 'MAKEFILE': 1 } " List of filenames that gets highlighted with NvimTreeSpecialFile
+"        "let g:nvim_tree_show_icons = {
+"        "    \ 'git': 1,
+"        "    \ 'folders': 1,
+"        "    \ 'files': 1,
+"        "    \ 'folder_arrows': 1,
+"        "    \ }
+"        ""If 0, do not show the icons for one of 'git' 'folder' and 'files'
+"        ""1 by default, notice that if 'files' is 1, it will only display
+"        ""if nvim-web-devicons is installed and on your runtimepath.
+"        ""if folder is 1, you can also tell folder_arrows 1 to show small arrows next to the folder icons.
+"        ""but this will not work when you set renderer.indent_markers.enable (because of UI conflict)
+
+"        "" default will show icon by default if no icon is provided
+"        "" default shows no icon by default
+"        "" let g:nvim_tree_icons = {
+"        ""     \ 'default': "",
+"        ""     \ 'symlink': "",
+"        ""     \ 'git': {
+"        ""     \   'unstaged': "✗",
+"        ""     \   'staged': "✓",
+"        ""     \   'unmerged': "",
+"        ""     \   'renamed': "➜",
+"        ""     \   'untracked': "★",
+"        ""     \   'deleted': "",
+"        ""     \   'ignored': "◌"
+"        ""     \   },
+"        ""     \ 'folder': {
+"        ""     \   'arrow_open': "",
+"        ""     \   'arrow_closed': "",
+"        ""     \   'default': "",
+"        ""     \   'open': "",
+"        ""     \   'empty': "",
+"        ""     \   'empty_open': "",
+"        ""     \   'symlink': "",
+"        ""     \   'symlink_open': "",
+"        ""     \   }
+"        ""     \ }
+
+"        "" a list of groups can be found at `:help nvim_tree_highlight`
+"        "highlight NvimTreeFolderIcon guibg=blue
+"        "lua << EOF
+"        "    require("nvim-tree").setup { -- BEGIN_DEFAULT_OPTS
+"        "      auto_reload_on_write = true,
+"        "      disable_netrw = false,
+"        "      hide_root_folder = false,
+"        "      hijack_cursor = false,
+"        "      hijack_netrw = false,
+"        "      hijack_unnamed_buffer_when_opening = false,
+"        "      ignore_buffer_on_setup = false,
+"        "      open_on_setup = false,
+"        "      open_on_setup_file = false,
+"        "      open_on_tab = false,
+"        "      sort_by = "name",
+"        "      update_cwd = false,
+"        "      view = {
+"        "        width = 30,
+"        "        height = 30,
+"        "        side = "left",
+"        "        preserve_window_proportions = false,
+"        "        number = false,
+"        "        relativenumber = false,
+"        "        signcolumn = "yes",
+"        "        mappings = {
+"        "          custom_only = false,
+"        "          list = {
+"        "            -- user mappings go here
+"        "            { key = "<CR>", action = "edit_in_place" }
+"        "          },
+"        "        },
+"        "      },
+"        "      renderer = {
+"        "        indent_markers = {
+"        "          enable = false,
+"        "          icons = {
+"        "            corner = "└ ",
+"        "            edge = "│ ",
+"        "            none = "  ",
+"        "          },
+"        "        },
+"        "        icons = {
+"        "          webdev_colors = true,
+"        "        },
+"        "      },
+"        "      hijack_directories = {
+"        "        enable = false,
+"        "        auto_open = true,
+"        "      },
+"        "      update_focused_file = {
+"        "        enable = false,
+"        "        update_cwd = false,
+"        "        ignore_list = {},
+"        "      },
+"        "      ignore_ft_on_setup = {},
+"        "      system_open = {
+"        "        cmd = nil,
+"        "        args = {},
+"        "      },
+"        "      diagnostics = {
+"        "        enable = false,
+"        "        show_on_dirs = false,
+"        "        icons = {
+"        "          hint = "",
+"        "          info = "",
+"        "          warning = "",
+"        "          error = "",
+"        "        },
+"        "      },
+"        "      filters = {
+"        "        dotfiles = false,
+"        "        custom = {},
+"        "        exclude = {},
+"        "      },
+"        "      git = {
+"        "        enable = true,
+"        "        ignore = true,
+"        "        timeout = 400,
+"        "      },
+"        "      actions = {
+"        "        use_system_clipboard = true,
+"        "        change_dir = {
+"        "          enable = true,
+"        "          global = false,
+"        "        },
+"        "        open_file = {
+"        "          quit_on_open = false,
+"        "          resize_window = false,
+"        "          window_picker = {
+"        "            enable = true,
+"        "            chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+"        "            exclude = {
+"        "              filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame" },
+"        "              buftype = { "nofile", "terminal", "help" },
+"        "            },
+"        "          },
+"        "        },
+"        "      },
+"        "      trash = {
+"        "        cmd = "trash",
+"        "        require_confirm = true,
+"        "      },
+"        "      log = {
+"        "        enable = false,
+"        "        truncate = false,
+"        "        types = {
+"        "          all = false,
+"        "          config = false,
+"        "          copy_paste = false,
+"        "          diagnostics = false,
+"        "          git = false,
+"        "          profile = false,
+"        "        },
+"        "      },
+"        "    } -- END_DEFAULT_OPTS
+""EOF
+"    "else
+"        "" NERDTree
+"        "nmap <leader>nn :NERDTreeToggle<CR>
+"        "let g:leader_keymap.n.n = "Toggle NERD Tree [:NERDTreeToggle]"
+
+"        ""source '$HOME/.vim/extra-scripts/NERDTreeGitignoreFilter/gitignore_filter.vim'
+"    "endif
+"" endif
+
+if full
+    " csv Plugin
+    autocmd FileType csv let &colorcolumn=''
+    " let g:no_csv_maps = 1
+    let g:csv_nomap_space = 1
+    let g:csv_nomap_bs = 1
+    let g:leader_keymap.v = {'name': '+csv'}
+    function CSVSpaceSeperatedFunc()
+        set filetype=csv
+        if exists('g:csv_col')
+            let csv_col = g:csv_col
+        endif
+        let g:csv_col='[^ ]* *'
+        CSVInit
+        if exists('csv_col')
+            let g:csv_col = csv_col
+        else
+            unlet g:csv_col
+        endif
+    endfunction
+    command! CSVSpaceSeperated call CSVSpaceSeperatedFunc()
+    nmap <leader>vf :CSVSpaceSeperated<CR>
+    let g:leader_keymap.v.f = 'As (multi) Space Seperated csv vile [:CSVSpaceSeperated]'
+
+    " gitblame
+    let g:gitblame_date_format = '%r'
+    let g:gitblame_highlight_group = "Question"
+
+    " calendar
+    let g:calendar_monday = 1
+    let g:calendar_filetype = 'markdown'
+    let g:calendar_number_of_months = 5
+
+    " EasyAlign
+    xmap ga <Plug>(EasyAlign)
+    nmap ga <Plug>(EasyAlign)
+    let g:gkey_keymap.a = "align selection"
+    nmap gA :ascii<CR>
+    let g:gkey_keymap.A = "Print ascii of character [:ascii]"
+    let g:easy_align_delimiters = {
+        \ '>': { 'pattern': '>>\|=>\|>' },
+        \ '/': {
+        \     'pattern':         '//\+\|/\*\|\*/',
+        \     'delimiter_align': 'l',
+        \     'ignore_groups':   ['!Comment'] },
+        \ ']': {
+        \     'pattern':       '[[\]]',
+        \     'left_margin':   0,
+        \     'right_margin':  0,
+        \     'stick_to_left': 0
+        \   },
+        \ ')': {
+        \     'pattern':       '[()]',
+        \     'left_margin':   0,
+        \     'right_margin':  0,
+        \     'stick_to_left': 0
+        \   },
+        \ 'r': {
+        \     'pattern':      ' \(\S\+\s*[;=]\)\@=',
+        \     'left_margin':  0,
+        \     'right_margin': 0
+        \   },
+        \ 'd': {
+        \     'pattern': ' \ze\S\+\s*[;=]',
+        \     'left_margin':  0,
+        \     'right_margin': 0
+        \   },
+        \ 'm': {
+        \     'pattern': '\.\.\.$',
+        \     'left_margin':  1,
+        \     'right_margin': 0
+        \   },
+        \ '\': {
+        \     'pattern': '\\$',
+        \     'left_margin':  1,
+        \     'right_margin': 0
+        \   },
+        \ '%': {
+        \     'pattern': '%',
+        \     'left_margin':  1,
+        \     'right_margin': 1
+        \   },
+        \ }
+    " • 'm' for MATLAB line continuation markers
+    " • 'r' and 'd' do pretty much the same thing: Format c/c++ declaration,
+    "   assignment statements
+
+
+    " better key bindings for UltiSnipsExpandTrigger
+    let g:UltiSnipsExpandTrigger       = "<C-j>"
+    let g:empty_keymap['<C-j>'] = "snippet expand"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-h>"
+    let g:empty_keymap['<C-h>'] = "snippet next field"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-l>"
+    let g:empty_keymap['<C-l>'] = "snippet previous filed"
+
+    " UltiSnips
+    let g:UltiSnipsEditSplit="vertical"
+    nmap <leader>cs :call UltiSnips#RefreshSnippets()<CR>
+    let g:leader_keymap.c.s = "Reload Snippets [:call UltiSnips#RefreshSnippets()]"
+
+    " Vimtex vim-tex vimtex
+    let g:vimtex_view_method = 'zathura'
+    let g:vimtex_quickfix_open_on_warning = 0
+    let g:vimtex_quickfix_ignore_filters = [
+        \ 'Overfull \\hbox ',
+        \ 'Underfull \\hbox ',
+        \]
+    let g:vimtex_compiler_latexmk = {
+            \ 'executable' : 'latexmk',
+            \ 'options' : [
+            \   '-lualatex',
+            \   '-file-line-error',
+            \   '-synctex=1',
+            \   '-interaction=nonstopmode',
+            \ ],
+            \ }
+    let g:vimtex_toc_config = {
+            \ 'name': 'vim-tex-toc',
+            \ 'mode': 2,
+            \ 'fold_enable': 1,
+            \ 'fold_level_start': 3,
+            \ 'hide_line_number': 1,
+            \ 'hotkeys_enabled': 1,
+            \ 'hotkeys_leader': ';',
+            \ 'layer_status': { 
+                \ 'content': 1,
+                \ 'label': 0,
+                \ 'todo': 0,
+                \ 'include': 0 
+            \ },
+            \ 'split_width': 80,
+            \ 'tocdepth' : 5
+            \ }
+    let g:leader_keymap.x = { 'name': '+VimTeX' }
+    nmap <leader>xf :call vimtex#fzf#run('c', { 'window': { 'width': 0.9, 'height': 0.9 } })<CR>
+    let g:leader_keymap.x.f = 'VimTex Search Content'
+    nmap <leader>xF :call vimtex#fzf#run('ctli', { 'window': { 'width': 0.9, 'height': 0.9 } })<CR>
+    let g:leader_keymap.x.F = 'VimTex Search everything'
+    nmap <leader>xi <plug>(vimtex-info)
+    let g:leader_keymap.x.i = 'vimtex-info'
+    nmap <leader>xI <plug>(vimtex-info-full)
+    let g:leader_keymap.x.I = 'vimtex-info-full'
+    nmap <leader>xt <plug>(vimtex-toc-open)
+    let g:leader_keymap.x.t = 'vimtex-toc-open'
+    nmap <leader>xT <plug>(vimtex-toc-toggle)
+    let g:leader_keymap.x.T = 'vimtex-toc-toggle'
+    nmap <leader>xq <plug>(vimtex-log)
+    let g:leader_keymap.x.q = 'vimtex-log'
+    nmap <leader>xv <plug>(vimtex-view)
+    let g:leader_keymap.x.v = 'vimtex-view'
+    nmap <leader>xr <plug>(vimtex-reverse-search)
+    let g:leader_keymap.x.r = 'vimtex-reverse-search'
+    nmap <leader>xl <plug>(vimtex-compile)
+    let g:leader_keymap.x.l = 'vimtex-compile'
+    nmap <leader>xL <plug>(vimtex-compile-selected)
+    let g:leader_keymap.x.L = 'vimtex-compile-selected'
+    nmap <leader>xk <plug>(vimtex-stop)
+    let g:leader_keymap.x.k = 'vimtex-stop'
+    nmap <leader>xK <plug>(vimtex-stop-all)
+    let g:leader_keymap.x.K = 'vimtex-stop-all'
+    nmap <leader>xe <plug>(vimtex-errors)
+    let g:leader_keymap.x.e = 'vimtex-errors'
+    nmap <leader>xo <plug>(vimtex-compile-output)
+    let g:leader_keymap.x.o = 'vimtex-compile-output'
+    nmap <leader>xg <plug>(vimtex-status)
+    let g:leader_keymap.x.g = 'vimtex-status'
+    nmap <leader>xG <plug>(vimtex-status-all)
+    let g:leader_keymap.x.G = 'vimtex-status-all'
+    nmap <leader>xc <plug>(vimtex-clean)
+    let g:leader_keymap.x.c = 'vimtex-clean'
+    nmap <leader>xC <plug>(vimtex-clean-full)
+    let g:leader_keymap.x.C = 'vimtex-clean-full'
+    nmap <leader>xm <plug>(vimtex-imaps-list)
+    let g:leader_keymap.x.m = 'vimtex-imaps-list'
+    nmap <leader>xx <plug>(vimtex-reload)
+    let g:leader_keymap.x.x = 'vimtex-reload'
+    nmap <leader>xX <plug>(vimtex-reload-state)
+    let g:leader_keymap.x.X = 'vimtex-reload-state'
+    nmap <leader>xs <plug>(vimtex-toggle-main)
+    let g:leader_keymap.x.s = 'vimtex-toggle-main'
+    nmap <leader>xa <plug>(vimtex-context-menu)
+    let g:leader_keymap.x.a = 'vimtex-context-menu'
+
+
+    " image paste
+    command! MarkdownClipboardImagePaste call mdip#MarkdownClipboardImage()
+    autocmd FileType markdown,pandoc nmap <buffer><silent> <leader>ep :MarkdownClipboardImagePaste<CR>
+    let g:leader_keymap.e.p = "Paste image from clipboard as markdown [:MarkdownClipboardImagePaste]"
+    let g:mdip_imgdir = 'img'
+    let g:mdip_imgname = 'image'
+
+
+    if g:use_pandoc_istead_of_markdwon
+        " pandoc preview
+        " TODO: set this up as a proper plugin
+        " autocmd! CursorHold * lua dofile('/home/ji/bin/standalone/standalone.lua')
+        " nmap <leader>sp :silent ! zathura --fork --config-dir=/home/ji/bin/standalone/zathura/. /tmp/nvim-preview.pdf<CR>
+
+        " Pandoc formatting
+        let g:pandoc#formatting#mode = "s"
+        let g:pandoc#formatting#textwidth = 80
+        let g:pandoc#folding#fold_yaml = 1
+        let g:pandoc#syntax#conceal#use = 1
+        let g:pandoc#syntax#style#emphases = 0
+        let g:pandoc#syntax#style#underline_special = 0
+        let g:pandoc#syntax#codeblocks#embeds#langs = ["julia", "python", "c", "java", "r", "cpp", "matlab", "bqn"]
+        let g:pandoc#hypertext#open_editable_alternates = 1
+        nmap <buffer> <leader>nt :TOC<CR>
+        let g:leader_keymap.n.t = "Pandoc TOC [:TOC]"
+        " autocmd FileType pandoc nnoremap <buffer> <leader>pt :FzfPandocTemplate<CR>
+        " autocmd FileType pandoc nnoremap <buffer> <leader>pe :PandocTemplateEdit<CR>
+        " autocmd FileType pandoc nnoremap <buffer> <leader>cc :Pandoc #cheat<CR>
+        let g:pandoc#syntax#style#use_definition_lists = 0
+
+        let g:pandoc#keyboard#use_default_mappings = 1
+        let g:leader_keymap.p = {'name': "+pandoc"}
+        nmap <localleader>pi <Plug>(pandoc-keyboard-toggle-emphasis)
+        vmap <localleader>pi <Plug>(pandoc-keyboard-toggle-emphasis)
+        let g:leader_keymap.p.i = "pandoc toggle emphasis"
+        nmap <localleader>pb <Plug>(pandoc-keyboard-toggle-strong)
+        vmap <localleader>pb <Plug>(pandoc-keyboard-toggle-strong)
+        let g:leader_keymap.p.b = "pandoc toggle strong"
+        nmap <localleader>p' <Plug>(pandoc-keyboard-toggle-verbatim)
+        vmap <localleader>p' <Plug>(pandoc-keyboard-toggle-verbatim)
+        let g:leader_keymap.p["'"] = "pandoc toggle verbatim"
+        nmap <localleader>p~ <Plug>(pandoc-keyboard-toggle-strikeout)
+        vmap <localleader>p~ <Plug>(pandoc-keyboard-toggle-strikeout)
+        let g:leader_keymap.p["~"] = "pandoc toggle strikeout"
+        nmap <localleader>p^ <Plug>(pandoc-keyboard-toggle-superscript)
+        vmap <localleader>p^ <Plug>(pandoc-keyboard-toggle-superscript)
+        let g:leader_keymap.p["^"] = "pandoc toggle superscript"
+        nmap <localleader>p_ <Plug>(pandoc-keyboard-toggle-subscript)
+        vmap <localleader>p_ <Plug>(pandoc-keyboard-toggle-subscript)
+        let g:leader_keymap.p["_"] = "pandoc toggle subscript"
+        nmap <localleader>p# <Plug>(pandoc-keyboard-toggle-header)
+        vmap <localleader>p# <Plug>(pandoc-keyboard-toggle-header)
+        let g:leader_keymap.p["#"] = "pandoc toggle header"
+        nmap <localleader>pf <Plug>(pandoc-hypertext-goto-id)
+        let g:leader_keymap.p.f = "pandoc follow link id"
+
+        let g:pandoc#filetypes#pandoc_markdown = 0  " fix conflict pandoc ⇔ markdown doesn't seam to work as expected
+        let g:pandoc#filetypes#handled = ["pandoc"]
+    else
+        " Markdown vim-markdown
+        " ge : open links with
+        " ]] [[ : goto next/previous header
+        " ][ [] : goto next/previous sibling header
+        " ]h ]u : goto current/parent header
+        let g:vim_markdown_follow_anchor = 1
+        let g:tex_conceal = "式" " shì = style, system, formula, rule
+        let g:vim_markdown_math = 1
+        let g:vim_markdown_toc_autofit = 1
+        let g:vim_markdown_frontmatter = 1
+        let g:vim_markdown_no_extensions_in_markdown = 1  " go to files with ge even if they don't end in .md
+        let g:vim_markdown_folding_disabled = 0
+        let g:vim_markdwon_folding_level = 6
+        let g:vim_markdown_folding_style_pythonic = 1
+        let g:vim_markdown_fenced_languages = ['c++=cpp', 'ini=dosini', 'viml=vim', 'bash=sh']
+        let g:vim_markdown_conceal_code_blocks = 0
+        function! s:ResetFold()
+            let b:fenced_block = 0
+            let b:front_matter = 0
+            setlocal foldtext=Foldtext_markdown()
+            setlocal foldexpr=Foldexpr_markdown(v:lnum)
+            setlocal foldmethod=expr
+        endfunction
+        command! -buffer Fold call s:ResetFold()
+        nmap <buffer><silent> <leader>nF :Fold<CR>
+        let g:leader_keymap.n.F = "Fold Markdown Dokument [:Fold]"
+        nmap <buffer><silent> <leader>nt :Toc<CR>
+        let g:leader_keymap.n.t = "Open markdown Toc in vSplit [:Toc]"
+        nmap <buffer><silent> <leader>nT :InsertToc 6<CR>
+        let g:leader_keymap.n.T = "Write markdown Toc until h6 to buffer [:InsertToc 6]"
+        map <buffer><silent> <leader>e<lt> :HeaderDecrease<CR>
+        let g:leader_keymap.e["<"] = "Decrease markdown header [:HeaderDecrease]"
+        map <buffer><silent> <leader>e<gt> :HeaderIncrease<CR>
+        let g:leader_keymap.e[">"] = "Increase markdown header [:HeaderIncrease]"
+    endif
+
+    " pandoc markdown tmp preview
+    let g:current_md_preview_pdf = "/tmp/nvim-current-md.pdf"
+    function! LinkPdfPreviw()
+        let name = join([expand("%:p:r"), "pdf"], ".")
+        if filereadable(name)
+            echo join(["linking", name, "with", g:current_md_preview_pdf], " ")
+            call system(['ln', '-sf', name, g:current_md_preview_pdf])
+        endif
+    endfunction
+    autocmd BufEnter *.md call LinkPdfPreviw()
+    nmap <leader>sP :call system(['zathura', '--fork', g:current_md_preview_pdf])<CR>
+    let g:leader_keymap.s.P = "Open current markdown preview in zathura"
+
+    " System clipboard interaction
+    vmap <leader>ec :!xclip -f -sel clip<CR>
+    let g:leader_keymap.e.c = 'Copy to System Clipboard'
+    map <leader>ep :-1r !xclip -o -sel clip<CR>
+    let g:leader_keymap.e.p = 'Paste from system Clipboard'
+
+    " fzf mapping
+
+    " extra key bindings currently match default
+    let g:fzf_action = {
+      \ 'ctrl-t': 'tab split',
+      \ 'ctrl-x': 'split',
+      \ 'ctrl-v': 'vsplit' }
+    let g:fzf_colors =
+    \ { 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
+
+    " path completion
+    inoremap <expr> <c-x><c-p> fzf#vim#complete#path('fd')
+
+    " line completion
+    inoremap <expr> <c-x><c-l> fzf#vim#complete#line()
+
+    " snippet completion seams to be somewhat brocken
+    " [](https://github.com/junegunn/fzf.vim/issues/796)
+    inoremap <silent> <c-x><c-s> <Cmd>:Snippets<CR>
+
+    " bibtex complete
+    inoremap <expr> <c-x><c-r> fzf#vim#complete(fzf#wrap({'source': "grep -o '^@.*{.*' *.bib \<bar> sed -e 's/^@.*{/@/;s/,$//'"}))
+
+    " Complete word reads from /usr/share/dict/words so it might not be to useful in German
+    inoremap <expr> <c-x><c-w> fzf#vim#complete#word({'window': { 'width': 0.2, 'height': 0.9, 'xoffset': 1 }})
+    inoremap <expr> <c-w> fzf#vim#complete#word({'window': { 'width': 0.2, 'height': 0.9, 'xoffset': 1 }})
+
+    " search word
+    nmap <leader>nr :Rg <C-r><C-w><CR>
+    let g:leader_keymap.n.r = "search for current word [:Rg <C-r><C-w><CR>]"
+
+    " Add fzf to all Autocompletions see https://vim.fandom.com/wiki/Fuzzy_insert_mode_completion_(using_FZF)
+    " Turns out to be quite useless, because the suggestions are not recomputed as you type
+    " function! PInsert2(item)
+    "     let @z=a:item
+    "     norm "zp
+    "     call feedkeys('a')
+    " endfunction
+    "
+    " function! CompleteInf()
+    "     let nl=[]
+    "     let l=complete_info()
+    "     for k in l['items']
+    "         call add(nl, k['word']. ' : ' .k['info'] . ' '. k['menu'] )
+    "     endfor
+    "     call fzf#vim#complete(fzf#wrap({
+    "         \ 'source': nl,
+    "         \ 'reducer': { lines -> split(lines[0], '\zs :')[0] },
+    "         \ 'sink': function('PInsert2'),
+    "         \ 'window': { 'width': 0.2, 'height': 0.9, 'xoffset': 1 }
+    "         \ }))
+    " endfunction
+    "
+    " imap <C-y> <CMD>:call CompleteInf()<CR>
+    " " complete words
+    " imap <C-w> <C-x>s<C-y>
+    " " complete lines
+    " " imap <C-s> <C-x><C-l><C-y>
+
+    nmap <leader>ff :Files<CR>
+    let g:leader_keymap.f.f = 'Files [:Files]'
+    nmap <leader>fg :GFiles<CR>
+    let g:leader_keymap.f.g = 'Git Files git ls-files [:GFiles]'
+    nmap <leader>fG :GFiles?<CR>
+    let g:leader_keymap.f.G = 'Git Files git status [:GFiles?]'
+    nmap <leader>fb :Buffers<CR>
+    let g:leader_keymap.f.b = 'Open Buffers [:Buffers]'
+    nmap <leader>fS :Colors<CR>
+    let g:leader_keymap.f.S = 'Colors Schemes [:Colors]'
+    nmap <leader>fl :Lines<CR>
+    let g:leader_keymap.f.l = 'Lines [:Lines]'
+    nmap <leader>fL :BLines<CR>
+    let g:leader_keymap.f.L = 'Lines in current Buffer [:BLines]'
+    nmap <leader>ft :Tags<CR>
+    let g:leader_keymap.f.t = 'Tags [:Tags]'
+    nmap <leader>fT :BTags<CR>
+    let g:leader_keymap.f.T = 'Tags in current Buffer [:BTags]'
+    nmap <leader>fm :Marks<CR>
+    let g:leader_keymap.f.m = 'Marks [:Marks]'
+    nmap <leader>fw :Windows<CR>
+    let g:leader_keymap.f.w = 'Windows [:Windows]'
+    nmap <leader>fh :History<CR>
+    let g:leader_keymap.f.h = 'History [:History]'
+    nmap <leader>f: :History:<CR>
+    let g:leader_keymap.f[':'] = 'Command History [:History:]'
+    nmap <leader>f/ :History/<CR>
+    let g:leader_keymap.f['/'] = 'Search History [:History/]'
+    nmap <leader>fs :Snippets<CR>
+    let g:leader_keymap.f.s = 'Snippets [:Snippets]'
+    nmap <leader>fc :Commits<CR>
+    let g:leader_keymap.f.c = 'Commits [:Commits]'
+    nmap <leader>fC :BCommits<CR>
+    let g:leader_keymap.f.C = 'Commits for current Buffer [:BCommits]'
+    nmap <leader>fM :Maps<CR>
+    let g:leader_keymap.f.M = 'Keyboard Mappings [:Maps]'
+    nmap <leader>fH :Helptags<CR>
+    let g:leader_keymap.f.H = 'Helptags [:Helptags]'
+    nmap <leader>fF :Filetypes<CR>
+    let g:leader_keymap.f.F = 'Filetypes [:Filetypes]'
+    nmap <leader>fx :call vimtex#fzf#run('ctli', { 'window': { 'width': 0.9, 'height': 0.9 } })
+    let g:leader_keymap.f.x = 'VimTex Search everything'
+
+    function! MyPandocTempFun(param)
+        call feedkeys("\<C-\>\<C-n>")
+        let i = stridx(a:param, '\ \|\ ')
+        let k = trim(a:param[:i-1], '\ ')
+        let s = 'Pandoc! #' . k
+        exe s
+    endfunction
+    autocmd! FileType pandoc command -nargs=? MyPandocTemp call MyPandocTempFun('<args>')
+    autocmd! FileType pandoc command! FzfPandocTemplate call fzf#run(fzf#wrap({
+        \ 'source': join([
+            \ 'column --table',
+            \ '--separator "|"',
+            \ '--output-separator "  | "',
+            \ g:pandoc#command#templates_file
+        \ ], ' '),
+        \ 'sink': 'MyPandocTemp',
+        \ 'options': [
+            \ '--preview',
+            \ join([
+                \ 'echo {} | sed -e ''$a\'' | ',
+                \ 'sed -E',
+                \ '''s/([^ ]*) +\| ([^ ]*) (-.*)/\x1b[31m\1\x1b[0m\n\x1b[32m\2\x1b[0m\n\3/;',
+                \ 's/(--?[^ ]*) +([^ ]*)( |$)/  \x1b[36m\1\x1b[0m \x1b[33m\2\x1b[0m\n/g'''
+            \ ], ' '),
+            \ '--preview-window',
+            \ 'right:35'
+        \ ]
+    \  }))
+    autocmd! FileType pandoc command! PandocTemplateEdit e /home/ji/.vim/plugged/vim-pandoc/templates
+
+    let g:pandoc#command#custom_open = "MyPandocOpen"
+    function! MyPandocOpen(file)
+        let file = shellescape(fnamemodify(a:file, ':p'))
+        let file_extension = fnamemodify(a:file, ':e')
+        if file_extension is? 'pdf'
+            if !empty($PDFVIEWER)
+                return expand('$PDFVIEWER') . ' ' . file
+            elseif executable('zathura')
+                return 'zathura ' . file
+            elseif executable('mupdf')
+                return 'mupdf ' . file
+            endif
+        elseif file_extension is? 'html'
+            if !empty($BROWSER)
+                return expand('$BROWSER') . ' ' . file
+            elseif executable('surf')
+                return 'surf ' . file
+            elseif executable('firefox')
+                return 'firefox ' . file
+            elseif executable('chromium')
+                return 'chromium ' . file
+            endif
+        elseif file_extension is? 'odt' && executable('okular')
+            return 'okular ' . file
+        elseif file_extension is? 'epub' && executable('okular')
+            return 'okular ' . file
+        else
+            return 'xdg-open ' . file
+        endif
+    endfunction
+
+    " Make background Transparent, so tmux panel backgrounds indicate the active panel
+    hi Normal guibg=NONE ctermbg=NONE
+
+    " add fzf -- actually don't do this, I am using the plugin so this
+    " default script won't actually work as expected
+    " source /usr/share/doc/fzf/examples/fzf.vim
+
+    " Floatterm fzf
+    let g:fzf_floaterm_newentries = {
+      \ '+ipython' : {
+        \ 'title': 'ipython Shell',
+        \ 'cmd': 'ipython' },
+      \ '+zsh': {
+        \ 'title': 'zsh',
+        \ 'cmd': 'zsh' },
+      \ '+nnn': {
+        \ 'title': 'nnn',
+        \ 'cmd': '$HOME/bin/nnn/nnn' },
+      \ '+matlab': {
+        \ 'title': 'matlab',
+        \ 'cmd': 'matlab -nodesktop' },
+      \ '+calcurse': {
+        \ 'title': 'calcurse',
+        \ 'cmd': 'calcurse' },
+      \ '+bpytop': {
+        \ 'title': 'bpytop',
+        \ 'cmd': 'bpytop' },
+      \ '+btop': {
+        \ 'title': 'btop',
+        \ 'cmd': 'btop' },
+      \ '+lazygit': {
+        \ 'title': 'lazygit',
+        \ 'cmd': 'lazygit' },
+      \ '+radian': {
+        \ 'title': 'radian',
+        \ 'cmd': 'radian' },
+      \ }
+    nnoremap   <silent>   <F8>    :Floaterms<CR>
+    tnoremap   <silent>   <F8>    <C-\><C-n>:Floaterms<CR>
+    let g:empty_keymap["<F8>"] = "open new floating terminal [:Floaterms]"
+
+
+    " Floatterm config
+    let g:floaterm_width  = 0.9
+    let g:floaterm_height = 0.9
+    " nnoremap   <silent>   <F8>    :FloatermNew<CR>
+    " tnoremap   <silent>   <F8>    <C-\><C-n>:FloatermNew<CR>
+    nnoremap   <silent>   <F9>    :FloatermPrev<CR>
+    tnoremap   <silent>   <F9>    <C-\><C-n>:FloatermPrev<CR>
+    let g:empty_keymap["<F9>"] = "jump to previous floating terminal [:FloatermPrev]"
+    nnoremap   <silent>   <F10>   :FloatermNext<CR>
+    tnoremap   <silent>   <F10>   <C-\><C-n>:FloatermNext<CR>
+    let g:empty_keymap["<F10>"] = "jump to next floating terminal [:FloatermNext]"
+    nnoremap   <silent>   <F12>   :FloatermToggle<CR>
+    tnoremap   <silent>   <F12>   <C-\><C-n>:FloatermToggle<CR>
+    let g:empty_keymap["<F12>"] = "toggle floating terminal visibility [:FloatermToggle]"
+
+    " vim-lion
+    let g:lion_squeeze_spaces = 1
+
+    " spectre sisual search and replace
+    nnoremap <leader>SS <cmd>lua require('spectre').open()<CR>
+    let g:leader_keymap.S = {'name': '+Spectre'}
+    let g:leader_keymap.S.S = 'open spectre'
+    "search current word
+    nnoremap <leader>Sw <cmd>lua require('spectre').open_visual({select_word=true})<CR>
+    let g:leader_keymap.S.w = 'search current word'
+    vnoremap <leader>SS <cmd>lua require('spectre').open_visual()<CR>
+    "  search in current file
+    nnoremap <leader>Sp viw:lua require('spectre').open_file_search()<cr>
+    let g:leader_keymap.S.p = 'open file search'
+    " run command :Spectre
+    autocmd BufEnter spectre_panel setlocal nospell nonumber norelativenumber
+
+    " Isotpe
+    let g:isotope_use_default_mappings = 0
+    " Superscript/subscript/circled-white
+    " inoremap <C-g><C-j>      <C-o>:IsotopeInsert SUPERSCRIPT<CR>
+    " inoremap <C-g><C-g><C-j> <C-o>:IsotopeToggle SUPERSCRIPT<CR>
+
+    " inoremap <C-g><C-k>      <C-o>:IsotopeInsert SUBSCRIPT<CR>
+    " inoremap <C-g><C-g><C-k> <C-o>:IsotopeToggle SUBSCRIPT<CR>
+
+    " Plug
+    let g:leader_keymap.c.p = { 'name': '+Plugin Management' }
+    nmap <leader>cpc :PlugClean<CR>
+    let g:leader_keymap.c.p.c = 'Clean Up Plugin Installations [:PlugClean]'
+    nmap <leader>cpd :PlugDiff<CR>
+    let g:leader_keymap.c.p.d = 'Show Plugin Diff [:PlugClean]'
+    nmap <leader>cpi :PlugInstall<CR>
+    let g:leader_keymap.c.p.i = 'Install New Plugins [:PlugInstall]'
+    nmap <leader>cpS :PlugSnapshot<CR>
+    let g:leader_keymap.c.p.S = 'Take Snapshot of Plugins [:PlugSnapshot]'
+    nmap <leader>cps :PlugStatus<CR>
+    let g:leader_keymap.c.p.s = 'Show Plugin Status [:PlugStatus]'
+    nmap <leader>cpu :PlugUpdate<CR>
+    let g:leader_keymap.c.p.u = 'Update Plugin Status [:PlugUpdate]'
+    nmap <leader>cpU :PlugUpgrade<CR>
+    let g:leader_keymap.c.p.U = 'Upgrade Plugins [:PlugUpgrade]'
+
+    " Expand/Shrink region
+    map + <Plug>(expand_region_expand)
+    map - <Plug>(expand_region_shrink)
+
+    " Snippets
+    let g:snips_author = "jochen.illerhaus@student.kit.edu"
+
+    " Make :grep use ripgrep
+    if executable('rg')
+        set grepprg=rg\ --color=never\ --vimgrep
+    endif
+
+    " " 🐓 Coq completion settings
+
+    " " set completeopt="menuone,nonselect,noinsert"
+    " " set noshowmode
+
+    " " Set recommended to false
+    " let g:coq_settings = {
+    "             \ 'keymap': {
+    "                 \ 'recommended': v:false,
+    "                 \ 'pre_select': v:false,
+    "                 \ 'manual_complete': '<C-l>',
+    "                 \ 'repeat': v:null,
+    "                 \ 'bigger_preview': 'K',
+    "                 \ 'jump_to_mark': '<C-h>',
+    "                 \ 'eval_snips': v:null
+    "             \ },
+    "             \ 'clients': {
+    "                 \ 'buffers': {
+    "                     \ 'match_syms': v:true
+    "                 \ },
+    "                 \ 'tabnine': { 'enabled': v:true }
+    "             \ },
+    "             \ 'display': {
+    "                 \ 'ghost_text': {
+    "                     \ 'enabled': v:true
+    "                 \ }
+    "             \ }
+    "         \ }
+    " lua << EOF
+    " require("coq_3p") {
+    "     { src = "nvimlua", short_name = "nLUA" },
+    "     {
+    "       src = "repl",
+    "       sh = "zsh",
+    "       shell = { p = "perl", n = "node", ... },
+    "       max_lines = 99,
+    "       deadline = 500,
+    "       unsafe = { "rm", "poweroff", "mv" }
+    "     },
+    "     { src = "vimtex", short_name = "vTEX" },
+    "     { src = "bc", short_name = "MATH", precision = 6 },
+    " }
+" EOF
+
+    " Keybindings for coq
+    " ino <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
+    " ino <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
+    " ino <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
+    " ino <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "\<C-e><CR>" : "\<C-y>") : "\<CR>"
+    " ino <silent><expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+    " ino <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<BS>"
+
+    " Treesitter
+    lua << EOF
+    require'nvim-treesitter.configs'.setup {
+        ensure_installed = {
+            "c", "rust", "html", "python", "bibtex",
+            "latex", "markdown", "norg", "scala",
+            "bash"
+        },
+        sync_install = false,
+        incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = "gnn",
+            node_incremental = "grn",
+            scope_incremental = "grc",
+            node_decremental = "grm",
+            },
+        },
+        indent = {
+            enable = true
+        },
+        highlight = {
+            enable = true,
+            -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
+            -- disable = function(lang, buf)
+            --     local max_filesize = 100 * 1024 -- 100 KB
+            --     local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            --     if ok and stats and stats.size > max_filesize then
+            --         return true
+            --     end
+            -- end,
+            additional_vim_regex_highlighting = false,
+        }
+    }
+EOF
+    nmap <leader>bs :set foldmethod=expr foldexpr=nvim_treesitter#foldexpr()<CR>
+    let g:leader_keymap.b.s = 'Fold based on Tree sitter'
+
+    " " coc
+    " nmap <leader>cc :CocConfig<CR>
+    " let g:leader_keymap.c.c = "Open Coc Config [:CocConfig]"
+    " command! CocSpellToggle call CocAction('toggleExtension', 'coc-spell-checker')
+    " command! CocSpellActivate call CocAction('activeExtension', 'coc-spell-checker')
+    " command! CocSpellDeactivate call CocAction('deactivateExtension', 'coc-spell-checker')
+    " nmap <leader>cO :CocSpellToggle<CR>
+    " let g:leader_keymap.c.O = "Toggle coc-spell-checker [:CocSpellToggle]"
+    " vmap <leader>ef <Plug>(coc-format-selected)
+    " nmap <leader>ef <Plug>(coc-format-selected)
+    " let g:leader_keymap.e.f = "Format using coc [coc-format-selected]"
+    " nmap <leader>er <Plug>(coc-rename)
+    " let g:leader_keymap.e.r = "Rename symbol [coc-rename]"
+    " nmap <leader>cR :CocRestart<CR>
+    " let g:leader_keymap.c.R = "Restart coc [:CocRestart]"
+
+    " let g:coc_global_extensions = [
+    "             \ 'coc-pyright',
+    "             \ 'coc-vimlsp',
+    "             \ 'coc-snippets',
+    "             \ 'coc-spell-checker',
+    "             \ 'coc-cspell-dicts',
+    "             \ 'coc-clangd'
+    "             \ ]
+    " let g:coc_fzf_preview = 'right:50%'
+
+    " nmap <leader>ci :CocList marketplace<CR>
+    " let g:leader_keymap.c.i = "Install Coc extentions from marketplace [:CocList marketplace]"
+
+    " " nmap <silent> gd <Plug>(coc-definition)
+    " function! s:GoToDefinition()
+    "     if CocAction('jumpDefinition')
+    "         return v:true
+    "     endif
+
+    "     let ret = execute("silent! normal \<C-]>")
+    "     if ret =~ "Error" || ret =~ "错误"
+    "         call searchdecl(expand('<cword>'))
+    "     endif
+    " endfunction
+    " nmap <silent> gd :call <SID>GoToDefinition()<CR>
+
+    " nmap <silent> gi <Plug>(coc-implementation)
+    " nmap <silent> gr <Plug>(coc-references)
+    " nmap <silent> gy <Plug>(coc-type-definition)
+
+    " nmap <silent> go :CocCommand clangd.switchSourceHeader<CR>
+    " nmap <silent> [g <Plug>(coc-diagnostic-prev)
+    " nmap <silent> ]g <Plug>(coc-diagnostic-next)
+    " imap <C-d> <Plug>(coc-snippets-expand)
+    " xmap <C-r> <Plug>(coc-snippets-select)
+
+    " nmap <leader>ea <plug>(coc-codeaction-cursor)
+    " let g:leader_keymap.e.a = "Apply Code Action [coc-codeaction-cursor]"
+    " nmap <leader>ex  <Plug>(coc-fix-current)
+    " let g:leader_keymap.e.x = "Fix current [coc-fix-current]"
+
+    " nnoremap <silent> <leader>rd :CocDiagnostics<CR>
+    " let g:leader_keymap.r.d = "Diagnostics [:CocDiagnostics]"
+    " " inoremap <silent> <expr> <CR> "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"")"))
+
+    " nnoremap <silent> K :call ShowDocumentation()<CR>
+    " nmap <leader>nk :call CocAction('doHover', 'preview')<CR>
+    " let g:leader_keymap.n.k = "Show Dokumentation in Split [:call CocAction('doHover', 'preview')]"
+    " function! ShowDocumentation()
+    "   if (index(['vim','help'], &filetype) >= 0)
+    "     execute 'h '.expand('<cword>')
+    "   else
+    "     call CocAction('doHover')
+    "   endif
+    " endfunction
+
+    " " nmap <leader>ns :CocList -I symbols<CR>
+    " nmap <leader>ns :CocFzfList symbols<CR>
+    " let g:leader_keymap.n.s = "List Symbols [:CocFzfList -I symbols]"
+    " " nmap <leader>no :CocList outline<CR>
+    " nmap <leader>no :CocFzfList outline<CR>
+    " let g:leader_keymap.n.o = "Show outline [:CocFzfList outline]"
+    " nmap <leader>nl :CocFzfList location<CR>
+    " let g:leader_keymap.n.l = "Show jump list [:CocFzfList location]"
+    " nmap <leader>nL :CocFzfList<CR>
+    " let g:leader_keymap.n.L = "Show available coc lists [:CocFzfList]"
+
+    " " Coc Text Objects
+    " xmap if <Plug>(coc-funcobj-i)
+    " omap if <Plug>(coc-funcobj-i)
+    " xmap af <Plug>(coc-funcobj-a)
+    " omap af <Plug>(coc-funcobj-a)
+    " xmap ic <Plug>(coc-classobj-i)
+    " omap ic <Plug>(coc-classobj-i)
+    " xmap ac <Plug>(coc-classobj-a)
+    " omap ac <Plug>(coc-classobj-a)
+
+    " Indent Line
+    let g:indentLine_setColors = 0
+    let g:indentLine_setConceal = 0
+    let g:indentLine_concealcursor = ''
+    let g:indentLine_char = '⎸'
+    " let g:indentLine_color_term = 239
+    " let g:indentLine_color_gui = '#44505c'
+    let g:indentLine_fileTypeExclude = ['tex', 'NvimTree']
+    " For some reason this won't use the expected color
+    " But there seams to be a fix described here
+    " https://github.com/Yggdroot/indentLine/issues/339
+    " hi SpecialKey ctermfg=170 ctermbg=NONE guifg=#bc6ec5 guibg=NONE guisp=NONE cterm=NONE gui=NONE
+    let g:indentLine_defaultGroup = 'NonText'  " = Whitespace
+    let g:indentLine_bufTypeExclude = ['help', 'terminal']
+    " let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+    nmap <leader>ci :IndentLinesToggle<CR>
+    let g:leader_keymap.c.i = "Toggle Indentation Lines [:IndentLinesToggle]"
+
+    " vim-slime for easy copy and paste to and from terminal seccions
+    let g:slime_target = "neovim"
+    nmap <leader>nj :echo b:terminal_job_id<CR>
+    let g:leader_keymap.n.j = "Echo terminal id vor slime [:echo b:terminal_job_id]"
+    " let g:slime_python_ipython = 1  " fix indentation for ipython
+
+    " Folddigest
+    nmap <leader>nd :call FoldDigest()<CR>
+    let g:leader_keymap.n.d  = "Fold Digest TOC [:call FoldDigest()]"
+    let g:folddigest_options = "vertical,flexnumwidth"
+    let g:folddigest_size    = 50
+    nmap <leader>nD <leader>ndgg"dyGZZ
+    let g:leader_keymap.n.D  = "Save Fold Digest TOC to Register d"
+
+    " boxdrawing
+    vmap <leader>db :'<,'>! ascii2box.pl<CR>
+    let g:leader_keymap.d.b = "Convert visual selection to box drawing diagram [:! ascii2box.pl]"
+    nmap <leader>dv :set virtualedit+=all<CR>
+    let g:leader_keymap.d.v = "Allo edeting at locations that don't yet exist [:set virtualedit+=all]"
+    " +0 in visula to add box
+    " +> +^ +v +< for arrows
+
+    " tagbar
+    nmap <leader>nB :TagbarToggle<CR>
+    let g:leader_keymap.n.B = "Toggle Tagbar visibility [:TagbarToggle]"
+    nmap <leader>nb :TagbarOpen j<CR>
+    let g:leader_keymap.n.b = "Open/Jump to Tagbar [:TabarOpen j]"
+
+    " minimap
+    let g:minimap_width                = 6
+    let g:minimap_auto_start           = 0
+    let g:minimap_auto_start_win_enter = 1
+    let g:minimap_highlight_search     = 1
+    let g:minimap_highlight_range      = 1
+    " Jump beck from minimap
+    autocmd FileType minimap nnoremap <buffer> <A-m> <C-w><C-p>
+    autocmd FileType minimap nnoremap <buffer> <CR> <C-w><C-p>
+    autocmd FileType minimap nnoremap <buffer> <C-w>= <C-w><C-p><C-w>=:MinimapJump<CR>
+    autocmd BufEnter minimap set wfw
+    function! JumpToMinimap()
+        let bnr = bufwinnr('-MINIMAP-')
+        if bnr < 0
+            :Minimap
+            let bnr = bufwinnr('-MINIMAP-')
+        endif
+        if bnr > 0  " check if creating was successful or unnecessary
+            :exe bnr . "wincmd w"
+        endif
+    endfunction
+    command MinimapJump call JumpToMinimap()
+    nmap <A-m> :MinimapJump<CR>
+    let g:empty_keymap['<A-m>'] = 'Jump to Minimap'
+    let g:minimap_git_colors           = 1
+
+    " This just won't work don't get why
+    " hi minimapDiffAdded guifg=#00ff00
+    " hi minimapRangeDiffAdded guifg=#00ff00
+    " hi minimapDiffRemoved guifg=#ff0000
+    " hi minimapDiffLine guifg=#0000ff
+
+    " Fern
+    let g:leader_keymap.F = { 'name': '+Fern File Tree' }
+    nmap <leader>Fd :Fern . -drawer<CR>
+    let g:leader_keymap.F.d = "Open File tree as side drawer [:Fern . -drawer]"
+    nmap <leader>F. :Fern .<CR>
+    let g:leader_keymap.F['.'] = "Open File tree [:Fern .]"
+    nmap <leader>Fp :Fern %:h<CR>
+    let g:leader_keymap.F.p = "Open parent of file in file tree [:Fern %:h]"
+    nmap <leader>FR :Fern . -reveal=%<CR>
+    let g:leader_keymap.F.R = "Show file in file tree [:Fern . -reveal=%]"
+    nmap <leader>Fr :Fern . -drawer -reveal=%<CR>
+    let g:leader_keymap.F.r = "Show file in file tree drawer [:Fern . -reveal=%]"
+    autocmd FileType fern nnoremap <buffer> ZZ :q<CR>
+    " autocmd FileType fern nnoremap <buffer> q :q<CR>
+
+    " Fern renderer devicons
+    let g:fern#renderer = "devicons"
+
+    " Fern fzf
+    " Usefull keybindings
+    " ff ― serach files
+    " fd ― serach directories
+    " frf ― serach files from root
+
+    " Fern prieview
+    function! s:fern_settings() abort
+      nmap <silent> <buffer> p     <Plug>(fern-action-preview:toggle)
+      nmap <silent> <buffer> <C-p> <Plug>(fern-action-preview:auto:toggle)
+      nmap <silent> <buffer> <C-d> <Plug>(fern-action-preview:scroll:down:half)
+      nmap <silent> <buffer> <C-u> <Plug>(fern-action-preview:scroll:up:half)
+      nmap <silent> <buffer> q <Plug>(fern-quit-or-close-preview)
+    endfunction
+
+    augroup fern-settings
+      autocmd!
+      autocmd FileType fern call s:fern_settings()
+    augroup END
+
+endif
+
+" matlab
+function MatlabRun(cmd)
+    let c = 'echo "' . a:cmd . '"'
+    let j = 'jupyter console --existing=nvim-connection-imatlab.json --kernel imatlab --no-confirm-exit --simple-promp'
+    let t = 'tail -n +4 | head -n -2 | sed -E ''1 s/^In \[[0-9]*\]: //'''
+    let b = ' | '
+    call ExecuteInShell(c . b . j . b . t)
+endfunction
+function MatlabOpenHelp()
+    call MatlabFindRun(expand('<cword>'))
+endfunction
+function MatlabFindHelp(arg)
+    call MatlabRun('help ' . a:arg)
+endfunction
+function MatlabDisplayVariable()
+    call MatlabRun(expand('<cword>'))
+endfunction
+autocmd FileType matlab nnoremap K :call MatlabOpenHelp()<CR>
+autocmd FileType matlab nnoremap <leader>rm :call MatlabDisplayVariable()<CR>
+let g:leader_keymap.r.m = "Run word under cursor in Matlab environment [:MatlabRund()]"
+command! -nargs=1 MatlabHelp call MatlabFindHelp(<f-args>)
+autocmd FileType matlab let &commentstring='%%s'
+
+" Shell show command output in new window
+function ExecuteInShell(command)
+      let command = join(map(split(a:command, '\ze[<%#]'), 'expand(v:val)'), '')
+      let winnr = bufwinnr('^' . command . '$')
+      silent! execute  winnr < 0 ? 'botright new ' . fnameescape(command) : winnr . 'wincmd w'
+      setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap number nospell
+      echo 'Execute ' . command . '...'
+      silent! execute 'silent %!'. command
+      let height = min([line('$'), 35])  " Set max hight here
+      silent! execute 'resize ' . height
+      silent! redraw
+      silent! execute 'au BufUnload <buffer> execute bufwinnr(' . bufnr('#') . ') . ''wincmd w'''
+      silent! execute 'nnoremap <silent> <buffer> r :call ExecuteInShell(''' . command . ''')<CR>'
+      silent! execute 'nnoremap <silent> <buffer> r :q<CR>'
+      echo 'Shell command ' . command . ' executed.'
+endfunction
+command! -complete=shellcmd -nargs=+ Shell call ExecuteInShell(<q-args>)
+
+" reize mode for faster window resizing
+nmap <C-w>. :<C-U>call ResizeModeStart('.', v:count1)<CR>
+let g:window_keymap['.'] = 'Resize Mode ⇑'
+nmap <C-w>, :<C-U>call ResizeModeStart(',', v:count1)<CR>
+let g:window_keymap[','] = 'Resize Mode ⇓'
+nmap <C-w>> :<C-U>call ResizeModeStart('>', v:count1)<CR>
+let g:window_keymap['>'] = 'Resize Mode ⇒'
+nmap <C-w>< :<C-U>call ResizeModeStart('<', v:count1)<CR>
+let g:window_keymap['<'] = 'Resize Mode ⇐'
+if exists('g:vimade')
+    nmap <C-w>ö :<C-U>call ResizeModeStart('ö', v:count1)<CR>
+    let g:window_keymap['ö'] = 'Reduce inactive window brightnes'
+    nmap <C-w>ä :<C-U>call ResizeModeStart('ä', v:count1)<CR>
+    let g:window_keymap['ä'] = 'Increase inactive window brightnes'
+endif
+
+function! ResizeModeStart(direction, count) abort
+    " The cursor is in the command line while this function is executing.
+    " Highlight the position of the cursor in the buffer.
+    let match_id = matchadd('Cursor', '\%#')
+    let action_map = {'.': '+', ',': '-', '<': '<', '>': '>'}
+    let triple_map = {'k': '+', 'j': '-', 'h': '<', 'l': '>'}
+    if exists('g:vimade')
+        let action_map = extend(action_map, {'ö': -1.0, 'ä': 1.0})
+        let tripel_map = extend(tripel_map, {'Ö': -1.0, 'Ä': 1.0})
+    endif
+    let full_map   = extend(action_map, triple_map)
+    let c = char2nr(a:direction)
+    let count = a:count
+    let factor = 1
+    let char_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    while 1
+        " Resize
+        if factor > 0
+            let cmd = full_map[nr2char(c)]
+            if type(cmd) == type("")
+                execute (factor*count) . 'wincmd' full_map[nr2char(c)]
+            elseif type(cmd) == type(0.0) && exists('g:vimade')
+                let bb = g:vimade.fadelevel + cmd*0.01*factor*count
+                " min/max funtions are undefined for floating point variables
+                if bb < 0.0
+                    let g:vimade.fadelevel = 0.0
+                elseif bb > 1.0
+                    let g:vimade.fadelevel = 1.0
+                else
+                    let g:vimade.fadelevel = bb
+                endif
+            endif
+        endif
+        redraw
+        echohl ModeMsg
+        if exists('g:vimade')
+            echo join(['-- RESIZE(f=', string(count), ', fade=', string(g:vimade.fadelevel), ') --'], '')
+        else
+            echo join(['-- RESIZE(f=', string(count), ') --'], '')
+        endif
+        echohl None
+        let c = getchar()
+        let factor = 0
+        if index(keys(action_map), nr2char(c)) >= 0
+            let factor = 1
+        elseif index(keys(triple_map), nr2char(c)) >= 0
+            let factor = 3
+        elseif index(char_list, nr2char(c)) >= 0
+            let count = str2nr(nr2char(c))
+        elseif ';' == nr2char(c) && count >= 2
+            let count = count - 1
+        elseif ':' == nr2char(c)
+            let count = count + 1
+        else
+            call ResizeModeExit(c, match_id)
+            break
+        endif
+    endwhile
+endfunction
+
+function! ResizeModeExit(c, match_id) abort
+    " Clear our highlighting
+    call matchdelete(a:match_id)
+
+    " Not sure why, but couldn't get calling `echo` directly here to
+    " update the command line working. Do it later with feedkeys.
+    call feedkeys(":echo\<CR>", 'nt')
+
+    " getchar() sometimes returns a number, sometimes a string. If it's a
+    " number, convert for passing into feedkeys.
+    let c = (type(a:c) == type(0)) ? nr2char(a:c) : a:c
+
+    " In order that you can use the <C-W> mappings in exactly the same way
+    " as before, when you exit the mode with a keypress, the keypress
+    " takes effect in the way it normally would.
+    call feedkeys(c, 'mt')
+endfunction
+
+" todo-comments highlight comments
+if has('nvim')
+lua << EOF
+      require("todo-comments").setup {}
+EOF
+endif
+nmap <leader>qt :TodoQuickFix<CR>
+let g:leader_keymap.q.t = 'Populate quickfix list with todo comments [:TodoQuickFix]'
+nmap <leader>lt :TodoLocList<CR>
+let g:leader_keymap.l.t = 'Populate location list with todo comments [:TodoLocList]'
+
+" SpellCheck plugin for populating the Quickfix list with spelling errors
+nmap <leader>qs :SpellCheck<CR>:copen<CR>
+let g:leader_keymap.q.s = 'Populate quickfix list with spelling errors [:SpellCheck]'
+nmap <leader>ls :SpellLCheck<CR>:copen<CR>
+let g:leader_keymap.l.s = 'Populate location list with spelling errors [:SpellLCheck]'
+
+" find new mapping with :map <leader>c
+
+" ctags
+nmap gZ <C-]>
+let g:gkey_keymap.Z = "Jump through ctags <C-]>"
+let g:empty_keymap['<C-t>'] = "Jump back in Jump List"
+let g:empty_keymap['<C-o>'] = "Jump forward in Jump list"
+" overview of tag jump list stack: :tags
+" see :help tagstack
+nmap <leader>rt :! ctags -R .<CR>
+let g:leader_keymap.r.t = "Run CTags"
+nmap <leader>nf :call fzf#vim#tags(expand('<cword>'))<CR>
+nmap gz :call fzf#vim#tags(expand('<cword>'))<CR>
+let g:leader_keymap.n.f = "FZF find Tags for word under cursor [:call fzf#vim#tags(expand('<cword>'))] gz"
+
+" no highlighting (because it's sometimes annoying in nvim)
+nmap <leader>ch :noh<CR>
+let g:leader_keymap.c.h = "Stop Highlighting Search Results [:noh]"
+
+" Splits
+" TODO: Add proper window picker see:
+"  • [](https://github.com/s1n7ax/nvim-window-picker)
+map <C-w>- :split<CR>
+" map <C-w>- :resize -1<CR>  " Conflicts with resize mode
+map <C-w>\| :vs<CR>
+map <C-w><C-j> :resize -10<CR>
+map <C-w><C-k> :resize +10<CR>
+map <C-w><C-h> :vertical resize -10<CR>
+map <C-w><C-l> :vertiacl resize +10<CR>
+
+nmap <leader>wh :set wfh<CR>
+let g:leader_keymap.w.h = 'keep window hight constant [:set wfh]'
+nmap <leader>ww :set wfw<CR>
+let g:leader_keymap.w.w = 'keep window width constant [:set wfw]'
+
+" vim-cursorword maybe highlight word under cursor
+let g:cursorword = 1  " switch on by default
+                      " and create Variable so the command is easy to write
+                      " so this won't require the function needed for the
+                      " version local to the buffer
+command! ToggeleGlobalCursorWord let g:cursorword=!g:cursorword
+nmap <leader>cW :ToggleGlobalCursorWord<CR>
+let g:leader_keymap.c.W = 'Toggle highlighting of current word [:ToggleGlobalCursoerWord]'
+function! ToggleBufferCursorWord()
+    if !exists('b:cursorword')
+        let b:cursorword = 0
+    else
+        let b:cursorword = !b:cursorword
+    endif
+endfunction
+command! ToggleCursorWord call ToggleBufferCursorWord()
+nmap <leader>bW :ToggleCursorWord<CR>
+let g:leader_keymap.b.W = 'Toggle hightlighting of current word in buffer [:ToggleCursorWord]'
+
+let g:cursorword_delay = 150  " Don't spend too much time on highlighting
+
+
+" Terminal buffer
+if has('nvim')
+    nmap <leader>bT :vsplit<CR><C-w>w:terminal<CR>
+    let g:leader_keymap.b.T = "open new terminal vertical split"
+    nmap <leader>bt :terminal<CR>
+    let g:leader_keymap.b.t = "open new terminal [:terminal]"
+
+    au TermOpen * setlocal nonumber norelativenumber nospell nocursorline nocursorcolumn scrolloff=0
+    au TermOpen * IndentLinesDisable
+    " Prefer Neovim terminal insert mode to normal mode.
+    autocmd BufEnter term://* startinsert
+
+    " Simulate i_CTRL-r in terminal buffer for easy copy and pasting
+    " But use <C-e> instead because <C-r> is already used to fzf search history
+    " in the prompt itself
+    tnoremap <expr> <C-e> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+
+    " Navigation in terminal buffer
+    tmap <C-g> <C-\><C-n>
+    tmap <A-h> <C-\><C-n><C-w>h
+    " tmap <A-H> <C-\><C-n><C-w>H
+    tmap <A-j> <C-\><C-n><C-w>j
+    " tmap <A-J> <C-\><C-n><C-w>J
+    tmap <A-k> <C-\><C-n><C-w>k
+    " tmap <A-K> <C-\><C-n><C-w>K
+    tmap <A-l> <C-\><C-n><C-w>l
+    " tmap <A-L> <C-\><C-n><C-w>L
+    tmap <A-n> <C-\><C-n>gt
+    " tmap <A-N> <C-\><C-n>:tabmove +1<CR>
+    tmap <A-p> <C-\><C-n>gT
+    " tmap <A-P> <C-\><C-n>:tabmove -1<CR>
+    tmap <C-w>- <C-\><C-n>:split<CR>
+    tmap <C-w>\| <C-\><C-n>:vs<CR>
+endif
+
+" Navigation
+map <A-h> <C-w>h
+" map <A-H> <C-w>H
+map <A-j> <C-w>j
+" map <A-J> <C-w>J
+map <A-k> <C-w>k
+" map <A-K> <C-w>K
+map <A-l> <C-w>l
+" map <A-L> <C-w>L
+map <A-n> gt
+" map <A-N> :tabmove +1<CR>
+map <C-w>N :tabmove +1<CR>
+map <A-p> gT
+" map <A-P> :tabmove -1<CR>
+map <C-w>P :tabmove -1<CR>
+
+" Buffers
+nmap <A-P> :bp<CR>
+let g:empty_keymap['<A-P>'] = 'Goto previous Buffer [:bp] <leader>bp'
+nmap <leader>bp :bp<CR>
+let g:leader_keymap.b.p = 'Goto previous Buffer [:bp] <A-P>'
+nmap <A-N> :bn<CR>
+let g:empty_keymap['<A-N>'] = 'Goto next Buffer [:bn] <leader>bn'
+nmap <leader>bn :bn<CR>
+let g:leader_keymap.b.n = 'Goto next Buffer [:bn] <A-N>'
+nmap <leader>bf :Buffers<CR>
+let g:leader_keymap.b.f = 'FZF find Buffers [:Buffers]'
+nmap <leader>bd :bd<CR>
+let g:leader_keymap.b.f = 'Delete buffer/close file [:bd]'
+
+command! SudoW w !sudo tee > /dev/null %
+nmap <leader>bw :SudoW<CR>
+let g:leader_keymap.b.w = "Write buffer as sudo [:SudoW]"
+
+" Renumber List
+vmap <leader>e<C-a> :call Renumber()<CR>
+let g:leader_keymap.e["C-a"] = "Renumber"
+let g:gkey_keymap["C-a"] = 'Renumer list in increasing order'
+
+" Date Time insert (kind of obsolete with UltiSnips)
+nmap <leader>et a<c-r>=strftime("%H:%M")<CR><esc>
+let g:leader_keymap.e.t = 'Print current time'
+nmap <leader>ed a<c-r>=strftime("%Y-%m-%d")<CR><esc>
+let g:leader_keymap.e.d = 'Print current date'
+nmap <leader>eD a<c-r>=strftime("%Y-%m-%d %H:%M")<CR><esc>
+let g:leader_keymap.e.D = 'Print current datetime'
+
+" Reload buffer (if auto-read doesn't work)
+nmap <leader>be :edit<CR>
+let g:leader_keymap.b.e = 'reload Buffer'
+
+" Preserve editor state when running stuff
+" [Jonathans Techno-Tales](https://technotales.wordpress.com/2010/03/31/preserve-a-vim-function-that-keeps-your-state/)
+function! Preserve(command)
+  " Preparation: save window state
+  let l:saved_winview = winsaveview()
+  " Run the command:
+  execute a:command
+  " Clean up: restore previous window position
+  call winrestview(l:saved_winview)
+endfunction
+
+" remove trailing wide space whitespace
+nnoremap <leader>rw :call Preserve("%s/\\s\\+$//e")<CR>
+xnoremap <leader>rw :call Preserve("'<,'>s/\\s\\+$//e")<CR>
+let g:leader_keymap.r.w = "Strip trailing widespace from buffer or selection"
+
+" move from 4 to 2 space indent without messing with vim internal settings
+xnoremap <leader>ri :call Preserve("'<,'>! awk '{ match($0, /^( *)([^ ].*)$/, arr); l=length(arr[1]); if(l\\%4==0){ print substr(arr[1], 1, l/2) arr[2] } else { print $0 }}'")<CR>
+let g:leader_keymap.r.i = "Visual only go from 4 space intent to 2 space indent"
+
+" mark current file executable
+command! -nargs=1 Chmod call system('chmod ' . <args> . ' ' . expand('%'))
+nmap <leader>rx :Chmod '+x'<CR>
+let g:leader_keymap.r.x = "Mark kurrent file executable using [:Chmod '+x']"
+
+" Move lines or selections up and down or left and right
+if full
+    " Use vim-move plug-in
+    let g:move_map_keys = 0
+    vmap <A-J> <Plug>MoveBlockDown
+    vmap <A-K> <Plug>MoveBlockUp
+    vmap <A-H> <Plug>MoveBlockLeft
+    vmap <A-L> <Plug>MoveBlockRight
+    nmap <A-J> <Plug>MoveLineDown
+    nmap <A-K> <Plug>MoveLineUp
+    nmap <A-H> <Plug>MoveCharLeft
+    nmap <A-L> <Plug>MoveCharRight
+else
+    " Using marker q as an internal marker. So this one shouldn't be used
+    nmap <silent> <A-H> mq:s/^ //<CR>`qh
+    nmap <silent> <A-J> mq:m .+1<CR>==`q
+    nmap <silent> <A-K> mq:m .-2<CR>==`q
+    nmap <silent> <A-L> mq:s/^/ /<CR>`ql
+    " imap <silent> <A-H> <Esc>:s/^ //<CR>gi<Left>
+    " imap <silent> <A-J> <Esc>:m .+1<CR>==gi
+    " imap <silent> <A-K> <Esc>:m .-2<CR>==gi
+    " imap <silent> <A-L> <Esc>:s/^/ /<CR>gi<Right>
+    if full
+        " Make this work vor block-visual mode using the `vis` plugin
+        " TODO: remove this, can't happen
+        vmap <silent> <A-H> :B s/^ //<CR>gv
+        vmap <silent> <A-L> :B s/^/ /<CR>gv
+    else
+        vmap <silent> <A-H> :s/^ //<CR>gv
+        vmap <silent> <A-L> :s/^/ /<CR>gv
+    endif
+    vmap <silent> <A-J> :m '>+1<CR>gv=gv
+    vmap <silent> <A-K> :m '<-2<CR>gv=gv
+endif
+
+" open in default viewer
+nmap go :!xdg-open <cfile><CR>
+
+" Highlight active window by making the others less obvious
+if ! exists('$TMUX') && has('nvim')
+    highlight Normal     ctermfg=249 ctermbg=238 guifg=#b2b2b2 guibg=#404040 guisp=NONE cterm=NONE gui=NONE
+    highlight MyNormalNC ctermfg=249 ctermbg=235 guifg=#b2b2b2 guibg=#2c2c2c guisp=NONE cterm=NONE gui=NONE
+    " highlight MyNormalNC ctermfg=249 ctermbg=235 guifg=#b2b2b2 guibg=#505050 guisp=NONE cterm=NONE gui=NONE
+    if full && exists('g:vimade')
+        " use vimade
+        let g:vimade = {
+                    \  'fadelevel': 0.85,
+                    \  'enablesigns': 1
+                    \  }
+    else
+        set winhighlight=NormalNC:MyNormalNC
+    endif
+else
+    if full && exists('g:vimade')
+        VimadeDisable
+    endif
+endif
+
+" Conceal
+nmap <leader>cC :set conceallevel=0<CR>
+let g:leader_keymap.c.C = "Disable Conceal [:set conceallevel=0]"
+" do use conceal
+set conceallevel=2
+" don't conceal on cursor line
+set concealcursor=""
+" use Conceal colors that are actually visible
+" hi clear Conceal
+" hi Conceal cterm=NONE ctermbg=NONE ctermfg=green gui=NONE guibg=NONE guifg=green
+
+" see current highliting group
+function! SynStack ()
+    for i1 in synstack(line("."), col("."))
+        let i2 = synIDtrans(i1)
+        let n1 = synIDattr(i1, "name")
+        let n2 = synIDattr(i2, "name")
+        echo n1 "->" n2
+    endfor
+endfunction
+map gm :call SynStack()<CR>
+let g:gkey_keymap.m = "Show Highlighting Groups"
+
+" Runtime measurments
+" https://vim.fandom.com/wiki/Measure_time_taken_to_execute_a_command
+function! HowLong( command, numberOfTimes )
+  " We don't want to be prompted by a message if the command being tried is
+  " an echo as that would slow things down while waiting for user input.
+  let more = &more
+  set nomore
+  let startTime = localtime()
+  for i in range( a:numberOfTimes )
+    execute a:command
+  endfor
+  let result = localtime() - startTime
+  let &more = more
+  return result
+endfunction
+" example:
+" echo HowLong('lua dofile("/home/ji/bin/standalone.lua")', 100000)
+
+" Firevim settings
+
+if exists('g:started_by_firenvim')
+  set laststatus=0
+  set showtabline=0
+endif
+
+" Neovide settings
+if exists('g:neovide')
+    let g:neovide_cursor_vfx_mode = "railgun"
+endif
+
+" Switch char with next one
+nmap gs vdp
+let g:gkey_keymap.s = "switch current with next key"
+
+" digraphs
+function! LoadCustomeDigraphs(echo_messeges)
+    dig -- 772    " combining overbar a̅
+    dig __ 818    " combining underline a̲
+    dig ^^ 769    " combining carrot above â
+    dig ^. 775    " combining dot above ȧ
+    dig :: 776    " combining double dots above ä
+    dig \> 8407   " comgining right arrow above a⃗
+    dig ^~ 771    " combining tilde above ã
+    " dig aa 227    " ä
+    " dig AA 195    " Ä
+    " dig oo 245    " ö
+    " dig OO 213    " Ö
+    " dig uu 251    " ü
+    " dig UU 219    " Ü
+    " dig ss 223    " ß
+    " dig !! 161    " ¡
+    " dig ?? 191    " ¿
+
+    if !executable('uni2ascii')
+        echoerr("uni2ascii is not installed: cannot load Digraphs")
+    else
+        " load more from file
+        " let code = system(join([
+        "             \ 'awk -l ordchr ''',
+        "             \   'match($0, /\\newunicodechar{(.)}.*§(..)/, a) ',
+        "             \   '{print "dig " a[2] " " sprintf("%lc", a[1])}',
+        "             \ ''' ~/conf/tex/greek.sty | ',
+        "             \ 'uni2ascii -a V 2> /dev/null | ',
+        "             \ 'sed -E ''s/ \\u([0-9]*)/ \1/'''
+        "             \ ], ''))
+        " let i = 0
+        " for c in split(code, '\n')
+        "     execute(substitute(c, '|', '\\|', 'g'))
+        "     let i = i + 1
+        " endfor
+        let i = 0
+        for line in readfile('/home/ji/conf/tex/greek.sty', '')
+            if line =~# '\\newunicodechar{.}.*§..'
+                let dig = substitute(line, '^.*\\newunicodechar{\(.\)}.*$', '\1', 'g')
+                let chr = substitute(line, '^.*§\(..\).*$', '\1', 'g')
+                " echo chr "->" dig
+                call digraph_set(chr, dig)
+            endif
+        endfor
+
+        if a:echo_messeges
+            echo join(['Successfully loaded ', i, ' Digrams from greek.sty'])
+        endif
+    endif
+endfunction
+command DigraphsLoad call LoadCustomeDigraphs(v:true)
+call LoadCustomeDigraphs(v:false)
+
+command! -range=% ReplaceCombining :<line1>,<line2>! ~/conf/tex/replace-combining.sh
+vmap <leader>eC :ReplaceCombining<CR>
+let g:leader_keymap.e.C = 'Replace combining Chars with latex expansion [:ReplaceCombining]'
+
+nmap <leader>se :!xdg-open 'https://en.pons.com/translate/spanish-german/<C-r><C-w>'<CR>
+let g:leader_keymap.s.e = 'Lookup current word on Pons'
+
+" if host == "pop-os"
+"  let $XIKI_DIR = "~/xiki-project/"
+"  source ~/xiki-project/misc/vim/xiki.vim
+" end
+
+nnoremap j gj
+nnoremap gj j
+nnoremap k gk
+nnoremap gk k

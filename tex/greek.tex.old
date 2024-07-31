@@ -1,0 +1,356 @@
+\usepackage{newunicodechar}
+% Using newunicodechar instead of \DeclareUnicodeCharacter
+% because that works independently of {xe,lua}latex vs pdflatex
+
+\usepackage{bbm} % for double struck digigits
+\usepackage{mathtools}
+% \usepackage{yhmath}  % \wideparen and others
+\usepackage{mathabx}  % \overgroup ...
+\usepackage{xcolor}
+\usepackage{stmaryrd} % for the ´\lightning´ 🗲 symbol
+\makeatletter
+\newcommand{\colorprovide}[2]{%
+  \@ifundefined{\string\color@#1}{\colorlet{#1}{#2}}{}}
+\makeatother
+\colorprovide{highlight}{rgb}{1.0,0.7,0}  % TODO: Move this somewhere else
+\newcommand{\il}[1]{~\textcolor{highlight}{\refstepcounter{equation}(\theequation)\label{#1}}}
+
+\newcommand{\uuline}[1]{\underline{\underline{#1}}} % needed for combining-chars.hs pandoc filter
+\providecommand{\ul}[1]{\underline{#1}}
+
+\usepackage{ulem} % for strikethrough text with combining-chars.hs
+\normalem  % loading ulem underlines em (reverse `\normalem` with `\ULforem`)
+\newcommand{\msout}[1]{\text{\sout{\ensuremath{#1}}}}
+\usepackage{slashed} % for dirac-slash with combining-chars.hs
+
+\newunicodechar{←}{\leftarrow}
+\newunicodechar{↓}{\downarrow}
+\newunicodechar{↑}{\uparrow}
+\newunicodechar{→}{\rightarrow}
+
+\newunicodechar{ß}{\ss}            % ß
+
+\newunicodechar{Γ}{\Gamma}         % Γ  0393
+\newunicodechar{Δ}{\Delta}         % Δ  0394
+\newunicodechar{Θ}{\Theta}         % Θ  0398
+\newunicodechar{Λ}{\Lambda}        % Λ  039B
+\newunicodechar{Ξ}{\Xi}            % Ξ  039E
+\newunicodechar{Π}{\Pi}            % Π  03A0
+\newunicodechar{Σ}{\Sigma}         % Σ  03A3
+\newunicodechar{Υ}{\Upsilon}       % Υ  03A5
+\newunicodechar{Φ}{\Phi}           % Φ  03A6
+\newunicodechar{Ψ}{\Psi}           % Ψ  03A8
+\newunicodechar{Ω}{\Omega}         % Ω  03A9
+
+\newunicodechar{α}{\alpha}         % α  03B1
+\newunicodechar{β}{\beta}          % β  03B2
+\newunicodechar{γ}{\gamma}         % γ  03B3
+\newunicodechar{δ}{\delta}         % δ  03B4
+\newunicodechar{ε}{\varepsilon}    % ε textepsilon/varepsilon  03B5
+\newunicodechar{ζ}{\zeta}          % ζ  03B6
+\newunicodechar{η}{\eta}           % η  03B7
+\newunicodechar{θ}{\theta}         % θ  03B8
+\newunicodechar{ι}{\iota}          % ι  03B9
+\newunicodechar{κ}{\kappa}         % κ  03BA
+\newunicodechar{λ}{\lambda}        % λ  03BB
+\newunicodechar{μ}{\mu}            % μ  03BC
+\newunicodechar{ν}{\nu}            % ν  03BD
+\newunicodechar{ξ}{\xi}            % ξ  03BE
+\newunicodechar{π}{\pi}            % π  03C0
+\newunicodechar{ρ}{\rho}           % ρ  03C1
+\newunicodechar{ς}{\varsigma}      % ς  03C2
+\newunicodechar{σ}{\sigma}         % σ  03C3
+\newunicodechar{τ}{\tau}           % τ  03C4
+\newunicodechar{υ}{\upsilon}       % υ  03C5
+\newunicodechar{φ}{\varphi}        % φ textphi/varphi  03C6
+\newunicodechar{χ}{\chi}           % χ  03C7
+\newunicodechar{ψ}{\psi}           % ψ  03C8
+\newunicodechar{ω}{\omega}         % ω  03C9
+
+\newunicodechar{ϑ}{\thetasymbol}   % ϑ  03D1
+\newunicodechar{ϕ}{\phisymbol}     % ϕ $\phi$  03D5
+\newunicodechar{ϖ}{\pisymbol}      % ϖ  03D6
+\newunicodechar{ϝ}{\digamma}       % ϝ  03DD
+\newunicodechar{ϱ}{\rhosymbol}     % ϱ  03F1
+\newunicodechar{ϵ}{\epsilonsymbol} % ϵ $\epsilon$  03F5
+
+\newunicodechar{𝛑}{\uppi}          % multi m π §mp
+
+\newunicodechar{⋯}{\cdots}         % ⋯  22ee  multi c . .  §.c
+\newunicodechar{…}{\dots}          % …  2026               §..
+\newunicodechar{⋮}{\vdots}         % ⋮        multi v . .  §.v
+\newunicodechar{⋱}{\ddots}         % ⋱        multi . \ .  §.d
+
+\newunicodechar{Ñ}{\tilde{N}}      % Ñ  00D1  §N~
+\newunicodechar{ñ}{\tilde{n}}      % ñ  00F1  §n~
+
+\newunicodechar{ṁ}{\dot{m}}	 % ṁ  1E41 §m.
+
+\newunicodechar{ⅈ}{\mathrm{i}}     % ⅈ  2148  §|i
+\newunicodechar{ⅉ}{\mathrm{j}}     % ⅉ  2149  §|j
+\newunicodechar{ⅇ}{\mathrm{e}}     % ⅇ  2147  §|e
+\newunicodechar{ⅆ}{\mathrm{d}}     % ⅆ  2146  §|d
+\newunicodechar{∂}{\partial}       % ∂  2202  §dd
+\newunicodechar{⇔}{\Leftrightarrow}  % ⇔  21D4  §<>
+\newunicodechar{⇒}{\Rightarrow}    % ⇒  21D2  §=>
+\newunicodechar{ħ}{\hbar}          % ħ  0127  §-h
+\newunicodechar{≈}{\approx}        % ≈  2248  §~~
+\newunicodechar{≡}{\equiv}         % ≡  2261  §==
+\newunicodechar{≠}{\neq}           % ≠  2260  §/=
+\newunicodechar{≫}{\gg}            % ≫  compose +>  226B  §+>
+\newunicodechar{≪}{\ll}            % ≪  compose +<  226A  §+<
+\newunicodechar{·}{\cdot}          % ·  compose .-  00B7  §.-
+\newunicodechar{±}{\pm}            % ±  00B1  §+-
+\newunicodechar{∓}{\mp}            % ∓  2213  §-+
+\newunicodechar{∇}{\nabla}         % ∇  2207  §na
+\newunicodechar{∞}{\infty}         % ∞  221E  §88
+\newunicodechar{→}{\rightarrow}    % →  2192  §->
+\newunicodechar{🗲}{\lightning}    % 🗲  1F5F2  §lb
+\newunicodechar{∈}{\in}    	 % ∈  2208        §in
+\newunicodechar{×}{\times}	 % ×  00D7        §xx
+\newunicodechar{∀}{\forall} 	 % ∀  2200    §AA
+\newunicodechar{≤}{\leq} 		 % ≤  2264    §<_
+\newunicodechar{≥}{\geq} 		 % ≥  2265    §>_
+\newunicodechar{∃}{\exists} 	 % ∃  2203    §EE
+\newunicodechar{∄}{\not\exists}	 % ∄          §/E
+
+\newunicodechar{∪}{\cup}    	 % ∪ compose {u  §{u
+\newunicodechar{∩}{\cap}    	 % ∩ compose {^  §{^
+
+\newunicodechar{⊂}{\subset}    	 % ⊂ compose {(  §{(
+\newunicodechar{⊆}{\subseteq}  	 % ⊆ compose {=( §{=
+\newunicodechar{⊄}{\not\subset}  % ⊄ compose /{( §{/
+
+\newunicodechar{⊃}{\supset}    	 % ⊂ compose {)  §})
+\newunicodechar{⊇}{\supseteq}  	 % ⊇ compose {=) §}=
+\newunicodechar{⊅}{\not\supset}  % ⊅ compose /{) §}/
+
+\newunicodechar{𝕄}{\mathbb{M}}     %            §|M
+\newunicodechar{ℕ}{\mathbb{N}}     %            §|N
+\newunicodechar{ℤ}{\mathbb{Z}}     % ℤ  2124    §|Z
+\newunicodechar{ℝ}{\mathbb{R}}     % ℝ  211D    §|R
+\newunicodechar{ℂ}{\mathbb{C}}     % ℂ  2102    §|C
+\newunicodechar{𝕂}{\mathbb{K}}     % 𝕂  1D542   §|K
+\newunicodechar{ℍ}{\mathbb{H}}     % ℍ  210D    §|H
+
+\newunicodechar{𝟙}{\mathbbm{1}}    % 𝟙  compose $#|1 or compose 11  §|1
+
+\newunicodechar{÷}{\over }         % ÷  00F7  §-:
+\newunicodechar{√}{\sqrt}          % √  221A  §q2
+\newunicodechar{∛}{\sqrt[3]}       % ∛        §q3
+\newunicodechar{∫}{\int}           % ∫  222B  §ni
+\newunicodechar{∮}{\oint}          % ∮  222E  §oi
+
+\newunicodechar{⟨}{\langle}        % ⟨  27E8  §<(
+\newunicodechar{⟩}{\rangle}        % ⟩  27E9  §>)
+
+\newunicodechar{⇝}{\left}          % ⇝  21DD  §~>
+\newunicodechar{⇜}{\right}         % ⇜  21DC  §<~
+
+\newunicodechar{◍}{\null} 	      % ◍  25CD   §|.
+\newunicodechar{▤}{\hfill} 	      % ▤  25A4   §|:
+\newunicodechar{Ŧ}{\text}         % Ŧ  0166 compose TT  §TT
+
+\newunicodechar{☆}{\left}          % ☆  2606  §so
+\newunicodechar{★}{\right}         % ★  2605  §sf
+
+\newunicodechar{∥}{\Vert}          % ∥  2225  §||
+
+\newunicodechar{⦗}{\begin{matrix}}  % ⦗ multi ( [  2997  §([
+\newunicodechar{⦘}{\end{matrix}}    % ⦘ multi ) ]  2998  §)]
+
+\newunicodechar{₀}{_0}    %  §_0
+\newunicodechar{₁}{_1}    %  §_1
+\newunicodechar{₂}{_2}    %  §_2
+\newunicodechar{₃}{_3}    %  §_3
+\newunicodechar{₄}{_4}    %  §_4
+\newunicodechar{₅}{_5}    %  §_5
+\newunicodechar{₆}{_6}    %  §_6
+\newunicodechar{₇}{_7}    %  §_7
+\newunicodechar{₈}{_8}    %  §_8
+\newunicodechar{₉}{_9}    %  §_9
+\newunicodechar{ₐ}{_a}    %  §_a
+\newunicodechar{ₑ}{_e}    %  §_e
+\newunicodechar{ₕ}{_h}    %  §_h
+\newunicodechar{ᵢ}{_i}    %  §_i
+\newunicodechar{ⱼ}{_j}    %  §_j
+\newunicodechar{ₖ}{_k}    %  §_k
+\newunicodechar{ₗ}{_l}    %  §_l
+\newunicodechar{ₘ}{_m}    %  §_m
+\newunicodechar{ₙ}{_n}    %  §_n
+\newunicodechar{ₒ}{_o}    %  §_o
+\newunicodechar{ₚ}{_p}    %  §_p
+\newunicodechar{ᵣ}{_r}    %  §_r
+\newunicodechar{ₛ}{_s}    %  §_s
+\newunicodechar{ₜ}{_t}    %  §_t
+\newunicodechar{ᵤ}{_u}    %  §_u
+\newunicodechar{ᵥ}{_v}    %  §_v
+\newunicodechar{ₓ}{_x}    %  §_x
+
+\newunicodechar{₀}{_0}             % ₀  2080  §_0
+\newunicodechar{₁}{_1}             % ₁  2081  §_1
+\newunicodechar{₂}{_2}             % ₂  2082  §_2
+\newunicodechar{₃}{_3}             % ₃  2083  §_3
+\newunicodechar{₄}{_4}             % ₄  2084  §_4
+\newunicodechar{₅}{_5}             % ₅  2085  §_5
+\newunicodechar{₆}{_6}             % ₆  2086  §_6
+\newunicodechar{₇}{_7}             % ₇  2087  §_7
+\newunicodechar{₈}{_8}             % ₈  2088  §_8
+\newunicodechar{₉}{_9}             % ₉  2089  §_9
+
+\newunicodechar{₊}{_+}             % ₊  208A  §_+
+\newunicodechar{₋}{_-}             % ₋  208B  §_-
+
+\newunicodechar{ᵃ}{^a}             %  §^a
+\newunicodechar{ᵇ}{^b}             %  §^b
+\newunicodechar{ᶜ}{^c}             %  §^c
+\newunicodechar{ᵈ}{^d}             %  §^d
+\newunicodechar{ᵉ}{^e}             %  §^e
+\newunicodechar{ᵛ}{^v}             %  §^v
+\newunicodechar{ᵍ}{^g}             %  §^g
+\newunicodechar{ʰ}{^h}             %  §^h
+\newunicodechar{ⁱ}{^i}             %  §^i
+\newunicodechar{ʲ}{^j}             %  §^j
+\newunicodechar{ᵏ}{^k}             %  §^k
+\newunicodechar{ˡ}{^l}             %  §^l
+\newunicodechar{ᵐ}{^m}             %  §^m
+\newunicodechar{ⁿ}{^n}             %  §^n
+\newunicodechar{ᵒ}{^o}             %  §^o
+\newunicodechar{ᵖ}{^p}             %  §^p
+\newunicodechar{ʳ}{^r}             %  §^r
+\newunicodechar{ˢ}{^s}             %  §^s
+\newunicodechar{ᵗ}{^t}             %  §^t
+\newunicodechar{ᵘ}{^u}             %  §^u
+\newunicodechar{ᵛ}{^v}             %  §^v
+\newunicodechar{ʷ}{^w}             %  §^w
+\newunicodechar{ˣ}{^x}             %  §^x
+\newunicodechar{ʸ}{^y}             %  §^y
+\newunicodechar{ᶻ}{^z}             %  §^z
+
+\newunicodechar{⁰}{^0}             % ⁰  2070  §^0
+\newunicodechar{¹}{^1}             % ¹  00B9  §^1
+\newunicodechar{²}{^2}             % ²  00B2  §^2
+\newunicodechar{³}{^3}             % ³  00B3  §^3
+\newunicodechar{⁴}{^4}             % ⁴  2074  §^4
+\newunicodechar{⁵}{^5}             % ⁵  2075  §^5
+\newunicodechar{⁶}{^6}             % ⁶  2076  §^6
+\newunicodechar{⁷}{^7}             % ⁷  2077  §^7
+\newunicodechar{⁸}{^8}             % ⁸  2078  §^8
+\newunicodechar{⁹}{^9}             % ⁹  2079  §^9
+
+\newunicodechar{⁺}{^+}             % ⁺  207A  §^+
+\newunicodechar{⁻}{^-}             % ⁻  207B  §^-
+\newunicodechar{⁼}{^=}             % ⁼  207C  §^=
+
+
+\newunicodechar{𝓕}{\mathscr{F}}  % 𝓕 multi $ # S F   1D4D5  §sF
+\newunicodechar{𝓛}{\mathscr{L}}  % 𝓛 multi $ # S L  1D4DB   §sL
+\newunicodechar{𝓩}{\mathscr{Z}}  % 𝓩 multi $ # S Z  1D4E9   §sZ
+\newunicodechar{𝓝}{\mathscr{N}}  % 𝓝 multi $ # S N          §sN
+
+\newunicodechar{Ⅰ}{\mathrm{I}}    % multi % 0 1  §R1
+\newunicodechar{Ⅱ}{\mathrm{II}}   %  §R2
+\newunicodechar{Ⅲ}{\mathrm{III}}  %  §R3
+\newunicodechar{Ⅳ}{\mathrm{IV}}   %  §R4
+\newunicodechar{Ⅴ}{\mathrm{V}}    %  §R5
+\newunicodechar{Ⅵ}{\mathrm{VI}}   %  §R6
+\newunicodechar{Ⅶ}{\mathrm{VII}}  %  §R7
+\newunicodechar{Ⅷ}{\mathrm{VIII}} %  §R8
+\newunicodechar{Ⅸ}{\mathrm{IX}}   %  §R9
+\newunicodechar{Ⅹ}{\mathrm{X}}    % multi % 0 x
+
+\newunicodechar{𝔞}{\mathfrak{a}}  %  §fa
+\newunicodechar{𝔟}{\mathfrak{b}}  %  §fb
+\newunicodechar{𝔠}{\mathfrak{c}}  %  §fc
+\newunicodechar{𝔡}{\mathfrak{d}}  %  §fd
+\newunicodechar{𝔢}{\mathfrak{e}}  %  §fe
+\newunicodechar{𝔣}{\mathfrak{f}}  %  §ff
+\newunicodechar{𝔤}{\mathfrak{g}}  %  §fg
+\newunicodechar{𝔥}{\mathfrak{h}}  %  §fh
+\newunicodechar{𝔦}{\mathfrak{i}}  %  §fi
+\newunicodechar{𝔧}{\mathfrak{j}}  %  §fj
+\newunicodechar{𝔨}{\mathfrak{k}}  %  §fk
+\newunicodechar{𝔩}{\mathfrak{l}}  %  §fl
+\newunicodechar{𝔪}{\mathfrak{m}}  %  §fm
+\newunicodechar{𝔫}{\mathfrak{n}}  %  §fn
+\newunicodechar{𝔬}{\mathfrak{o}}  %  §fo
+\newunicodechar{𝔭}{\mathfrak{p}}  %  §fp
+\newunicodechar{𝔮}{\mathfrak{q}}  %  §fq
+\newunicodechar{𝔯}{\mathfrak{r}}  %  §fr
+\newunicodechar{𝔰}{\mathfrak{s}}  %  §fs
+\newunicodechar{𝔱}{\mathfrak{t}}  %  §ft
+\newunicodechar{𝔲}{\mathfrak{u}}  %  §fu
+\newunicodechar{𝔳}{\mathfrak{v}}  %  §fv
+\newunicodechar{𝔴}{\mathfrak{w}}  %  §fw
+\newunicodechar{𝔵}{\mathfrak{x}}  %  §fx
+\newunicodechar{𝔶}{\mathfrak{y}}  %  §fy
+\newunicodechar{𝔷}{\mathfrak{z}}  %  §fz
+\newunicodechar{𝔄}{\mathfrak{A}}  %  §fA
+\newunicodechar{𝔅}{\mathfrak{B}}  %  §fB
+\newunicodechar{ℭ}{\mathfrak{C}}  %  §fC
+\newunicodechar{𝔇}{\mathfrak{D}}  %  §fD
+\newunicodechar{𝔈}{\mathfrak{E}}  %  §fE
+\newunicodechar{𝔉}{\mathfrak{F}}  %  §fF
+\newunicodechar{𝔊}{\mathfrak{G}}  %  §fG
+\newunicodechar{ℌ}{\mathfrak{H}}  %  §fH
+\newunicodechar{ℑ}{\mathfrak{I}}  %  §fI
+\newunicodechar{𝔍}{\mathfrak{J}}  %  §fJ
+\newunicodechar{𝔎}{\mathfrak{K}}  %  §fK
+\newunicodechar{𝔏}{\mathfrak{L}}  %  §fL
+\newunicodechar{𝔐}{\mathfrak{M}}  %  §fM
+\newunicodechar{𝔑}{\mathfrak{N}}  %  §fN
+\newunicodechar{𝔒}{\mathfrak{O}}  %  §fO
+\newunicodechar{𝔓}{\mathfrak{P}}  %  §fP
+\newunicodechar{𝔔}{\mathfrak{Q}}  %  §fQ
+\newunicodechar{ℜ}{\mathfrak{R}}  %  §fR
+\newunicodechar{𝔖}{\mathfrak{S}}  %  §fS
+\newunicodechar{𝔗}{\mathfrak{T}}  %  §fT
+\newunicodechar{𝔘}{\mathfrak{U}}  %  §fU
+\newunicodechar{𝔙}{\mathfrak{V}}  %  §fV
+\newunicodechar{𝔚}{\mathfrak{W}}  %  §fW
+\newunicodechar{𝔛}{\mathfrak{X}}  %  §fX
+\newunicodechar{𝔜}{\mathfrak{Y}}  %  §fY
+\newunicodechar{ℨ}{\mathfrak{Z}}  %  §fZ
+
+\newunicodechar{⊤}{\top}          % transpose   multi _!_  §_!
+\newunicodechar{ℓ}{\ell}  % §ll
+
+\DeclareMathOperator*{\laplaceop}{\laplace}
+\DeclareMathOperator*{\Laplaceop}{\Laplace}
+\newunicodechar{⊶}{\displaystyle\laplaceop}  % multi - 0  §-0
+\newunicodechar{⊷}{\displaystyle\Laplaceop}  % multi 0 -  §0-
+
+\newunicodechar{⏟}{\underbrace}  % multi _ ,   §_,
+\newunicodechar{⏞}{\overbrace}   % multi ^ ,   §^,
+
+\newunicodechar{▲}{\blacktriangle}  % multi ^ ^  §^-
+
+\newunicodechar{⟼}{\mapsto}  %  §|>
+
+\newunicodechar{∧}{\wedge}  % §^&
+\newunicodechar{∨}{\vee}    % §v&
+
+\newunicodechar{≟}{\overset{?}{=}}    % §?=
+\newunicodechar{≝}{\overset{def}{=}}  % §d=
+\newunicodechar{≔}{\coloneqq}         % §:=
+\newunicodechar{≕}{\eqqcolon}         % §=:
+\newunicodechar{❢}{\overset{!}}       % §^!
+
+\newunicodechar{½}{{1\over 2}}  % §12
+\newunicodechar{⅓}{{1\over 3}}  % §13
+\newunicodechar{⅔}{{2\over 3}}  % §23
+\newunicodechar{¼}{{1\over 4}}  % §14
+\newunicodechar{¾}{{3\over 4}}  % §34
+\newunicodechar{⅕}{{1\over 5}}  % §15
+\newunicodechar{⅖}{{2\over 5}}  % §25
+\newunicodechar{⅗}{{3\over 5}}  % §35
+\newunicodechar{⅘}{{4\over 5}}  % §45
+\newunicodechar{⅙}{{1\over 6}}  % §16
+\newunicodechar{⅚}{{5\over 6}}  % §56
+\newunicodechar{⅐}{{1\over 7}}  % §17
+\newunicodechar{⅛}{{1\over 8}}  % §18
+\newunicodechar{⅑}{{1\over 9}}  % §19
+
+\newcommand{\notimplementet}{NOT_IMPLEMENTED_CHAR}
+\newunicodechar{•}{\notimplementet}  % §bb
+\newunicodechar{‣}{\notimplementet}  % §tt

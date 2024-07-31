@@ -1,0 +1,22 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Jochen Illerhaus
+	email = uwuto@student.kit.edu #j.illerhaus@live.de
+[init]
+	defaultBranch = master
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
+[alias]
+	graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
+	lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)' --all
+	fzf = fzf-commit
+	fzf-commit = "!git log --pretty=oneline | fzf | awk '{print $1}'"
+	fzf-tag = "!git tag --list | fzf"
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true  # use n and N to move between diff sections

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+test -f base || cp /etc/hosts base
+curl https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | \
+    sed '1,/# End of custom host records\./d' > block
+test \
+    $( \
+        cat block | \
+        grep -E '^(\s*)[1-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\s*.*\..*' | \
+        wc -l \
+    ) = 0 || \
+    ( \
+        echo "ERROR: file has bin tempered with... abort" && \
+        exit 1 \
+    )
+cat base block | sudo tee /etc/hosts > /dev/null
+# cat base | sudo tee /etc/hosts > /dev/null

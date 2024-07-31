@@ -1,0 +1,26 @@
+snippet snip "normal snippet"
+snippet $1 "$2"
+${3:${VISUAL}}
+`echo endsnippet`
+$0
+endsnippet
+
+snippet con "centext snippet"
+context $1
+snippet $2 "$3" e
+${3:${VISUAL}}
+`echo endsnippet`
+$0
+endsnippet
+
+snippet math "snippet in pandoc/tex math context"
+context ismath()
+snippet $1 "$2" e
+${3:${VISUAL}}
+`echo endsnippet`
+$0
+endsnippet
+
+snippet vis "visual selection"
+`echo '${VISUAL}'`
+endsnippet

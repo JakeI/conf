@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+[ -f "~/.auto-click-freq" ] && \
+    # Hit mouse button 1 (=left) .auto-click-freq many times with 1ms of delay
+    xdotool click --repeate "$(cat ~/.auto-click-freq)" --delay 1 1 || \
+    xdotool key End

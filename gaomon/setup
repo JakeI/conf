@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# xrandr -q lists screenss
+#
+# xsetwacom list should print
+#
+# HID 256c:006e Touch Strip pad   	id: 17	type: PAD       
+# HID 256c:006e Pad pad           	id: 18	type: PAD       
+# HID 256c:006e Pen stylus        	id: 19	type: STYLUS    
+#
+function setup-gaomon-keys {
+	xsetwacom set 'HID 256c:006e Pen stylus'  Button 2 'key shift ctrl p' 
+	xsetwacom set 'HID 256c:006e Pen stylus'  Button 3 'key shift ctrl e' 
+	xsetwacom set 'HID 256c:006e Pad pad' Button 1 'key shift ctrl a'
+	xsetwacom set 'HID 256c:006e Pad pad' Button 2 'key ctrl z'
+	xsetwacom set 'HID 256c:006e Pad pad' Button 3 'key shift ctrl g'
+}
+
+function setup-gaomon-area {
+	xsetwacom set 'HID 256c:006e Pen stylus' MapToOutput "$1" 
+}
+
+function lst-screen-sizes {
+    xrandr -q | \
+        grep -oE '[0-9]+x[0-9]+\+[0-9]+\+[0-9]+' | \
+        sed -E 's/(x|\+)/ /g' 
+}
+
+function min-area {
+	awk 'BEGIN{m=10000*5000} {p=$1*$2; if (p<0+m) {m=p; a=$1 "x" $2 "+" $3 "+" $4}} END{print a}'
+}
+
+function max-area {
+	awk 'BEGIN{m=0} {p=$1*$2; if (p>0+m) {m=p; a=$1 "x" $2 "+" $3 "+" $4}} END{print a}'
+}
+
+function to-cols {
+    sed -E 's/([0-9]*)x([0-9]*)\+([0-9]*)\+([0-9]*)/\1 \2 \3 \4/' 
+}
+
+function quadrant-adjust {
+    case "$1" in
+    0)
+        cat
+    ;;  
+    1)
+        to-cols | awk '{ w = $1 / 2; x = w + $3; h = $2 / 2; y = $4; print w "x" h "+" x "+" y }'
+    ;;
+    2)
+        to-cols | awk '{ w = $1 / 2; x = $3; h = $2 / 2; y = $4; print w "x" h "+" x "+" y }'
+    ;;
+    3)
+        to-cols | awk '{ w = $1 / 2; x = $3; h = $2 / 2; y = h + $4; print w "x" h "+" x "+" y }'
+    ;;
+    4)
+        to-cols | awk '{ w = $1 / 2; x = w + $3; h = $2 / 2; y = h + $4; print w "x" h "+" x "+" y }'
+    ;;
+    esac
+}
+
+function message {
+    if [[ "$usezenity" = true ]]
+    then
+        zenity --notification --text="Graphics Tablet Setup Script\n$1"
+    fi
+}
+
+quadrant="0"
+usezenity=false
+
+while [[ $# -gt 0 ]]
+do
+	case "$1" in
+	-k|--keys)
+		setup-gaomon-keys
+	;;
+	--max)
+        area="$(lst-screen-sizes | max-area)"
+	;;
+	--min)
+        area="$(lst-screen-sizes | min-area)"
+	;;
+    -q|--quadrant)
+        quadrant="$2"
+        shift
+    ;;
+    -z|--zenity)
+        usezenity=true
+    ;;
+	esac
+	shift
+done
+
+if [ ! -z "$area" ]
+then
+    size="$(echo $area | quadrant-adjust $quadrant)"
+    message "Q$quadrant on $area so $size"
+    setup-gaomon-area "$size"    
+fi
+

@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import re
+from pandocfilters import toJSONFilter, RawInline
+import datetime
+from typing import Optional
+
+date_regex = re.compile(r"^(?:(?P<dow>Mo|Di|Mi|Do|Fr|Sa|So)_)?(?P<year>\d\d\d?\d?)-(?P<month>\d\d?)-(?P<day>\d\d?)$")
+DOW_US2DE = {"Mon": "Mo", "Tue": "Di", "Wed": "Mi", "Thu": "Do", "Fri": "Fr", "Sat": "Sa", "Sun": "So"}
+MONTH_DE = ["Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Spt",
+            "Okt", "Nov", "Dez"]
+
+
+def to_date(year: str, month: str, day: str) -> (Optional[datetime.date], str):
+    y, m, d = int(year), int(month), int(day)
+    try:
+        y = y if y > 100 else y+2000 if y < 60 else y+1900
+        date = datetime.date(y, m, d)
+        dow = date.strftime("%a")
+        return date, dow
+    except ValueError:
+        return None, ""
+
+def use_date_format(key, value, format, meta):
+    if format != 'latex':
+        return
+    if key == "Str":
+        m = date_regex.search(value)
+        if m:
+            date, true_dow = to_date(m.group('year'), m.group('month'), m.group('day'))
+            if date:
+                correct_dow = m.group('dow') is None or true_dow == m.group('dow') or DOW_US2DE[true_dow] == m.group('dow')
+                return RawInline("tex", 
+                    date.strftime("\\dateFmt{%a}{%Y}{%-y}{%y}{%b}{%-m}{%m}{%-d}{%d}")
+                    + "{" + "}{".join([
+                                     DOW_US2DE[date.strftime("%a")],
+                                     MONTH_DE[date.month - 1],
+                                     str(correct_dow)
+                                 ]) + "}"
+                )
+
+if __name__ == "__main__":
+    toJSONFilter(use_date_format)

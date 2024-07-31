@@ -1,0 +1,24 @@
+# English
+<Multi_key> <n> <t>                     : "n’t "
+<Multi_key> <space> <t>                 : " the "
+<Multi_key> <space> <T>                 : "  The "
+<Multi_key> <space> <a>                 : " and "
+<Multi_key> <i> <m>                     : " I’m "
+<Multi_key> <v> <e>                     : "’ve "
+<Multi_key> <s> <t>                     : "ˢᵗ"
+<Multi_key> <n> <d>                     : "ⁿᵈ"
+<Multi_key> <r> <d>                     : "ʳᵈ"
+
+# German
+<Multi_key> <m> <f> <g>     : "Mit freundlichen Grüßen"
+<Multi_key> <u> <s>         : "üß"
+<Multi_key> <o> <s>         : "öß"
+
+# coding
+<Multi_key> <q> <q>         : "\""
+
+# Signatures
+<Multi_key> <j> <k> <i>      : "𝒿𝓀𝒾"
+<Multi_key> <J> <K> <I>      : "𝓙𝓚𝓘"
+<Multi_key> <j> <i>          : "Jochen Illerhaus"
+<Multi_key> <j> <period> <i> : "Jochen K. Illerhaus"

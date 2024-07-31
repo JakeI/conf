@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rg -p "$@" | less -RFX

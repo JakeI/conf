@@ -1,0 +1,213 @@
+;; also check kanata instead of kmonad
+
+(defcfg
+      input (device-file "<__device-file__>")
+  output (uinput-sink "My KMonad output"
+    "/usr/bin/sleep 1 && /usr/bin/setxkbmap -option compose:ralt")
+  cmp-seq ralt    ;; Set the compose key to `ralt'
+  cmp-seq-delay 5 ;; 5ms delay between each compose-key sequence press
+  fallthrough true
+  allow-cmd true
+)
+
+(defalias
+  χ #(ralt g q)
+  ω #(ralt g w)
+  ε #(ralt g e)
+  ρ #(ralt g r)
+  τ #(ralt g t)
+  ζ #(ralt g z)
+  υ #(ralt g u)
+  ι #(ralt g i)
+  ο #(ralt g o)
+  π #(ralt g p)
+  α #(ralt g a)
+  σ #(ralt g s)
+  δ #(ralt g d)
+  φ #(ralt g f)
+  γ #(ralt g g)
+  η #(ralt g h)
+  θ #(ralt g j)
+  κ #(ralt g k)
+  λ #(ralt g l)
+  ψ #(ralt g y)
+  ξ #(ralt g x)
+  β #(ralt g b)
+  ν #(ralt g n)
+  μ #(ralt g m)
+)
+
+(defalias
+  Χ #(ralt g Q)
+  Ω #(ralt g W)
+  Ε #(ralt g E)
+  Ρ #(ralt g R)
+  Τ #(ralt g T)
+  Ζ #(ralt g Z)
+  Υ #(ralt g U)
+  Ι #(ralt g I)
+  Ο #(ralt g O)
+  Π #(ralt g P)
+  Α #(ralt g A)
+  Σ #(ralt g S)
+  Δ #(ralt g D)
+  Φ #(ralt g F)
+  Γ #(ralt g G)
+  Η #(ralt g H)
+  Θ #(ralt g J)
+  Κ #(ralt g K)
+  Λ #(ralt g L)
+  Ψ #(ralt g Y)
+  Ξ #(ralt g X)
+  Β #(ralt g B)
+  Ν #(ralt g N)
+  Μ #(ralt g M)
+)
+
+(defalias
+  ñ #(ralt n ~)
+)
+
+(defalias
+  ÷ #(ralt - :)
+  ¿ #(ralt ? ?)
+  ¡ #(ralt ! !)
+  Ñ #(ralt ~ N)
+  ° #(ralt * 0)
+  § #(ralt p a)
+)
+
+(defalias
+  ´ #(ralt ' ")
+)
+
+(defalias
+  ä #(ralt a a)
+  ü #(ralt u u)
+  ö #(ralt o o)
+  Ä #(ralt A A)
+  Ü #(ralt U U)
+  Ö #(ralt O O)
+  ß #(ralt s s)
+  ẞ #(ralt S S)
+)
+
+(defsrc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]
+  caps  a    s    d    f    g    h    j    k    l    ;    '    \
+  lsft lsgt  z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt            spc                 ralt rmet cmp  rctl
+  end
+)
+
+;;(defsrc
+;;  tab   q    w    e    r    t    z    u    i    o    p    ü    +
+;;  caps  a    s    d    f    g    h    j    k    l    ö    ä    #
+;;  lsft lsgt  z    x    c    v    b    n    m    ,    .    -    rsft
+;;  lctl lmet lalt            spc                 ralt rmet cmp  rctl
+;;)
+
+(defalias sfq (layer-toggle qwertz-shifted))
+(defalias sps (tap-next spc (layer-toggle layer3)))
+(defalias spq (tap-next spc (layer-toggle layer3-shifted)))
+(defalias spp (layer-toggle layer3-shifted))
+(defalias ecl (tap-next esc lctl))
+(defalias ecs (tap-next S-esc S-lctl))
+(defalias grk (layer-next greek-qwertz))
+(defalias gsf (layer-toggle greek-qwertz-shifted))
+(defalias num (layer-toggle numbers))
+(defalias cmd (tap-next tab (layer-toggle command)))
+(defalias sym (layer-next symbols-qwertz))
+
+(defalias ack (cmd-button "test -f ~/.auto-click-freq && xdotool click --repeat $(cat ~/.auto-click-freq) --delay 1 1 || xdotool key End"))
+
+(deflayer qwertz
+  @cmd q    w    e    r    t    @ä   z    u    i    o    p    bspc
+  @ecl a    s    d    f    g    @ü   h    j    k    l    ralt ret
+  @sfq @sfq y    x    c    v    b    @ö   n    m    ,    .    @sfq
+  lmet lalt @num           @sps                @num lalt ralt rctl
+  @ack
+)
+
+(deflayer qwertz-shifted
+  @cmd S-q  S-w  S-e  S-r  S-t  @Ä   S-z  S-u  S-i  S-o  S-p  del
+  @ecs S-a  S-s  S-d  S-f  S-g  @Ü   S-h  S-j  S-k  S-l  _    S-ret
+  XX   XX   S-y  S-x  S-c  S-v  S-b  @Ö   S-n  S-m  ;    :    XX  
+  _    _    _              @spq                _    _    _    _   
+  _
+)
+
+(deflayer layer3
+  @cmd @    %    @sym ^    ~    XX   +    /    *    -    !    bspc
+  @ecl {    [    ]    }    \\   XX   =    |    \_   ?    _    ret
+  @spp @spp &    $    \(   \)   #    XX   @ñ   @grk <    >    @spp
+  lmet lalt @num           XX                  @num lalt ralt rctl
+  _
+)
+
+(deflayer layer3-shifted
+  @cmd _    _    _    @°   _    XX   S-+  @÷   _  S--    @¡   del 
+  @ecl _    _    _    _    _    XX   _    _    _    @¿   _    S-ret
+  XX   XX   _    @§   _    _    _    XX   @Ñ   _    _    _    XX   
+  lmet lalt @num           XX                  @num lalt ralt rctl
+  _
+)
+
+(deflayer greek-qwertz
+  @cmd @χ   @ω   @ε   @ρ   @τ   XX   @ζ   @υ   @ι   @ο   @π   bspc
+  @ecl @α   @σ   @δ   @φ   @γ   XX   @η   @θ   @κ   @λ   ralt ret
+  @gsf @gsf @ψ   @ξ   _    _    @β   XX   @ν   @μ   _    _    @gsf
+  lmet lalt @num           @sps                @num lalt ralt rctl
+  _
+)
+
+(deflayer greek-qwertz-shifted
+  @cmd @Χ   @Ω   @Ε   @Ρ   @Τ   XX   @Ζ   @Υ   @Ι   @Ο   @Π   bspc
+  @ecl @Α   @Σ   @Δ   @Φ   @Γ   XX   @Η   @Θ   @Κ   @Λ   ralt ret
+  XX   XX   @Ψ   @Ξ   _    _    @Β   XX   @Ν   @Μ   _    _    XX  
+  lmet lalt @num           @sps                @num lalt ralt rctl
+  _
+)
+
+(deflayer numbers
+  @cmd _    _    _    _    _    XX   kp/  7    8    9    kp-  bspc
+  @ecl '    "    @´   `    _    XX   kp*  4    5    6    kp+  ret
+  lsft lsft _    _    _    _    _    XX   0    1    2    3    kp.
+  lmet lalt @num           @sps                @num lalt ralt rctl
+  _
+)
+
+;; missing volu,vold  brup,brdn
+(deflayer command
+  XX   lsft lctl lalt volu _    XX   home fwd  back end  pgup bspc
+  @ecl _    _    pp   vold _    XX   lft  down up   rght pgdn ret
+  lsft lsft _    cut  copy paste _   XX   _    _    _    _    del
+  lmet lalt @num           @sps                @num lmet ralt rctl
+  _
+)
+
+(defalias
+  € #(ralt C =)
+  £ #(ralt L -)
+  ¥ #(ralt Y =)
+)
+
+(deflayer symbols-qwertz
+  @cmd _    _    €    _    _    XX   _    _    _    _    _    bspc
+  @ecl _    _    _    _    _    XX   _    _    _    £    _    ret
+  lsft lsft ¥    _    _    _    _    XX   _    _    _    _    rsft
+  lmet lalt @num           @sps                @num lalt ralt rctl
+  _
+)
+
+;; use layer-switch to enable this layout when needed
+;; define different layer3 with a greek layer matching the collmak layout
+(deflayer colmak
+  tab  q    w    f    p    g    XX   j    l    u    y    _    bspc
+  @ecl a    r    s    t    d    XX   h    n    e    i    o    ret
+  lsft lsft z    x    c    v    b    XX   k    m    ,    .    rsft
+  lctl lmet lalt           @sps                ralt lmet ralt rctl
+  _
+)
+
+;; (deflayer greek-colmak ...)

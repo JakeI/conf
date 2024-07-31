@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+name="$1"
+
+if [[ -z "$name" ]]
+then
+    echo "nothing to look at provide a gdx file"
+    exit 1
+fi
+
+out="$(gdx2sqlite -i \"$name\" -o \"${name:r}\".sqlite)"
+
+echo "Omitted $(echo \"$out\" | wc -l) lines from conversion process"
+
+vd "${name:r}".sqlite

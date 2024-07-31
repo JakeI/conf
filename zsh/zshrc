@@ -1,0 +1,514 @@
+# [[ $? -eq 0 ]] && neofetch
+
+# Kitty specific settings {{{
+if [ "$TERM_PROGRAM" = "xterm-kitty" ]
+then
+	let &t_ut=''
+    kitty + complete setup zsh | source /dev/stdin
+
+    alias icat="kitty +kitten icat"
+	alias ssh="kitty +kitten ssh"
+
+	alias wetter-map-bayern="curl -ks v3.wttr.in/Bayern.png | kitty icat"
+fi
+autoload -Uz compinit
+compinit
+# }}}
+
+# Editor Settings {{{
+
+# Command Inline Editing {{{
+# Enable no just vv in normal mode Ctrl-x-e to edit command line
+autoload edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+# }}}
+
+# Editor {{{
+export EDITOR=nvim
+alias e="$EDITOR"
+# function e() {
+#     case "$#" in
+#     "1")
+#         lowerext=$(echo $1:t:e | sed 's/ /-/g')  # this is a zsh feature for getting the extension only
+#         case $lowerext in
+#         "csv")
+#             vd "$@"
+#             ;;
+#         "pdf")
+#             # find some nice pdf-editor for adding anotations
+#             ;;
+#         *)
+#             $EDITOR "$@"
+#             ;;
+#         esac
+#         ;;
+#     *)
+#         $EDITOR "$@"
+#         ;;
+#     esac
+# }
+# }}}
+
+# Pager {{{
+export RLWRAP_EDITOR="nvim '+call cursor(%L,%C)'"
+export PAGER="less -R"
+# }}}
+
+# }}}
+
+# Theme {{{
+# ZSH_THEME="robbyrussell"
+# ZSH_THEME="miloshadzic"
+# ZSH_THEME="jonathan"
+# ZSH_THEME="agnoster"
+
+#  Auto suggest {{{
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=122'
+#  }}}
+
+# }}}
+
+# History {{{
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=100000
+SAVEHIST=100000
+
+# See also Hishtory setup after fzf setup
+
+# }}}
+
+# Plugins {{{
+plugins=(
+	git
+	zsh-vi-mode
+	fast-syntax-highlighting
+	fzf
+)
+# zsh-autosuggestions
+
+# Install autosuggestions
+# git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+source ~/.oh-my-zsh/oh-my-zsh.sh
+# }}}
+
+#  zoxide {{{
+eval "$(zoxide init zsh)"
+#  }}}
+
+# Prompt {{{
+
+#  git {{{
+# based on miloshadzic and robbyrussel themes
+# ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}⟨%{$fg[red]%}"
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[red]%}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}⟩%{$fg[yellow]%}✗"
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%}⟩"
+#  }}}
+
+#  time each command {{{
+function preexec() {
+  timer=$(($(date +%s%0N)/1000000))
+}
+
+function precmd() {
+  if [ $timer ]; then
+    now=$(($(date +%s%0N)/1000000))
+    elapsed=$(($now-$timer))
+    if command -v units &> /dev/null
+    then
+        message="$(units ${elapsed}'ms' 'day;hr;min;sec;ms' | sed 's! + .*$!!;s!^\s*!!')"
+    else
+        message="$([[ $elapsed -gt 1000 ]] && echo $(echo scale=2';'$elapsed'/1000' | bc)s || echo ${elapsed}ms)"
+    fi
+    export RPROMPT="%F{cyan}$message%{$reset_color%}"
+    unset timer
+  fi
+}
+#  }}}
+
+PROMPT='%{$fg[green]%}%n%{$fg[white]%}@%{$fg_bold[green]%}%m %{$fg[cyan]%}%1~%{$reset_color%}%{$fg[blue]%}|%{$reset_color%}$(git_prompt_info)%{$fg[cyan]%}⇒%{$reset_color%} '
+
+# }}}
+
+# Terminal Colors {{{
+# export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+export LS_COLORS="di=36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+
+export LESS_TERMCAP_mb=$'\e[1;32m'
+export LESS_TERMCAP_md=$'\e[1;32m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[01;33m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[1;4;31m'
+# }}}
+
+# Path {{{
+export PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/bin
+export PATH=$PATH:$HOME/.cargo/bin
+export PATH=$PATH:$HOME/.cabal/bin
+export PATH=$PATH:$HOME/.gem/ruby/2.7.0/bin
+export PATH=$PATH:$HOME/.local/share/coursier/bin
+export PATH=$PATH:$HOME/go/bin
+export PATH=$PATH:$HOME/curr/work/MA/code/mosek/bin/
+export PATH=$PATH:$HOME/.yarn/bin
+
+export PATH=$PATH:/usr/local/texlive/2020/bin/x86_64-linux
+export MANPATH=$MANPATH:/usr/local/texlive/2020/texmf-dist/doc/man
+export INFOPATH=$INFOPATH:/usr/local/texlive/2020/texmf-dist/doc/info
+# }}}
+
+#  Variables {{{
+export LINES=24
+#  }}}
+
+# Aliases and Functions {{{
+
+# Command to File {{{
+function getlast() { fc -ln "$1" "$1" | sed '1s/^[[:space:]]*//' }
+function getlastzsh() { echo "#!/usr/bin/env zsh\n"; fc -ln "$1" "$1" | sed '1s/^[[:space:]]*//' }
+function savelast() {
+    ( \
+        echo "#!/usr/bin/env zsh\n"; \
+        fc -ln "$2" "$2" | sed '1s/^[[:space:]]*//' \
+    ) > "$1";
+    chmod +x "$1";
+}
+# }}}
+
+#  PDF {{{
+alias pdftohtmlex="sudo docker run -ti --rm -v $(pwd):/pdf bwits/pdf2htmlex pdf2htmlEX"
+alias pdftk="java -jar ~/bin/pdftk.jar"
+function compress-pdf() {
+	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress
+	   -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${1:r}"-small.pdf $1
+}
+function pga() {  # grep through all pdf files
+    pdfgrep -i "$@" **/*.{pdf,PDF}(.N)
+}
+function ocrmypdf-inplace {
+    ocrmypdf "$1" "$1"
+}
+# }}}
+
+# pandoc {{{
+function pandoc-eisvogel() { pandoc -f markdown -t latex --template eisvogel --listings -o "${1:r}".pdf "$1" }
+function pandoc-eisvogel-numbers() { pandoc -f markdown -t latex --template eisvogel --listings --number-sections -o "${1:r}".pdf "$1" }
+function pandoc-letter() { pandoc -f markdown -t latex --template letter -o "${1:r}".pdf "$1" }
+function pandoc-cheat() { pandoc -f markdown -t latex --template cheat -o "${1:r}".pdf "$1" }
+# }}}
+
+#  markdown cat {{{
+alias mdcat="/home/ji/bin/mdcat/mdcat"
+alias mdless="/home/ji/bin/mdcat/mdcat -p"
+#  }}}
+
+#  Save path markers {{{
+# `ms` means memory store and it stores the working dir in location fiel `default` or the name given as paramter
+function ms {
+	[ -z "$1" ] && echo "$(pwd)" > /tmp/location-default || echo "$(pwd)" > /tmp/location-$1
+}
+# `mc` means memory change and it changes to the location `default` or the name given as parameter
+function mc {
+	[ -z "$1" ] && cd "$(cat /tmp/location-default)" || cd "$(cat /tmp/location-$1)"
+}
+# `mp` get named abs path
+function mp {
+    [ -z "$1" ] && cat /tmp/location-default || cat /tmp/location-$1
+}
+# `mreg` list filled location memory registers with contents
+function mreg {
+	for f in $(find /tmp/ -name "location-*" 2> /dev/null); do echo "$f\t$(cat $f)" | sed "s/\/tmp\/location-//"; done | tabulate -f fancy_grid
+}
+# `mclear` clear memory locations
+function mclear {
+	for f in $(find /tmp/ -name "location-*" 2> /dev/null); do rm $f; done;
+}
+#  }}}
+
+#  mkdir {{{
+function mkc {
+	mkdir "$1" && cd "$1"
+}
+function __internal_date_dir_name__ {
+    DATE="$(date +'%y-%m-%d')"
+    ARG="${@}"
+    JOINED="$(echo $ARG | sed 's/ /-/g')"
+    if [ -z "$JOINED" ]
+    then
+        SUFFIX=""
+    else
+        SUFFIX="_$JOINED"
+    fi
+    NAME="$DATE$SUFFIX"
+    echo "$NAME"
+}
+function mkd {
+    mkdir $(__internal_date_dir_name__ "${@}")
+}
+function mkdc {
+    mkc $(__internal_date_dir_name__ "${@}")
+}
+#  }}}
+
+#  change directory {{{
+alias cdr=". ranger"
+alias ..="cd .."
+#  }}}
+
+#  Copy and Paste {{{
+alias c="xclip -f -sel clip"
+alias v="xclip -o"
+#  }}}
+
+#  list with exa {{{
+function l () { exa --git --icons --color=always --grid "$@" }  # list
+function ll () { exa --git --icons -l --time-style=long-iso --color=always "$@" | batcat --style=plain }  # long list
+function t () { exa --git --icons --tree --color=always "$@" | batcat --style=plain } # tree
+function tl () { exa --git --icons --tree -l --time-style=long-iso --color=always "$@" | batcat --style=plain }  # long tree
+# git ignore
+function lg () { exa --git --icons --git-ignore --color=always --grid "$@" }  # list
+function llg () { exa --git --icons -l --time-style=long-iso --git-ignore --color=always "$@" | batcat --style=plain }  # long list
+function tg () { exa --git --icons --tree --git-ignore --color=always "$@" | batcat --style=plain } # tree
+function tlg () { exa --git --icons --tree -l --time-style=long-iso --git-ignore --color=always "$@" | batcat --style=plain }  # long tree
+# with all
+function la () { exa --git --icons -a --color=always --grid "$@" }  # list
+function lla () { exa --git --icons -l --time-style=long-iso -a --color=always "$@" | batcat --style=plain }  # long list
+function ta () { exa --git --icons --tree -a --color=always "$@" | batcat --style=plain } # tree
+function tla () { exa --git --icons --tree -l --time-style=long-iso -a --color=always "$@" | batcat --style=plain }  # long tree
+#  }}}
+
+#  directory size {{{
+alias ds="du -h | tail -n 1 | sed -E 's/^([0-9\\.\\,]+)( |K|M|G|T|P|E)?.*$/\\1\\2/'"
+#  }}}
+
+#  cat with bat {{{
+alias bat="batcat"
+function b () {
+    case "$#" in
+    "0")
+        if test -t 0
+        then
+            tl  # no stdin either just list the directory
+        else
+            batcat
+        fi
+        ;;
+    "1")
+        lowerext=$(echo $1:t:e | sed 's/ /-/g')  # this is a zsh feature for getting the extension only
+        case $lowerext in
+        "csv")
+            tv --color-always --force-all-rows -- "$1" | batcat --style=plain
+            ;;
+        "png" | "jpg" | "jpeg")
+            viu --name -- "$1"
+            ;;
+        "pdf")
+            # termpdf.py "$1"
+            zathura --fork "$1"
+            ;;
+        *)
+            if [[ -d "$1" ]]
+            then
+                tl "$1"
+            else
+                batcat "$@"
+            fi
+            ;;
+        esac
+        ;;
+    *)
+        batcat "$@"
+        ;;
+    esac
+}
+#  }}}
+
+#  open in default viewer {{{
+function og () { for arg in "$@"; do xdg-open "$arg"; done }
+#  }}}
+
+#  how cpu frequency {{{
+alias cpufreq='watch -n1 "cat /proc/cpuinfo | grep \"^[c]pu MHz\""'
+#  }}}
+
+#  matrix {{{
+alias matrix="unimatrix -s 96"
+#  }}}
+
+#  programming {{{
+alias g++20="g++ -std=c++20"
+#  }}}
+
+# }}}
+
+#  Program setup {{{
+
+#  fzf {{{
+export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
+export FZF_DEFAULT_OPTS="--ansi"
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+zvm_after_init_commands+=('[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh')
+#  }}}
+
+#  Hishtory {{{
+zvm_after_init_commands+=('[ -f ~/.hishtory/config.zsh ] && source /home/ji/.hishtory/config.zsh')
+#  }}}
+
+#  paged search {{{
+alias prg="pageedripgrap"
+#  }}}
+
+#  tagged search {{{
+if (( $+commands[tag] )); then
+  export TAG_SEARCH_PROG=ag  # replace with rg for ripgrep
+  tag() { command tag "$@"; source ${TAG_ALIAS_FILE:-/tmp/tag_aliases} 2>/dev/null }
+  alias ag=tag  # replace with rg for ripgrep
+fi
+#  }}}
+
+#  broot {{{
+[[ -f /home/ji/.config/broot/launcher/bash/br ]] && source /home/ji/.config/broot/launcher/bash/br
+#  }}}
+
+#  vifm {{{
+alias vf="vifm ."
+#  }}}
+
+#  kakoune {{{
+export KAKOUNE_CONFIG_DIR="$HOME/.config/kak"
+#  }}}
+
+#  xdg {{{
+export XDG_CONFIG_HOME="$HOME/.config"
+#  }}}
+
+#  GAMS {{{
+unalias gams
+#  }}}
+
+#  Matlab {{{
+# MATLAB path setup Runtime Library setup unfortunately this messes with other
+# applications (like firefox)
+# export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}\
+# /usr/local/MATLAB/MATLAB_Runtime/v911/runtime/glnxa64:\
+# /usr/local/MATLAB/MATLAB_Runtime/v911/bin/glnxa64:\
+# /usr/local/MATLAB/MATLAB_Runtime/v911/sys/os/glnxa64:\
+# /usr/local/MATLAB/MATLAB_Runtime/v911/extern/bin/glnxa64"
+# matlabroot="/usr/local/MATLAB/R2021b"
+export MATLAB="/usr/local/MATLAB/R2021b"
+# export LD_LIBRARY_PATH="$matlabroot/bin/glnxa64"
+alias mlab-no-wrap="matlab -nodesktop -nosplash"
+alias mlab="rlwrap -a -c -m' \ ' -M'.m' -H "$HOME/.matlab/R2021b/history.m" matlab -nodesktop -nosplash"
+alias imatlab="jupyter console --kernel imatlab"
+alias imatlabnvim="jupyter console --kernel imatlab -f=nvim-connection-imatlab.json"
+#  }}}
+
+#  julia {{{
+alias iju='jupyter console --ZMQTerminalInteractiveShell.editing_mode=vi --kernel=julia-1.6'
+alias j="rlwrap -a -A -m' \ ' -M'.jl' julia"
+#  }}}
+
+#  zsh {{{
+alias sourcerc="source ~/.zshrc"
+setopt inc_append_history_time
+setopt correct
+#  }}}
+
+#  smartphone camera {{{
+alias samsung="scrcpy --stay-awake --turn-screen-off --prefer-text --disable-screensaver"
+#  }}}
+
+# man {{{
+function m () {
+    man "$@"
+    if [[ "$?" -eq "16" ]]
+    then
+        if [[ "$#" -eq "1" ]]
+        then
+            als="$aliases[$1]"
+            if [[ -z "$als" ]]
+            then
+                cmd="$1"
+            else
+                cmd="$als"
+            fi
+            echo "Trying to run $cmd --help instead"
+            "$cmd" --help 2>&1 | batcat -l man --style=plain
+        fi
+    fi
+}
+# }}}
+
+#  }}}
+
+#  Auto-Generated Config {{{
+
+#  envman {{{
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+#  }}}
+
+# conda {{{
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/ji/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/ji/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/ji/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/ji/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+# }}}
+
+#  nvm {{{
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#  }}}
+
+#  opam {{{
+[[ ! -r /home/ji/.opam/opam-init/init.zsh ]] || source /home/ji/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
+#  }}}
+
+#  broot br {{{
+source /home/ji/.config/broot/launcher/bash/br
+#  }}}
+
+#  }}}
+
+#  outdated {{{
+# function iplot {
+#     cat <<EOF | gnuplot
+# set terminal pngcairo enhanced font 'Fira Sans,10'
+# set autoscale
+# set samples 1000
+# set output '|kitty +kitten icat --stdin yes'
+# set object 1 rectangle from screen 0,0 to screen 1,1 fillcolor rgb"#fdf6e3" behind
+# plot $@
+# set output '/dev/null'
+# EOF
+# }
+#
+# alias print-keyboard-layout="xkbprint -nkg 6 -color "${DISPLAY}" - | ps2pdf - > current-keyboard_layout.pdf"
+# alias figlet-fmt-list="for f in $(ls /usr/share/figlet); do echo "${f:r}"; date '+%H:%M' | figlet -f "${f:r}"; done"
+# alias calcurse-grep="calcurse -a -d 1000 -S"
+#
+# alias ipython-last-session="sqlite3 $HOME/.ipython/profile_default/history.sqlite 'SELECT source FROM history WHERE session = (SELECT session FROM history ORDER BY session DESC LIMIT 1) ORDER BY line ASC;'"
+#
+#  extraterm {{{
+# [ -f "~/bin/extraterm-commands-0.66.0/setup_extraterm_zsh.zsh" ] && source ~/bin/extraterm-commands-0.66.0/setup_extraterm_zsh.zsh
+#  }}}
+#  }}}
+

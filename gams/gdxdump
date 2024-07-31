@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+read -r -d '' cmd <<- EOM
+    $HOME/conf/gams/gamsdir/gams34.3_linux_x64_64_sfx/gdxdump $@
+EOM
+
+sudo iptables -I OUTPUT 1 -m owner --gid-owner no-net -j DROP 
+sg no-net "$cmd"

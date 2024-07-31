@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo "TODO: Implement this properly"
+
+find . -type f -name "*.mp4" | xargs -d '\n' -P 16 -I {} bash -c '[[ "$1" -nt "${1%.mp4}.mp3" ]] && ffmpeg -i "$1" -map 0:a "${1%.mp4}.mp3"' - {}

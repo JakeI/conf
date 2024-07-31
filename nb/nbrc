@@ -1,0 +1,4 @@
+
+
+export NB_DIR="${NB_DIR:-/home/ji/curr/notes/.nb}" # Set by `nb` • Fr 26. Apr 14:36:03 CEST 2024
+export NB_MATHJAX_ENABLED=1
