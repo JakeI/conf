@@ -1,0 +1,23 @@
+*.log
+**/*.sync-conflict*
+gams/*
+!gams/gams
+!gams/gamsmodel2tex
+!gams/gdx
+!gams/gdx2sqlite
+!gams/gdxdiff
+!gams/gdxdump
+!gams/gamserror/src/main.rs
+emacs/*
+!emacs/spacemacs
+stt/*
+*.AppImage
+*.ttf
+*.otf
+!"Fira Code Regular Nerd Font Complete Mono.ttf"
+!"JuliaMono-Regular.ttf"
+!"Lucillian-Binary.ttf"
+!"SourceCodePro-Regular.ttf"
+!"TokiTengwar.ttf"
+!"vscode.ttf"
+
