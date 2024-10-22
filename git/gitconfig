@@ -16,7 +16,10 @@
 	fzf-tag = "!git tag --list | fzf"
 [core]
     pager = delta
+	fileMode = false
 [interactive]
     diffFilter = delta --color-only
 [delta]
     navigate = true  # use n and N to move between diff sections
+[safe]
+	directory = /mnt/l/Lehrveranstaltungen/Vorlesungen/KAI/2024 SS/3_Klausur/SS2024

@@ -3,7 +3,7 @@ set path+=**
 set autoread
 
 let host        = substitute(system('hostname'), '\n', '', '')
-let fullconfigs = ["pop-os", "think"]
+let fullconfigs = ["pop-os", "think", "IRS-Illerhaus"]
 let full        = index(fullconfigs, host) >= 0
 
 let g:tcomment_maps      = 0
@@ -17,6 +17,12 @@ let g:pandoc#syntax#style#use_definition_lists = 0  " load plugin if setting alr
 let g:use_pandoc_istead_of_markdwon = 0
 
 if full
+    " Install Plug if it's missing
+    let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+    if empty(glob(data_dir . '/autoload/plug.vim'))
+	    silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+	    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    endif
     " Specify a directory for plugins
     " TODO: switch to a more modern lua based plugin manager see:
     "  • packer.nvim: fully featured
@@ -216,7 +222,7 @@ if full
     " Plug 'rbgrouleff/bclose.vim'
 
     Plug 'lambdalisue/fern.vim'  " netrw style split window file tree
-    Plug 'lambdalisue/fern-renderer-devicons.vim'
+    Plug 'VladYagl/fern-renderer-nerdfont.vim' " Plug 'lambdalisue/fern-renderer-devicons.vim'
     Plug 'LumaKernel/fern-mapping-fzf.vim'
     Plug 'yuki-yano/fern-preview.vim'
     Plug 'lambdalisue/fern-hijack.vim'
@@ -761,7 +767,7 @@ lua << EOF
 
     require("mason-lspconfig").setup({
         ensure_installed = {
-            "ltex", "clangd", "julia"
+            "ltex", "clangd", "julials"
             -- "awk_ls", "bashls", "html", "pyright",
             -- "rust_analyzer", "vimls", "marksman", "jdtls"
         }
@@ -2578,7 +2584,7 @@ function! LoadCustomeDigraphs(echo_messeges)
         "     let i = i + 1
         " endfor
         let i = 0
-        for line in readfile('/home/ji/conf/tex/greek.sty', '')
+        for line in readfile(expand("$HOME") . '/conf/tex/greek.sty', '')
             if line =~# '\\newunicodechar{.}.*§..'
                 let dig = substitute(line, '^.*\\newunicodechar{\(.\)}.*$', '\1', 'g')
                 let chr = substitute(line, '^.*§\(..\).*$', '\1', 'g')

@@ -43,7 +43,7 @@ This function should only modify configuration layer settings."
      markdown
      multiple-cursors
      (org :variables
-       org-directory (expand-file-name "~/curr/org")
+       org-directory (expand-file-name "/mnt/d/val/notes/org")
        org-default-notes-file (concat org-directory "/inbox.org")
        org-enable-roam-support t
        org-roam-directory (concat org-directory "/roam")

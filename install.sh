@@ -15,6 +15,7 @@ ln bin/ascii2box.pl                  $HOME/bin/ascii2box.pl
 ln bin/pageedripgrap                 $HOME/bin/pageedripgrap
 ln bin/pdfpagelist                   $HOME/bin/pdfpagelist
 ln bin/Ansel-675c000-x86_64.AppImage $HOME/bin/ansel.AppImage
+ln bin/anonymize-pdf                 $HOME/bin/anonymize-pdf
 ln desktop/photos.ansel.app.desktop  $HOME/.local/share/applications/photos.ansel.app.desktop
 ln desktop/feh.desktop               $HOME/.local/share/applications/feh.desktop
 ln pandoc                            $HOME/.pandoc
@@ -52,12 +53,26 @@ ln vscode/snippets                   $HOME/.config/Code/User/snippets
 ln nb/nbrc                           $HOME/.nbrc
 ln emacs/emacs.d                     $HOME/.emacs.d
 ln emacs/spacemacs                   $HOME/.spacemacs
+ln zellij/config.kdl                 $HOME/.config/zellij/config.kdl
 EOF
 )
 
 mkdir -p $HOME/bin/hosts
-mkdir -p /home/ji/texmf/tex/latex/local
+mkdir -p $HOME/texmf/tex/latex/local
 mkdir -p $HOME/.config/kmonad
+mkdir -p $HOME/.config/nvim
+mkdir -p $HOME/.vim
+mkdir -p $HOME/bin
+mkdir -p $HOME/.ipython/profile_default/startup
+mkdir -p $HOME/.jupyter
+mkdir -p $HOME/.config/systemd/user
+mkdir -p $HOME/.config/nix
+mkdir -p $HOME/.config/kitty
+mkdir -p $HOME/.config/zathura
+mkdir -p $HOME/.config/Code/User
+mkdir -p $HOME/.config/Code/User/snippets
+mkdir -p $HOME/.config/zellij
+
 
 SCRIPT=$(realpath "$0")
 CONFIGDIR=$(dirname "$SCRIPT")
