@@ -35,8 +35,8 @@ case "$1" in
     export max_print_line=1048576; 
     mkdir -p build
         #-jobname="$job_name" \
-        #-e '$texpost=sub{my $file = shift; system("pplatex -q -i $file.log");};' \
         #-silent \
+        #-file-line-error \ # pplatex won't handel this correctly see https://github.com/stefanhepp/pplatex/issues/2
     latexmk \
         -pvc \
         -lualatex \
@@ -45,7 +45,6 @@ case "$1" in
         -auxdir=build/. \
         -cd- \
         -CF \
-        -file-line-error \
         -e '$lualatex="pplatex -q -c lualatex -- %O %S"' \
         "$@"
     ;;
