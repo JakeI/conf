@@ -196,6 +196,7 @@ function pga() {  # grep through all pdf files
 function ocrmypdf-inplace {
     ocrmypdf "$1" "$1"
 }
+alias x="modern-latexmk"
 # }}}
 
 # pandoc {{{

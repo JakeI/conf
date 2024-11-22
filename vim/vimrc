@@ -831,7 +831,7 @@ lua << EOF
     require("lspconfig").ltex.setup({
         settings = {
             ltex = {
-                language = "de-DE",
+                language = "de-DE", -- "de-DE", -- "en-US", 
                 disabledRules = {
                     ["de-DE"] = {
                         -- find using: ~/bin/grammar.xml
@@ -844,7 +844,7 @@ lua << EOF
             },
         },
         cmd = {"ltex-ls"},
-        filetypes = {"tex"},  -- "markdown" cann't handel math properly
+        filetypes = { "tex", "text", "markdown" },  -- "markdown" cann't handel math properly
         on_attach = on_attach
     })
 
