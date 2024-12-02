@@ -45,6 +45,8 @@ case "$1" in
         -auxdir=build/. \
         -cd- \
         -CF \
+        -e '$pdf_previewer="zathura"' \
+        -e '$pdf_update_method=2' \
         -e '$lualatex="pplatex -q -c lualatex -- %O %S"' \
         "$@"
     ;;
