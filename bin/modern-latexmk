@@ -26,7 +26,10 @@ case "$1" in
     ;;
   "show" | "s" )
     shift
-    zathura --fork "$1"
+    tmpdir=$(mktemp -d)
+    cp $XDG_CONFIG_HOME/zathura/zathurarc $tmpdir/.
+    echo 'set filemonitor "signal"' >> $tmpdir/zathurarc
+    zathura --fork --config-dir=$tmpdir "$1"
     ;;
   "build" | "b" )
     shift
@@ -45,7 +48,7 @@ case "$1" in
         -auxdir=build/. \
         -cd- \
         -CF \
-        -e '$pdf_previewer="zathura"' \
+        -e '$pdf_previewer='"'$0 show'" \
         -e '$pdf_update_method=2' \
         -e '$lualatex="pplatex -q -c lualatex -- %O %S"' \
         "$@"
