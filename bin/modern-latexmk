@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Build the LaTeX project
 build_case() {
     file_name="${@: -1}"
     job_name="${file_name%.tex}"
@@ -19,7 +20,7 @@ build_case() {
         "$@"
 }
 
-# Function to find a single .tex file and check for its matching PDF
+# Find a single .tex file and check for its matching PDF
 find_single_tex_with_pdf() {
     tex_files=(*.tex)
 
@@ -48,27 +49,29 @@ find_single_tex_with_pdf() {
     fi
 }
 
-show_pdf_in_zathura () {
-  tmpdir=$(mktemp -d)
-  cp $XDG_CONFIG_HOME/zathura/zathurarc $tmpdir/.
-  echo 'set filemonitor "signal"' >> $tmpdir/zathurarc
-  zathura --fork --config-dir=$tmpdir "$1"
+# Display PDF in Zathura
+show_pdf_in_zathura() {
+    tmpdir=$(mktemp -d)
+    cp "$XDG_CONFIG_HOME/zathura/zathurarc" "$tmpdir/."
+    echo 'set filemonitor "signal"' >> "$tmpdir/zathurarc"
+    zathura --fork --config-dir="$tmpdir" "$1"
 }
 
-case "$1" in
-  "clean" | "c" )
-    shift # Remove the first argument
+# Perform clean operations
+perform_clean() {
     if [ -d build/. ]; then
         case "$1" in
-          all)
+        all)
             latexmk -C -outdir=build/. -auxdir=build/.
             ;;
-          *)
+        *)
             latexmk -c -outdir=build/. -auxdir=build/.
         esac
     fi
-    ;;
-  "help" | "h")
+}
+
+# Display help message
+display_help() {
     echo "runs latex in the build/. directory"
     echo "$0 [build|show|clean|help] [additional arguments]"
     echo "  build/b   : Run latexmk in continuous mode"
@@ -77,51 +80,59 @@ case "$1" in
     echo "  clean/c   : Perform clean operation."
     echo "  clean all : Clean everything including the pdf file"
     echo "  help/h    : Display this help message."
-    shift # Remove the first argument
-    ;;
-  "show" | "s" )
-    shift
+}
+
+# Handle "show" functionality
+handle_show() {
     if [ -z "$1" ]; then
-      # Handle the case where $1 is empty
-      input_file=$(find_single_tex_with_pdf)
+        input_file=$(find_single_tex_with_pdf)
     else
-      input_file="$1"
+        input_file="$1"
     fi
 
-    pdf_name=""
-
-    # Check if the input is an existing PDF file
     if [[ "$input_file" == *.pdf && -f "$input_file" ]]; then
-      pdf_name="$input_file"
+        pdf_name="$input_file"
     elif [[ "$input_file" == *.tex ]]; then
-      # Extract the base name without the extension
-      base_name=$(basename "$input_file" .tex)
-      build_pdf_path="build/${base_name}.pdf"
+        base_name=$(basename "$input_file" .tex)
+        build_pdf_path="build/${base_name}.pdf"
 
-        # Check if the PDF exists in the build directory
         if [ -f "$build_pdf_path" ]; then
-          pdf_name="$build_pdf_path"
+            pdf_name="$build_pdf_path"
         else
-          echo "Error: No PDF file found in the build directory for $input_file."
-          exit 1
+            echo "Error: No PDF file found in the build directory for $input_file."
+            exit 1
         fi
-      else
+    else
         echo "Error: Input must be a valid .pdf or .tex file."
         exit 1
     fi
     show_pdf_in_zathura "$pdf_name"
-    ;;
-  "build" | "b" )
-    shift
-    build_case "$@"
-    ;;
-  *)
-    # Check if arguments exist and the last argument is a .tex file
-    if [ $# -gt 0 ] && [[ "${@: -1}" =~ \.tex$ ]] && [ -f "${@: -1}" ]; then
-      build_case "$@"
-    else
-      echo "missing option run help for help"
-    fi
-    ;;
+}
+
+# Main case statement
+case "$1" in
+    "clean" | "c" )
+        shift
+        perform_clean "$1"
+        ;;
+    "help" | "h")
+        display_help
+        shift
+        ;;
+    "show" | "s" )
+        shift
+        handle_show "$1"
+        ;;
+    "build" | "b" )
+        shift
+        build_case "$@"
+        ;;
+    *)
+        if [ $# -gt 0 ] && [[ "${@: -1}" =~ \.tex$ ]] && [ -f "${@: -1}" ]; then
+            build_case "$@"
+        else
+            echo "missing option run help for help"
+        fi
+        ;;
 esac
 
