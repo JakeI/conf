@@ -19,6 +19,42 @@ build_case() {
         "$@"
 }
 
+# Function to find a single .tex file and check for its matching PDF
+find_single_tex_with_pdf() {
+    tex_files=(*.tex)
+
+    if [ "${#tex_files[@]}" -eq 1 ]; then
+        echo "${tex_files[0]}"
+    else
+        matching_tex=""
+        for tex_file in "${tex_files[@]}"; do
+            base_name=$(basename "$tex_file" .tex)
+            build_pdf_path="build/${base_name}.pdf"
+            if [ -f "$build_pdf_path" ]; then
+                if [ -n "$matching_tex" ]; then
+                    echo "Error: Multiple .tex files have matching PDFs in the build directory." >&2
+                    exit 1
+                fi
+                matching_tex="$tex_file"
+            fi
+        done
+
+        if [ -z "$matching_tex" ]; then
+            echo "Error: No .tex files have matching PDFs in the build directory." >&2
+            exit 1
+        fi
+
+        echo "$matching_tex"
+    fi
+}
+
+show_pdf_in_zathura () {
+  tmpdir=$(mktemp -d)
+  cp $XDG_CONFIG_HOME/zathura/zathurarc $tmpdir/.
+  echo 'set filemonitor "signal"' >> $tmpdir/zathurarc
+  zathura --fork --config-dir=$tmpdir "$1"
+}
+
 case "$1" in
   "clean" | "c" )
     shift # Remove the first argument
@@ -45,10 +81,35 @@ case "$1" in
     ;;
   "show" | "s" )
     shift
-    tmpdir=$(mktemp -d)
-    cp $XDG_CONFIG_HOME/zathura/zathurarc $tmpdir/.
-    echo 'set filemonitor "signal"' >> $tmpdir/zathurarc
-    zathura --fork --config-dir=$tmpdir "$1"
+    if [ -z "$1" ]; then
+      # Handle the case where $1 is empty
+      input_file=$(find_single_tex_with_pdf)
+    else
+      input_file="$1"
+    fi
+
+    pdf_name=""
+
+    # Check if the input is an existing PDF file
+    if [[ "$input_file" == *.pdf && -f "$input_file" ]]; then
+      pdf_name="$input_file"
+    elif [[ "$input_file" == *.tex ]]; then
+      # Extract the base name without the extension
+      base_name=$(basename "$input_file" .tex)
+      build_pdf_path="build/${base_name}.pdf"
+
+        # Check if the PDF exists in the build directory
+        if [ -f "$build_pdf_path" ]; then
+          pdf_name="$build_pdf_path"
+        else
+          echo "Error: No PDF file found in the build directory for $input_file."
+          exit 1
+        fi
+      else
+        echo "Error: Input must be a valid .pdf or .tex file."
+        exit 1
+    fi
+    show_pdf_in_zathura "$pdf_name"
     ;;
   "build" | "b" )
     shift
