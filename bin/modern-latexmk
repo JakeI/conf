@@ -3,8 +3,19 @@
 # Build the LaTeX project
 build_case() {
     file_name="${@: -1}"
+    # Check if the file name is empty or not a .tex file
+    if [[ -z "$file_name" || "$file_name" != *.tex ]]; then
+        tex_files=( *.tex )
+        if [[ ${#tex_files[@]} -eq 1 ]]; then
+            file_name="${tex_files[0]}"
+        else
+            echo "Error: No .tex file specified, and ${#tex_files[@]} .tex files found in the directory."
+            echo "Please specify a .tex file or ensure there is only one in the directory."
+            exit 1
+        fi
+    fi
+
     job_name="${file_name%.tex}"
-    export max_print_line=1048576
     mkdir -p build
     latexmk \
         -pvc \
@@ -17,13 +28,12 @@ build_case() {
         -e '$pdf_previewer='"'$0 show'" \
         -e '$pdf_update_method=2' \
         -e '$lualatex="pplatex -q -c lualatex -- %O %S"' \
-        "$@"
+        "$file_name"
 }
 
 # Find a single .tex file and check for its matching PDF
 find_single_tex_with_pdf() {
     tex_files=(*.tex)
-
     if [ "${#tex_files[@]}" -eq 1 ]; then
         echo "${tex_files[0]}"
     else
@@ -39,17 +49,14 @@ find_single_tex_with_pdf() {
                 matching_tex="$tex_file"
             fi
         done
-
         if [ -z "$matching_tex" ]; then
             echo "Error: No .tex files have matching PDFs in the build directory." >&2
             exit 1
         fi
-
         echo "$matching_tex"
     fi
 }
 
-# Display PDF in Zathura
 show_pdf_in_zathura() {
     tmpdir=$(mktemp -d)
     cp "$XDG_CONFIG_HOME/zathura/zathurarc" "$tmpdir/."
@@ -57,7 +64,6 @@ show_pdf_in_zathura() {
     zathura --fork --config-dir="$tmpdir" "$1"
 }
 
-# Perform clean operations
 perform_clean() {
     if [ -d build/. ]; then
         case "$1" in
@@ -70,7 +76,6 @@ perform_clean() {
     fi
 }
 
-# Display help message
 display_help() {
     echo "runs latex in the build/. directory"
     echo "$0 [build|show|clean|help] [additional arguments]"
@@ -128,11 +133,7 @@ case "$1" in
         build_case "$@"
         ;;
     *)
-        if [ $# -gt 0 ] && [[ "${@: -1}" =~ \.tex$ ]] && [ -f "${@: -1}" ]; then
-            build_case "$@"
-        else
-            echo "missing option run help for help"
-        fi
+        build_case "$@"
         ;;
 esac
 
