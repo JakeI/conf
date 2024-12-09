@@ -652,8 +652,16 @@ snippet cases "cases environment" i
 $0
 endsnippet
 
-snippet / "fraction" i
-{${1:${VISUAL}}÷$2}$0
+snippet / "fraction uses frac or unicode depending on previeous use of frac" i
+`!p
+num_lines = int(vim.eval('line("$")'))
+lines_to_check = vim.eval('getline(1, {})'.format(min(5_000, num_lines)))
+use_frac = any('\\frac' in line for line in lines_to_check)
+if use_frac:
+	snip.rv = "\\frac{"
+else:
+	snip.rv = "{"
+`${1:${VISUAL}}`!p snip.rv = "}{" if use_frac else "÷"`$2}$0
 endsnippet
 
 snippet '([^\$\+\-\*×÷/ ]*)/([^\$\+\-\*×÷/ ]+)' "Enter Fraction" ir

@@ -1332,12 +1332,22 @@ if full
     let g:vimtex_quickfix_ignore_filters = [
         \ 'Overfull \\hbox ',
         \ 'Underfull \\hbox ',
+        \ 'Package unicode\-math Warning',
+        \ 'LaTeX Warning: Unused global option',
+        \ 'LaTeX Warning: No \\author given',
+        \ 'Package lualatex\-math Warning: I''ve expected \\MT_cramped_internal:Nn',
         \]
-    let g:vimtex_compiler_latexrun_engines = {
-        \ '_'                : 'lualatex',
-        \ 'pdflatex'         : 'pdflatex',
-        \ 'lualatex'         : 'lualatex',
-        \ 'xelatex'          : 'xelatex',
+    let g:vimtex_compiler_latexmk_engines = {
+        \ '_'                : '-lualatex',
+        \ 'pdfdvi'           : '-pdfdvi',
+        \ 'pdfps'            : '-pdfps',
+        \ 'pdflatex'         : '-pdf',
+        \ 'luatex'           : '-lualatex',
+        \ 'lualatex'         : '-lualatex',
+        \ 'xelatex'          : '-xelatex',
+        \ 'context (pdftex)' : '-pdf -pdflatex=texexec',
+        \ 'context (luatex)' : '-pdf -pdflatex=context',
+        \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
         \}
     let g:vimtex_compiler_latexmk = {
         \ 'aux_dir' : 'build',
