@@ -1333,15 +1333,26 @@ if full
         \ 'Overfull \\hbox ',
         \ 'Underfull \\hbox ',
         \]
+    let g:vimtex_compiler_latexrun_engines = {
+        \ '_'                : 'lualatex',
+        \ 'pdflatex'         : 'pdflatex',
+        \ 'lualatex'         : 'lualatex',
+        \ 'xelatex'          : 'xelatex',
+        \}
     let g:vimtex_compiler_latexmk = {
-            \ 'executable' : 'latexmk',
-            \ 'options' : [
-            \   '-lualatex',
-            \   '-file-line-error',
-            \   '-synctex=1',
-            \   '-interaction=nonstopmode',
-            \ ],
-            \ }
+        \ 'aux_dir' : 'build',
+        \ 'out_dir' : 'build',
+        \ 'callback' : 1,
+        \ 'continuous' : 1,
+        \ 'executable' : 'latexmk',
+        \ 'hooks' : [],
+        \ 'options' : [
+        \   '-verbose',
+        \   '-file-line-error',
+        \   '-synctex=1',
+        \   '-interaction=nonstopmode',
+        \ ],
+        \}
     let g:vimtex_toc_config = {
             \ 'name': 'vim-tex-toc',
             \ 'mode': 2,

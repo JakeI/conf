@@ -187,7 +187,7 @@ alias pdftohtmlex="sudo docker run -ti --rm -v $(pwd):/pdf bwits/pdf2htmlex pdf2
 if [ "$HOST" = "IRS-Illerhaus" ]; then ; else alias pdftk="java -jar ~/bin/pdftk.jar"; fi
 
 function compress-pdf() {
-	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress
+	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress \
 	   -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${1:r}"-small.pdf $1
 }
 function pga() {  # grep through all pdf files

@@ -17,6 +17,14 @@ def math():
 		return False
 endglobal
 
+snippet irs "Insert template.tex content" b
+`!p snip.rv = open('/mnt/f/Vorlagen/TEX/simple-note/template.tex', 'r').read()`
+endsnippet
+
+snippet lualatex "tell vimtex to use lualatex" b
+%! TeX program = lualatex
+endsnippet
+
 snippet template "Basic template" b
 \documentclass[a4paper]{article}
 
