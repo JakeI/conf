@@ -165,6 +165,7 @@ eval "$(zoxide init zsh)"
 
 #  Variables {{{
 export LINES=24
+export TIMEWARRIORDB="/mnt/d/val/time/."
 #  }}}
 
 # Aliases and Functions {{{

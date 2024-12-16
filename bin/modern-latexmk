@@ -1,11 +1,59 @@
 #!/usr/bin/env bash
 
-# Build the LaTeX project
-build_case() {
-    file_name="${@: -1}"
-    # Check if the file name is empty or not a .tex file
+# Define common latexmk arguments
+LATEXMK_ARGS=(
+    -lualatex
+    -interaction=nonstopmode
+    -outdir=build/.
+    -auxdir=build/.
+    -cd-
+    -CF
+    -e '$lualatex="pplatex -q -c lualatex -- %O %S"'
+)
+
+# Function to handle single-shot compilation
+compile_single_shot() {
+    local file_name="$1"
+    shift
+    local additional_args="$@"
+    local job_name="${file_name%.tex}"
+
+    latexmk "${LATEXMK_ARGS[@]}" $additional_args "$file_name"
+
+    # Copy the resulting PDF file to the same directory as the .tex file
+    cp "build/${job_name}.pdf" .
+
+    # Delete the build files created during this process
+    find build/ -type f -newer "$file_name" -exec rm {} \;
+}
+
+# Function to handle continuous compilation
+compile_continuous() {
+    local file_name="$1"
+    shift
+    local additional_args="$@"
+
+    latexmk "${LATEXMK_ARGS[@]}" \
+        -pvc \
+        -e '$pdf_previewer='"'$0 show'" \
+        -e '$pdf_update_method=2' \
+        $additional_args \
+        "$file_name"
+}
+
+# Function to delete the build directory if it is empty
+cleanup_build_directory() {
+    if [ -z "$(ls -A build)" ]; then
+        rm -r build
+    fi
+}
+
+# Function to check if the file name is valid
+check_file_name() {
+    local file_name="$1"
+
     if [[ -z "$file_name" || "$file_name" != *.tex ]]; then
-        tex_files=( *.tex )
+        local tex_files=( *.tex )
         if [[ ${#tex_files[@]} -eq 1 ]]; then
             file_name="${tex_files[0]}"
         else
@@ -15,20 +63,36 @@ build_case() {
         fi
     fi
 
-    job_name="${file_name%.tex}"
+    echo "$file_name"
+}
+
+# Main function to build the case
+build_case() {
+    local single_shot=false
+    local additional_args=()
+    local file_name="${@: -1}"
+
+     # Check for --single-shot option and build additional_args array in one loop
+    for ((i=1; i<$#; i++)); do
+        if [[ "${!i}" == "--single-shot" ]]; then
+            single_shot=true
+        else
+            additional_args+=("${!i}")
+        fi
+    done
+
+    # Check if the file name is valid
+    file_name=$(check_file_name "$file_name")
+
+    local job_name="${file_name%.tex}"
     mkdir -p build
-    latexmk \
-        -pvc \
-        -lualatex \
-        -interaction=nonstopmode \
-        -outdir=build/. \
-        -auxdir=build/. \
-        -cd- \
-        -CF \
-        -e '$pdf_previewer='"'$0 show'" \
-        -e '$pdf_update_method=2' \
-        -e '$lualatex="pplatex -q -c lualatex -- %O %S"' \
-        "$file_name"
+
+    if $single_shot; then
+        compile_single_shot "$file_name" "${additional_args[@]}"
+        cleanup_build_directory
+    else
+        compile_continuous "$file_name" "${additional_args[@]}"
+    fi
 }
 
 # Find a single .tex file and check for its matching PDF
@@ -81,6 +145,8 @@ display_help() {
     echo "$0 [build|show|clean|help] [additional arguments]"
     echo "  build/b   : Run latexmk in continuous mode"
     echo "              last arg should be the file_name.tex"
+    echo "      --single-shot : Run latexmk in non-continuous mode,"
+    echo "                      copy the resulting PDF, and delete build files"
     echo "  show/s    : display a pdf in a forked zathura instance"
     echo "  clean/c   : Perform clean operation."
     echo "  clean all : Clean everything including the pdf file"
