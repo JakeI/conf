@@ -293,44 +293,7 @@ alias ds="du -h | tail -n 1 | sed -E 's/^([0-9\\.\\,]+)( |K|M|G|T|P|E)?.*$/\\1\\
 
 #  cat with bat {{{
 alias bat="batcat"
-function b () {
-    case "$#" in
-    "0")
-        if test -t 0
-        then
-            tl  # no stdin either just list the directory
-        else
-            batcat
-        fi
-        ;;
-    "1")
-        lowerext=$(echo $1:t:e | sed 's/ /-/g')  # this is a zsh feature for getting the extension only
-        case $lowerext in
-        "csv")
-            tv --color-always --force-all-rows -- "$1" | batcat --style=plain
-            ;;
-        "png" | "jpg" | "jpeg")
-            viu --name -- "$1"
-            ;;
-        "pdf")
-            # termpdf.py "$1"
-            zathura --fork "$1"
-            ;;
-        *)
-            if [[ -d "$1" ]]
-            then
-                tl "$1"
-            else
-                batcat "$@"
-            fi
-            ;;
-        esac
-        ;;
-    *)
-        batcat "$@"
-        ;;
-    esac
-}
+alias b="batcat-extended"
 #  }}}
 
 #  open in default viewer {{{

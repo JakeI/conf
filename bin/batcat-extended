@@ -1,0 +1,121 @@
+#!/bin/bash
+
+help_message() {
+    cat <<EOF
+Usage: $(basename "$0") [options] <files/directories>
+
+Options:
+  -h, --help       Show this help message
+
+Description:
+This script provides enhanced viewing for various file types and directories.
+Supported features include:
+  - CSV files viewed with tabular formatting
+  - PNG/JPG/JPEG files displayed as images
+  - PDF files opened with modern-latexmk or zathura
+  - GraphML files rendered as Unicode graphs
+  - Directories displayed as detailed trees
+  - Multiple inputs handled with clear headers
+EOF
+}
+
+display_unicode_header() {
+    local title="$1"
+    local len=${#title}
+    local border=$(printf '%*s' "$len" | tr ' ' '━')
+    echo -e "\n┏━$border━┓"
+    echo -e "┃ $title ┃"
+    echo -e "┗━$border━┛"
+}
+
+handle_directory() {
+    local directory="$1"
+    exa --git --icons --tree -l --time-style=long-iso --color=always "$directory" | batcat --style=plain
+}
+
+handle_csv() {
+    local file="$1"
+    tv --color-always --force-all-rows -- "$file" | batcat --style=plain
+}
+
+handle_image() {
+    local file="$1"
+    viu --name -- "$file"
+}
+
+handle_pdf() {
+    local file="$1"
+    if command -v modern-latexmk &> /dev/null; then
+        modern-latexmk show "$file"
+    else
+        zathura --fork "$file"
+    fi
+}
+
+handle_graphml() {
+    local file="$1"
+    graphml2unicode "$file" | batcat --style=plain
+}
+
+handle_default() {
+    local file="$1"
+    batcat "$file"
+}
+
+view_item() {
+    local item="$1"
+    local ext=$(echo "${item##*.}" | tr '[:upper:]' '[:lower:]')
+
+    if [[ -d "$item" ]]; then
+        handle_directory "$item"
+    else
+        case "$ext" in
+        "csv")
+            handle_csv "$item"
+            ;;
+        "png"|"jpg"|"jpeg")
+            handle_image "$item"
+            ;;
+        "pdf")
+            handle_pdf "$item"
+            ;;
+        "graphml")
+            handle_graphml "$item"
+            ;;
+        *)
+            handle_default "$item"
+            ;;
+        esac
+    fi
+}
+
+process_arguments() {
+    for item in "$@"; do
+        # display_unicode_header "$item"  # might not be needed because everything already uses batcat witch add a heading by itselve
+        view_item "$item"
+    done
+}
+
+process_no_arguments() {
+    if [ -t 0 ]; then
+        handle_directory .
+    else
+        batcat
+    fi
+}
+
+main() {
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        help_message
+        exit 0
+    fi
+
+    if [[ $# -eq 0 ]]; then
+        process_no_arguments
+    else
+        process_arguments "$@"
+    fi
+}
+
+main "$@"
+

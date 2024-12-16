@@ -19,6 +19,7 @@ ln bin/anonymize-pdf                 $HOME/bin/anonymize-pdf
 ln bin/modern-latexmk                $HOME/bin/modern-latexmk
 ln bin/pplatex                       $HOME/bin/pplatex
 ln bin/graphml2unicode.py            $HOME/bin/graphml2unicode
+ln bin/batcat-extended               $HOME/bin/batcat-extended
 ln desktop/photos.ansel.app.desktop  $HOME/.local/share/applications/photos.ansel.app.desktop
 ln desktop/feh.desktop               $HOME/.local/share/applications/feh.desktop
 ln pandoc                            $HOME/.pandoc
