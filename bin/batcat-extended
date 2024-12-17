@@ -20,12 +20,20 @@ EOF
 }
 
 display_unicode_header() {
-    local title="$1"
-    local len=${#title}
-    local border=$(printf '%*s' "$len" | tr ' ' '━')
-    echo -e "\n┏━$border━┓"
-    echo -e "┃ $title ┃"
-    echo -e "┗━$border━┛"
+    local text="$1"
+    local color_code=$(tput setaf 2)  # Green color
+
+    # Check if figlet is installed
+    if command -v figlet &> /dev/null; then
+        banner=$(figlet "$text")
+    else
+        # Fallback implementation
+        local text_length=${#text}
+        local border=$(printf '%*s' "$((text_length + 2))" | sed 's/ /━/g')
+        banner="┏${border}┓\n┃ ${text} ┃\n┗${border}┛"
+    fi
+
+    echo -e "${color_code}${banner}$(tput sgr0)"
 }
 
 handle_directory() {
@@ -91,7 +99,7 @@ view_item() {
 
 process_arguments() {
     for item in "$@"; do
-        # display_unicode_header "$item"  # might not be needed because everything already uses batcat witch add a heading by itselve
+        display_unicode_header "$item"
         view_item "$item"
     done
 }
