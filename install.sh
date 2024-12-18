@@ -4,6 +4,8 @@ LINKS=$(cat <<EOF
 ln zsh/zshrc                         $HOME/.zshrc
 ln vim/vimrc                         $HOME/.vimrc
 ln vim/UltiSnips                     $HOME/.vim/UltiSnips
+ln vim/syntax                        $HOME/.vim/syntax
+ln vim/ftdetect                      $HOME/.vim/ftdetect
 ln vim/colors                        $HOME/.vim/colors
 ln vim/init.vim                      $HOME/.config/nvim/init.vim
 ln vim/standalone                    $HOME/bin/standalone

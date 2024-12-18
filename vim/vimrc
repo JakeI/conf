@@ -190,6 +190,7 @@ if full
     Plug 'chrisbra/csv.vim'
     Plug 'justin2004/vim-apl'
     Plug 'mlochbaum/BQN', {'rtp': 'editors/vim'}
+    "Plug '73/vim-klog'  " klog file support is installed manually
 
     " Plug 'https://github.com/adelarsq/vim-matchit'  " Extendet % operator
     Plug 'andymass/vim-matchup'
