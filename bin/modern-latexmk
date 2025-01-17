@@ -37,6 +37,7 @@ compile_continuous() {
         -pvc \
         -e '$pdf_previewer='"'$0 show'" \
         -e '$pdf_update_method=2' \
+        -e '$compiling_cmd="clear"' \
         $additional_args \
         "$file_name"
 }

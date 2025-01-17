@@ -13,6 +13,7 @@ then
 fi
 autoload -Uz compinit
 compinit
+export COLORTERM=truecolor
 # }}}
 
 # Editor Settings {{{
@@ -213,23 +214,23 @@ alias mdless="$HOME/bin/mdcat/mdcat -p"
 #  }}}
 
 #  Save path markers {{{
-# `ms` means memory store and it stores the working dir in location fiel `default` or the name given as paramter
+# ms means memory store and it stores the working dir in location fiel default or the name given as paramter
 function ms {
 	[ -z "$1" ] && echo "$(pwd)" > /tmp/location-default || echo "$(pwd)" > /tmp/location-$1
 }
-# `mc` means memory change and it changes to the location `default` or the name given as parameter
+# mc means memory change and it changes to the location default or the name given as parameter
 function mc {
 	[ -z "$1" ] && cd "$(cat /tmp/location-default)" || cd "$(cat /tmp/location-$1)"
 }
-# `mp` get named abs path
+# mp get named abs path
 function mp {
     [ -z "$1" ] && cat /tmp/location-default || cat /tmp/location-$1
 }
-# `mreg` list filled location memory registers with contents
+# mreg list filled location memory registers with contents
 function mreg {
 	for f in $(find /tmp/ -name "location-*" 2> /dev/null); do echo "$f\t$(cat $f)" | sed "s/\/tmp\/location-//"; done | tabulate -f fancy_grid
 }
-# `mclear` clear memory locations
+# mclear clear memory locations
 function mclear {
 	for f in $(find /tmp/ -name "location-*" 2> /dev/null); do rm $f; done;
 }

@@ -1,1 +1,1 @@
-autocmd! BufRead,BufNewFile *.uttlog,uttlog set filetype=uttlog
+autocmd! BufRead,BufNewFile *.uttlog,utt.log set filetype=uttlog

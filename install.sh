@@ -60,6 +60,9 @@ ln nb/nbrc                           $HOME/.nbrc
 ln emacs/emacs.d                     $HOME/.emacs.d
 ln emacs/spacemacs                   $HOME/.spacemacs
 ln zellij/config.kdl                 $HOME/.config/zellij/config.kdl
+ln nu/config.nu                      $HOME/.config/nushell/config.nu
+ln nu/env.nu                         $HOME/.config/nushell/env.nu
+ln utt/utt-reporter.py               $HOME/bin/utt-reporter
 EOF
 )
 
