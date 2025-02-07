@@ -5,7 +5,7 @@ end
 " Define syntax highlighting for the uttlog filetype
 syntax match uttlogDate "^\d\{4}-\d\{2}-\d\{2}"
 syntax match uttlogTime "\<\d\{2}:\d\{2}\>"
-syntax match uttlogCategory "\<[^0-9]\+:"
+syntax match uttlogCategory "\<[^:]+:\>"
 syntax match uttlogTask "\<\k\+\( \|$\)"
 syntax match uttlogBreak "\*\*$"
 syntax match uttlogIgnore "\*\*\*$"

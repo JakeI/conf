@@ -18,6 +18,7 @@ ln bin/pageedripgrap                 $HOME/bin/pageedripgrap
 ln bin/pdfpagelist                   $HOME/bin/pdfpagelist
 ln bin/Ansel-675c000-x86_64.AppImage $HOME/bin/ansel.AppImage
 ln bin/anonymize-pdf                 $HOME/bin/anonymize-pdf
+ln bin/extract-pdf-annotations       $HOME/bin/extract-pdf-annotations
 ln bin/modern-latexmk                $HOME/bin/modern-latexmk
 ln bin/pplatex                       $HOME/bin/pplatex
 ln bin/graphml2unicode.py            $HOME/bin/graphml2unicode

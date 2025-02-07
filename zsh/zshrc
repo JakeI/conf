@@ -28,6 +28,7 @@ bindkey -M vicmd v edit-command-line
 # Editor {{{
 export EDITOR=nvim
 alias e="$EDITOR"
+alias lazyvim="NVIM_APPNAME=lazyvim nvim"
 # function e() {
 #     case "$#" in
 #     "1")
