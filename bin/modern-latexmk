@@ -141,6 +141,91 @@ perform_clean() {
     fi
 }
 
+procs_case() {
+    TMPFILE=$(mktemp).yaml
+    TMPTEX=$(mktemp).yaml
+    TMPPDF=$(mktemp).yaml
+    declare -A seen_names
+    max_name_length=0
+
+    max() { echo $(( $1 > $2 ? $1 : $2 )); }
+    min() { echo $(( $1 < $2 ? $1 : $2 )); }
+
+    write_proc() {
+      local texfile="$1"
+      local autostart="$2"
+      local basefolder="${texfile%/*}"
+      local filename="${texfile##*/}"
+      local basename="${filename%.tex}"
+      local name="${basename}"
+
+      # Ensure uniqueness
+      if [[ -n "${seen_names[$name]}" ]]; then
+        count="${seen_names[$name]}"
+        name="${name}_$count"
+        seen_names["$name"]=$((count + 1))
+      else
+        seen_names["$name"]=1
+      fi
+      max_name_length=$(max "$max_name_length" "${#name}")
+
+      cat <<EOF >> "$TMPTEX"
+  TeX_$name:
+    autostart: $autostart
+    cwd: $basefolder
+    cmd:
+      - latexmk
+      - -lualatex
+      - -interaction=nonstopmode
+      - "-e"
+      - "'\$lualatex=\"pplatex -q -c lualatex -- %O %S\"'"
+      - "-e"
+      - "'\$pdf_update_method=2'"
+      - "-e"
+      - "'\$compiling_cmd=\"clear\"'"
+      - -CF
+      - -pvc
+      - -view=none
+      - -outdir=build/.
+      - -auxdir=build/.
+      - $filename
+EOF
+      cat <<EOF >> "$TMPPDF"
+  PDF_${name}:
+    autostart: false
+    cwd: $basefolder
+    shell: |
+      tmpdir=\$(mktemp -d)
+      if [ -f "\$XDG_CONFIG_HOME/zathura/zathurarc" ]; then
+        cp "\$XDG_CONFIG_HOME/zathura/zathurarc" "\$tmpdir/."
+      else
+        touch "\$tmpdir/zathurarc"
+      fi
+      echo 'set filemonitor "signal"' >> "\$tmpdir/zathurarc"
+      zathura --config-dir="\$tmpdir" "build/${basename}.pdf"
+EOF
+    }
+
+    for texfile in $(find . -type f -name '*.tex' | sort); do
+      autostart=false
+      # [[ "$texfile" == *1_Aufgaben/KAI_SS25.tex ]] && autostart=true
+      write_proc "$texfile" "$autostart"
+    done
+
+    len=$(min "$max_name_length" 80)
+    echo "proc_list_width: $((len + 5))" > "$TMPFILE"
+    echo "procs:" >> "$TMPFILE"
+    cat "$TMPTEX" >> "$TMPFILE"
+    rm "$TMPTEX"
+    cat "$TMPPDF" >> "$TMPFILE"
+    rm "$TMPFILE_VIEWS"
+
+
+    mprocs --config "$TMPFILE"
+
+    rm "$TMPFILE"
+}
+
 display_help() {
     echo "runs latex in the build/. directory"
     echo "$0 [build|show|clean|help] [additional arguments]"
@@ -148,6 +233,7 @@ display_help() {
     echo "              last arg should be the file_name.tex"
     echo "      --single-shot : Run latexmk in non-continuous mode,"
     echo "                      copy the resulting PDF, and delete build files"
+    echo "  procs/p   : run latexmk in mprocs for all tex files in cwd"
     echo "  show/s    : display a pdf in a forked zathura instance"
     echo "  clean/c   : Perform clean operation."
     echo "  clean all : Clean everything including the pdf file"
@@ -198,6 +284,10 @@ case "$1" in
     "build" | "b" )
         shift
         build_case "$@"
+        ;;
+    "procs" | "p")
+        shift
+        procs_case "$@"
         ;;
     *)
         build_case "$@"
