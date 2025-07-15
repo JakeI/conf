@@ -386,7 +386,7 @@ endsnippet
 
 context "math()"
 snippet set "set" w
-☆\\{$1★\\} $0
+\qty\\{$1\\} $0
 endsnippet
 
 context "math()"
@@ -461,7 +461,7 @@ snippet case "cases" w
 endsnippet
 
 snippet pick "pic options" i
-☆\\{ \begin{array}{c} $0 \end{array} ★\\}
+\qty{\begin{array}{c} $0 \end{array}}
 endsnippet
 
 snippet SI "SI" i
@@ -621,7 +621,7 @@ snippet eql "Labeled equation environment" A
 endsnippet
 
 snippet mat "matrix environment"
-☆${1:(}⦗${2:${VISUAL}}⦘★`!p snip.rv = PARENTH_MATCH.get(t[1], t[1])`$0
+\qty${1:(}⦗${2:${VISUAL}}⦘`!p snip.rv = PARENTH_MATCH.get(t[1], t[1])`$0
 endsnippet
 
 snippet ⦗ "matrix without parenthesis" i
@@ -629,34 +629,36 @@ snippet ⦗ "matrix without parenthesis" i
 endsnippet
 
 snippet "mat([\(\)\[\]⟨⟩∥|])" "matrix environment with deliminator" rA
-☆`!p snip.rv = match.group(1)`⦗${1:${VISUAL}}⦘★`!p snip.rv = PARENTH_MATCH.get(match.group(1), match.group(1))`$0
+\qty`!p snip.rv = match.group(1)`⦗${1:${VISUAL}}⦘`!p snip.rv = PARENTH_MATCH.get(match.group(1), match.group(1))`$0
 endsnippet
 
 snippet { "paired curly braces properly excaped" i
-☆\\{${1:${VISUAL}}★\\}$0
+\qty{${1:${VISUAL}}}$0
 endsnippet
 
 snippet "(^|.)([()\[\]⟨⟩∥|⌊⌋⌈⌉])" "paired parenthesis" r
 `!p snip.rv = "" if match.group(1) in PARENTH_MATCH else match.group(1)
-`☆`!p snip.rv = match.group(1) if match.group(1) in PARENTH_MATCH else match.group(2)
-`${1:${VISUAL}}★`!p snip.rv = \
+`\qty`!p snip.rv = match.group(1) if match.group(1) in PARENTH_MATCH else match.group(2)
+`${1:${VISUAL}}`!p snip.rv = \
 	match.group(2) if match.group(1) in PARENTH_MATCH else PARENTH_MATCH.get(match.group(2), match.group(2))
 `$0
 endsnippet
 
 snippet cases "cases environment" i
-☆\\{⦗
+\\begin{cases}
 	$1, & ~~ & $2 \\\\
-	${3:${VISUAL}} && Ŧ{sonst}
-⦘★.
-$0
+	${3:${VISUAL}} && \\textt{sonst}
+\\end{cases} $0
 endsnippet
 
 snippet / "fraction uses frac or unicode depending on previeous use of frac" i
 `!p
-num_lines = int(vim.eval('line("$")'))
-lines_to_check = vim.eval('getline(1, {})'.format(min(5_000, num_lines)))
-use_frac = any('\\frac' in line for line in lines_to_check)
+use_frac = False
+use_frac_override = vim.eval('get(b:, "use_frac_override", "")')
+if not use_frac_override:
+	num_lines = int(vim.eval('line("$")'))
+	lines_to_check = vim.eval('getline(1, {})'.format(min(5_000, num_lines)))
+	use_frac = any('\\frac' in line for line in lines_to_check)
 if use_frac:
 	snip.rv = "\\frac{"
 else:
@@ -673,11 +675,11 @@ snippet "([^dn])d" "total derivative" ir
 endsnippet
 
 snippet dd "second total derivative" i
-{𝒹²$1÷𝒹$2²}$0
+\dv[2]{${1:${VISUAL}}}{$2}$0
 endsnippet
 
 snippet nd "nth total derivative" i
-{𝒹^{$1}$2÷𝒹$3^{$1}}$0
+\dv[$1]{${2:${VISUAL}}}{$3}$0
 endsnippet
 
 snippet "([^pn∂t])(p|∂)" "partial derivative" ir
