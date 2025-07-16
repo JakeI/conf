@@ -201,9 +201,13 @@ EOF
       else
         touch "\$tmpdir/zathurarc"
       fi
-      echo 'set filemonitor "signal"' >> "\$tmpdir/zathurarc"
+      echo 'set filemonitor "polling"' >> "\$tmpdir/zathurarc"
       zathura --config-dir="\$tmpdir" "build/${basename}.pdf"
 EOF
+# Unfortunatly signal won't work because there is nothing to send it,
+# at some point I should possibly switch back to optening zathura through latexmk and using signal as an update method
+# inotify would be the best choice but unfortunatly this doesn't work on windows file systems
+# so I'm stuck with polling for now
     }
 
     for texfile in $(find . -type f -name '*.tex' | sort); do
