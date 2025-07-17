@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+import csv
+import sys
+import argparse
+import re
+import os
+
+def is_alignment_row(line):
+    line = line.strip('|').strip()
+    return all(re.match(r'^:?-+:?$', cell.strip()) for cell in line.split('|'))
+
+def parse_markdown_table(lines):
+    table_lines = [line.strip() for line in lines if '|' in line]
+    table_lines = [line for line in table_lines if not is_alignment_row(line)]
+    rows = [[cell.strip() for cell in line.strip('|').split('|')] for line in table_lines]
+    return rows
+
+def write_csv(rows, output_file, separator):
+    writer = csv.writer(output_file, delimiter=separator)
+    writer.writerows(rows)
+
+def write_xlsx(rows, xlsx_filename):
+    try:
+        import xlsxwriter
+    except ImportError:
+        sys.exit("Error: xlsxwriter module not found. Install with `pip install xlsxwriter`.")
+    
+    workbook = xlsxwriter.Workbook(xlsx_filename)
+    worksheet = workbook.add_worksheet()
+
+    for r, row in enumerate(rows):
+        for c, cell in enumerate(row):
+            worksheet.write(r, c, cell)
+
+    workbook.close()
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Convert a Markdown pipe table to CSV or XLSX, inferred from output file extension."
+    )
+    parser.add_argument(
+        "-i", "--input", type=argparse.FileType('r'), default=sys.stdin,
+        help="Input Markdown file (default: stdin)"
+    )
+    parser.add_argument(
+        "-o", "--output", type=str, default="-",
+        help="Output file name. Use '-' for stdout (default). '.csv' or '.xlsx' determines format."
+    )
+    parser.add_argument(
+        "-s", "--separator", default=",",
+        help="CSV separator character (default: ','). Ignored for XLSX output."
+    )
+
+    args = parser.parse_args()
+
+    if args.input == sys.stdin and os.isatty(sys.stdin.fileno()):
+        sys.exit("\nNo input provided. Use -i FILE or pipe markdown into stdin. Use -h to print help\n")
+
+    rows = parse_markdown_table(args.input)
+
+    # Determine format
+    output_ext = os.path.splitext(args.output)[1].lower()
+    is_xlsx = output_ext == '.xlsx'
+
+    if is_xlsx:
+        if args.output == "-":
+            sys.exit("Error: XLSX output requires a filename (use -o <filename.xlsx>)")
+        write_xlsx(rows, args.output)
+    else:
+        if args.output == "-":
+            write_csv(rows, sys.stdout, args.separator)
+        else:
+            with open(args.output, 'w', newline='') as f:
+                write_csv(rows, f, args.separator)
+
+if __name__ == "__main__":
+    main()
+
