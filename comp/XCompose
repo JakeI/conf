@@ -1300,6 +1300,7 @@
 <Multi_key> <slash> <bar> : "∢"
 <Multi_key> <underscore> <exclam> : "⊤"
 <Multi_key> <l> <l> : "ℓ"
+<Multi_key> <asciicircum> <T> : "ᵀ"
 <Multi_key> <minus> <0> : "⊶"
 <Multi_key> <0> <minus> : "⊷"
 <Multi_key> <underscore> <comma> : "⏟"
