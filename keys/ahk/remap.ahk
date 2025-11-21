@@ -55,8 +55,9 @@ Space & y::&
 ; Problem space and Tab stop working
 
 ; LControl::LWin
-; LWin::LAlt
-; LAlt::LAlt
+; LWin::LAlt  ; turnes out it's questionably useful to to do this because Win+L is always treated as special so you cannot repap it at all so you end up constantly looking your computer by accident.
+; LAlt::RAlt
+
 !n::0
 !m::1
 !,::2
@@ -67,6 +68,8 @@ Space & y::&
 !u::7
 !i::8
 !o::9
+
+
 ; <^>!a::'
 ; <^>!s::"
 ; <^>!d::´
