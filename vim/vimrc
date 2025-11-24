@@ -9,6 +9,9 @@ let full        = index(fullconfigs, host) >= 0
 let g:tcomment_maps      = 0
 let g:gitgutter_map_keys = 0
 
+" fix ubuntus block on gobally installed python packages by setting up a python venv just for nvim
+let g:python3_host_prog = $HOME . "/.venvs/nvim/bin/python"
+
 " Define if vimade should be used or if the vim Build in NormalNC is enough
 "let g:vimade = {}
 

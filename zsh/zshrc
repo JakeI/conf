@@ -473,6 +473,14 @@ source $HOME/.config/broot/launcher/bash/br
 
 #  }}}
 
+# Python uv and workaround for global pip ban in ubuntu {{{
+# used `uv venv ~/.venvs/std` to create a standard environement
+# Linked this envs python `ln -s ~/.venvs/std/bin/python ~/bin/py` so its accessable
+# Now I can use this alias as a replacement for pip
+alias pypip="uv pip install --python ~/.venvs/std/bin/python"
+# note that nvim as it's own virtual enviornment
+# }}}
+
 #  outdated {{{
 # function iplot {
 #     cat <<EOF | gnuplot
