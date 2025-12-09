@@ -1,0 +1,233 @@
+" ======================================================================
+"   Minimal, Cross-Platform, Vimscript-Only NeoVim Config (2025)
+" ======================================================================
+
+set nocompatible
+set encoding=utf-8
+set fileencodings=utf-8
+set mouse=a
+set number relativenumber
+set nowrap linebreak
+set cursorline
+set hidden
+set autoread
+
+let mapleader = " "
+
+" ======================================================================
+"   Plugins — minimal, essential only
+" ======================================================================
+
+call plug#begin('~/.vim/plugged_simple')
+
+Plug 'tomtom/tlib_vim'
+Plug 'marcweber/vim-addon-mw-utils'
+Plug 'garbas/vim-snipmate'
+Plug 'junegunn/vim-easy-align'
+Plug 'dhruvasagar/vim-table-mode'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+
+" FZF + integration
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
+call plug#end()
+
+" ======================================================================
+"   Color Theme: Nord-ish light (no plugin)
+" ======================================================================
+
+hi clear
+set background=light
+let g:colors_name = 'nord_light_minimal'
+
+hi Normal       guibg=#ECEFF4 guifg=#2E3440
+hi Comment      guifg=#6C7A96 gui=italic
+hi Constant     guifg=#5E81AC
+hi Identifier   guifg=#BF616A
+hi Statement    guifg=#5E81AC gui=bold
+hi PreProc      guifg=#81A1C1
+hi Type         guifg=#A3BE8C
+hi Special      guifg=#D08770
+hi LineNr       guibg=#E5E9F0 guifg=#9DA5B4
+hi CursorLineNr guifg=#4C566A gui=bold
+hi Visual       guibg=#D8DEE9
+hi Search       guibg=#EBCB8B guifg=#2E3440
+hi MatchParen   guibg=#E5E9F0 guifg=#BF616A gui=bold
+
+" ======================================================================
+"   Usability
+" ======================================================================
+
+set wildmenu
+set wildmode=list:longest,full
+set path+=**
+set completeopt=menuone,noselect
+
+" ======================================================================
+"   KEY HINT SYSTEM (fzf-based)
+" ======================================================================
+
+let g:KeyHints = []
+
+" Hint("<keys>", "Description", [":Command"])
+function! Hint(key, desc, ...) abort
+  let action = a:0 ? a:1 : ''
+  call add(g:KeyHints, {'key': a:key, 'desc': a:desc, 'action': action})
+endfunction
+
+nnoremap <leader>? :call ShowKeyHintsFZF()<CR>
+tnoremap <leader>? <C-\><C-n>:call ShowKeyHintsFZF()<CR>
+
+function! ShowKeyHintsFZF() abort
+  if empty(g:KeyHints)
+    echo "No hints defined"
+    return
+  endif
+
+  let list = map(copy(g:KeyHints),
+        \ {_,v -> printf("%-20s %s", v.key, v.desc)})
+
+  let spec = {
+        \ 'source': list,
+        \ 'sink*': function('KeyHintAction'),
+        \ 'options': '--prompt="Key> " --ansi'
+        \ }
+
+  call fzf#run(fzf#wrap(spec))
+endfunction
+
+function! KeyHintAction(selection) abort
+  let key = matchstr(a:selection, '^\S\+')
+  for h in g:KeyHints
+    if h.key ==# key
+      if h.action !=# ''
+        execute h.action
+      endif
+      return
+    endif
+  endfor
+endfunction
+
+" ======================================================================
+"   FZF (replaces the old :find and :ls approach)
+" ======================================================================
+
+nnoremap <leader>f :Files<CR>
+call Hint("<leader>f", "Find files", ":Files")
+nnoremap <leader>b :Buffers<CR>
+call Hint("<leader>b", "Switch buffer", ":Buffers")
+nnoremap <leader>r :Rg<CR>
+call Hint("<leader>r", "Search text (rg)", ":Rg")
+nnoremap <leader>g :GFiles?<CR>
+call Hint("<leader>g", "Git file browser", ":GFiles?")
+
+
+" ======================================================================
+"   EasyAlign
+" ======================================================================
+nnoremap ga :EasyAlign<CR>
+vnoremap ga :EasyAlign<CR>
+call Hint("ga", "Align text", ":EasyAlign")
+
+" ======================================================================
+"   Markdown Table Mode
+" ======================================================================
+nnoremap <leader>tm :TableModeToggle<CR>
+nnoremap <leader>tr :TableModeRealign<CR>
+call Hint("<leader>tm", "Toggle markdown tables", ":TableModeToggle")
+call Hint("<leader>tr", "Realign markdown tables", ":TableModeRealign")
+
+" ======================================================================
+"   Resize Mode (pure Vimscript)
+" ======================================================================
+
+nnoremap <leader>wr :call ResizeModeStart()<CR>
+function! ResizeModeStart()
+  echo "Resize (h/l = width, j/k = height), q = quit"
+  while 1
+    let c = nr2char(getchar())
+    echo 'Resize char is = {' . c . '}'
+    if     c ==# 'h' | exe "vertical resize -2"
+    elseif c ==# 'l' | exe "vertical resize +2"
+    elseif c ==# 'j' | exe "resize +1"
+    elseif c ==# 'k' | exe "resize -1"
+    elseif c ==# 'q' | echo "" | break
+    elseif c ==# '' | echo "" | break
+    endif
+  endwhile
+endfunction
+call Hint("<leader>wr", "Interactive resize mode")
+
+" ======================================================================
+"   Terminal + Split Navigation (ALT keys)
+" ======================================================================
+
+tnoremap <Esc> <C-\><C-n>
+
+" Normal mode
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+nnoremap <A-n> gt
+nnoremap <A-p> gT
+
+" Terminal mode
+tnoremap <A-h> <C-\><C-n><C-w>h
+tnoremap <A-j> <C-\><C-n><C-w>j
+tnoremap <A-k> <C-\><C-n><C-w>k
+tnoremap <A-l> <C-\><C-n><C-w>l
+tnoremap <A-n> <C-\><C-n>gt
+tnoremap <A-p> <C-\><C-n>gT
+
+call Hint("<A-h/j/k/l/n/p>", "Move panel/tab focus")
+
+" split
+nnoremap <C-w>v :vs<CR>
+call Hint("<C-w>v", "Vertical Split", ":vs")
+nnoremap <C-w>s :s<CR>
+call Hint("<C-w>s", "Horizontal Split", ":s")
+
+" ======================================================================
+"   Spell
+" ======================================================================
+
+" Spell might fail find the files it should on Windows
+
+set spellfile=~/.vim/spell/en.utf-8.add
+set spellfile+=~/.vim/spell/de.utf-8.add
+
+" Disable Neovim's automatic spellfile updating
+" On windows this dosen't actually work witch is quite anyoing but once they
+" are there a don't need them anymore to it should be fine
+let g:loaded_spellfile_plugin = 1
+
+
+set spell spelllang=en,de spellsuggest=best
+nnoremap <leader>sp :set spell!<CR>
+call Hint("<leader>sp", "Toggle spell check", ":set spell!")
+
+" ======================================================================
+"   Misc
+" ======================================================================
+
+set tabstop=4 shiftwidth=4 expandtab
+set foldmethod=marker
+set list listchars=tab:▶‒,trail:∙,extends:▶,precedes:◀,eol:↲
+
+" ======================================================================
+"   ToDos
+" ======================================================================
+"
+" - Markdown Lists creat item below with <C-j>
+" - Markdown Create Heading of same level below with <C-j>
+" - Markdown increase/decrease heading level with <C-l> and <C-h>
+" - Resize mode dosen't appear to work properly and escape won't allow me to leave
+" - Digraphs
+" - Active panels with color different form non active
+" - Visual verticla line for char limit
+" - Visuzl Line select makes a things hard to read.
+" - Color Theme is not obsidian nord light it's definitly dark
+"
