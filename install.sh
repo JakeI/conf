@@ -24,6 +24,7 @@ ln bin/pplatex                       $HOME/bin/pplatex
 ln bin/graphml2unicode.py            $HOME/bin/graphml2unicode
 ln bin/batcat-extended               $HOME/bin/batcat-extended
 ln bin/md2table                      $HOME/bin/md2table
+ln bin/mount-val                     $HOME/bin/mount-val
 ln desktop/photos.ansel.app.desktop  $HOME/.local/share/applications/photos.ansel.app.desktop
 ln desktop/feh.desktop               $HOME/.local/share/applications/feh.desktop
 ln pandoc                            $HOME/.pandoc
