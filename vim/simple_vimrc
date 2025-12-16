@@ -230,4 +230,5 @@ set list listchars=tab:▶‒,trail:∙,extends:▶,precedes:◀,eol:↲
 " - Visual verticla line for char limit
 " - Visuzl Line select makes a things hard to read.
 " - Color Theme is not obsidian nord light it's definitly dark
+" - Color of spelling mistakes is not readable use underline instead
 "
