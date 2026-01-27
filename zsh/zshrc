@@ -308,8 +308,12 @@ alias b="batcat-extended"
 #  open in default viewer {{{
 if [ "$USER" = "dm5635" ]
 then
-    function path2dos () { cat | sed 's!^/mnt/\([a-z]\)/!\U\1\E:\\!;s!/!\\!g;' }
-    function og () { for arg in "$@"; do explorer.exe `echo "$arg" | path2dos`; done }
+    function path2dos () { 
+	cat | \
+	    sed 's!^/val/!/mnt/d/val/!' | \
+	    sed 's!^/mnt/\([a-z]\)/!\U\1\E:\\!;s!/!\\!g;' 
+    }
+    function og () { for arg in "$@"; do explorer.exe `realpath "$arg" | path2dos`; done }
 else
     function og () { for arg in "$@"; do xdg-open "$arg"; done }
 fi
