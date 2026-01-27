@@ -59,5 +59,21 @@ awk '
     }' $HOME/conf/tex/greek.sty > $LOC/greek.compose
 
 cat $LOC/{names,words,greek,user}.compose | \
-    sed 's/#.*$//' | sed 's/ *$//' > $LOC/XCompose
-rm $LOC/greek.compose
+    sed 's/#.*$//' | \
+    sed 's/ *$//' \
+    > $LOC/tmp.compose
+
+# deal with windows Keyborads dead keys that cannot be turned off
+# Configure Keybord to send F22 for ^ and F21 for ` and F20 for ´
+# Use PowerToys Tastaur-Manager to meke F20,F21,F22 "send text" with the matching char
+# Handel those F keys here separably
+cat $LOC/tmp.compose | \
+    grep '<asciicircum>' | sed 's/<asciicircum>/<F22>/g' > $LOC/f22.compose
+cat $LOC/{tmp,f22}.compose | \
+    grep '<grave>' | sed 's/<grave>/<F21>/g' > $LOC/f21.compose
+cat $LOC/{tmp,f22,f21}.compose | \
+    grep '<acute>' | sed 's/<acute>/<F20>/g' > $LOC/f20.compose
+
+cat $LOC/{tmp,f22,f21,f20}.compose > $LOC/XCompose
+
+rm $LOC/{greek,tmp,f22,f21,f20}.compose

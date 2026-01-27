@@ -1716,3 +1716,100 @@
 
 
 
+<Multi_key> <minus> <F22> 	: "¯"   macron
+<Multi_key> <F22> <minus> 	: "¯"   macron
+<Multi_key> <underscore> <F22> 	: "¯"   macron
+<Multi_key> <F22> <space> 	: "^"   asciicircum
+<Multi_key> <period> <F22> 	: "·"   periodcentered
+<Multi_key> <F22> <period> 	: "·"   periodcentered
+<Multi_key> <exclam> <F22> 	: "¦"   brokenbar
+<Multi_key> <exclam> <F22>	: "⚠"	U26A0		
+<Multi_key> <backslash> <F22>    : "̂"   U0302
+<Multi_key> <backslash> <at> <F22>	: "̭"	U032d	
+<Multi_key> <period> <F22>	: "⸳"	U2E33		
+<Multi_key> <comma> <F22>	: "⸴"	U2E34		
+<Multi_key> <F22> <bar>		: "ⸯ"	U2E2F		
+<Multi_key> <7> <F22> <bracketleft>  : "⸢"  U2E22	
+<Multi_key> <7> <F22> <bracketright> : "⸣"  U2E23	
+<Multi_key> <minus> <F22>	: "↑"	uparrow		
+<Multi_key> <Multi_key> <F22> : "⍉"
+<Multi_key> <F22> <bar> : "↑"
+<Multi_key> <F22> <underscore> : "̄"
+<Multi_key> <F22> <U> : "̆"
+<Multi_key> <F22> <O> : "̊"
+<Multi_key> <F22> <slash> : "̋"
+<Multi_key> <F22> <period> : "̇"
+<Multi_key> <F22> <greater> : "⃗"
+<Multi_key> <F22> <less> : "⃖"
+<Multi_key> <F22> <asciitilde> : "̃"
+<Multi_key> <F22> <F22> : "̂"
+<Multi_key> <v> <F22> : "⇕"
+<Multi_key> <V> <F22> : "↕"
+<Multi_key> <equal> <F22> : "⇑"
+<Multi_key> <braceleft> <F22> : "∩"
+<Multi_key> <F22> <a> : "ᵃ"
+<Multi_key> <F22> <b> : "ᵇ"
+<Multi_key> <F22> <c> : "ᶜ"
+<Multi_key> <F22> <d> : "ᵈ"
+<Multi_key> <F22> <e> : "ᵉ"
+<Multi_key> <F22> <v> : "ᵛ"
+<Multi_key> <F22> <g> : "ᵍ"
+<Multi_key> <F22> <h> : "ʰ"
+<Multi_key> <F22> <i> : "ⁱ"
+<Multi_key> <F22> <j> : "ʲ"
+<Multi_key> <F22> <k> : "ᵏ"
+<Multi_key> <F22> <l> : "ˡ"
+<Multi_key> <F22> <m> : "ᵐ"
+<Multi_key> <F22> <n> : "ⁿ"
+<Multi_key> <F22> <o> : "ᵒ"
+<Multi_key> <F22> <p> : "ᵖ"
+<Multi_key> <F22> <r> : "ʳ"
+<Multi_key> <F22> <s> : "ˢ"
+<Multi_key> <F22> <t> : "ᵗ"
+<Multi_key> <F22> <u> : "ᵘ"
+<Multi_key> <F22> <w> : "ʷ"
+<Multi_key> <F22> <x> : "ˣ"
+<Multi_key> <F22> <y> : "ʸ"
+<Multi_key> <F22> <z> : "ᶻ"
+<Multi_key> <F22> <0> : "⁰"
+<Multi_key> <F22> <1> : "¹"
+<Multi_key> <F22> <2> : "²"
+<Multi_key> <F22> <3> : "³"
+<Multi_key> <F22> <4> : "⁴"
+<Multi_key> <F22> <5> : "⁵"
+<Multi_key> <F22> <6> : "⁶"
+<Multi_key> <F22> <7> : "⁷"
+<Multi_key> <F22> <8> : "⁸"
+<Multi_key> <F22> <9> : "⁹"
+<Multi_key> <F22> <plus> : "⁺"
+<Multi_key> <F22> <minus> : "⁻"
+<Multi_key> <F22> <equal> : "⁼"
+<Multi_key> <F22> <parenleft> : "⁽"
+<Multi_key> <F22> <parenright> : "⁾"
+<Multi_key> <F22> <T> : "ᵀ"
+<Multi_key> <F22> <comma> : "⏞"
+<Multi_key> <F22> <v> : "▲"
+<Multi_key> <ampersand> <F22> : "∧"
+<Multi_key> <F22> <exclam> : "❢"
+<Multi_key> <space> <F22> : "⎊"
+<Multi_key> <backslash> <F21>	: "̀"  U0300
+<Multi_key> <backslash> <2> <F21>	: "̏"	U030f	
+<Multi_key> <F21> <space>		: "‘"	U2018		
+<Multi_key> <F21> <F21>		: "“"	U201C		
+<Multi_key> <Multi_key> <F21> : "⋄"
+<Multi_key> <F21> <F21> : "̀"
+<Multi_key> <F21> <a> : "à"
+<Multi_key> <F21> <e> : "è"
+<Multi_key> <F21> <i> : "ì"
+<Multi_key> <F21> <o> : "ò"
+<Multi_key> <F21> <u> : "ù"
+<Multi_key> <F21> <A> : "À"
+<Multi_key> <F21> <E> : "È"
+<Multi_key> <F21> <I> : "Ì"
+<Multi_key> <F21> <O> : "Ò"
+<Multi_key> <F21> <U> : "Ù"
+<Multi_key> <space> <F21> : "˜"
+<Multi_key> <F21> <comma> : "‚"
+<Multi_key> <F21> <apostrophe> : "‘"
+<Multi_key> <F21> <less> : "‹"
+<Multi_key> <F21> <greater> : "›"
