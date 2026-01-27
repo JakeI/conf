@@ -1333,6 +1333,7 @@ if full
 
     " Vimtex vim-tex vimtex
     let g:vimtex_fold_enabled = 1
+    let g:vimtex_indent_on_ampersands = 0
     let g:vimtex_fold_types = {
             \ 'envs' : {
             \	'whitelist': ['exercise','solution'],
