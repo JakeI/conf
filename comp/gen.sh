@@ -63,6 +63,8 @@ cat $LOC/{names,words,greek,user}.compose | \
     sed 's/ *$//' \
     > $LOC/tmp.compose
 
+
+# WARNING: This tunrns out to be useless: WinCompose won't actually handle <F*> keys. Windows is anoyhing!
 # deal with windows Keyborads dead keys that cannot be turned off
 # Configure Keybord to send F22 for ^ and F21 for ` and F20 for ´
 # Use PowerToys Tastaur-Manager to meke F20,F21,F22 "send text" with the matching char
