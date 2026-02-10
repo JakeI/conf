@@ -649,13 +649,30 @@ endif
 highlight VertSplit guibg=#777777 guifg=#eeeeee ctermbg=255 ctermfg=0
 
 " Highlight column 80 and beyond
-"let &colorcolumn="80,100,".join(range(120,999),",")
-let &colorcolumn=join(range(80, 2000, 20), ',')
-autocmd BufWinEnter quickfix,netrw let &colorcolumn=''
-autocmd FileType help let &colorcolumn=''
-" let &colorcolumn=join(range(81,999),",")
-"highlight ColorColumn ctermbg=235 guibg=#2c2d27
-highlight ColorColumn ctermbg=235 guibg=#30353C
+""let &colorcolumn="80,100,".join(range(120,999),",")
+"let &colorcolumn=join(range(80, 2000, 20), ',')
+"autocmd BufWinEnter quickfix,netrw let &colorcolumn=''
+"autocmd FileType help let &colorcolumn=''
+"" let &colorcolumn=join(range(81,999),",")
+""highlight ColorColumn ctermbg=235 guibg=#2c2d27
+"highlight ColorColumn ctermbg=235 guibg=#30353C
+" Function that (re)defines the colour column list
+function! s:SetColorColumn()
+  " Use the local value of 'textwidth'
+  let l:tw = &l:textwidth
+  " If 'textwidth' is 0 (disabled) clear the column
+  if l:tw == 0
+    let &l:colorcolumn = ''
+    return
+  endif
+  " Build a comma‑separated list: tw, tw+20, tw+40, …
+  let l:cols = [l:tw] + range(l:tw + 20, 2000, 20)
+  let &l:colorcolumn = join(l:cols, ',')
+endfunction
+" Run once when a buffer/window is created
+autocmd BufWinEnter * call s:SetColorColumn()
+" Re‑run whenever 'textwidth' is changed (e.g. :set tw=200)
+autocmd OptionSet textwidth call s:SetColorColumn()
 
 " Work around for background rendering issues in kitty
 let &t_ut=''
