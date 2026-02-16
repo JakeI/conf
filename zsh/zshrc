@@ -275,8 +275,18 @@ alias ..="cd .."
 #  }}}
 
 #  Copy and Paste {{{
-alias c="xclip -f -sel clip"
-alias v="xclip -o"
+is_wsl () {
+    grep -qi microsoft /proc/version 2>/dev/null
+}
+if is_wsl; then
+    # alias c="cat | iconv -f UTF-8 -t UTF-8 | clip.exe"
+    # alias v="powershell.exe -NoProfile -Command 'Get-Clipboard -Raw'"
+    alias c="cat | win32yank.exe -i"
+    alias v="win32yank.exe -o"
+else
+    alias c="xclip -f -sel clip"
+    alias v="xclip -o"
+fi
 #  }}}
 
 #  list with exa {{{
