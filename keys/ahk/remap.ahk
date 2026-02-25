@@ -26,8 +26,10 @@ Space::Space
 Space & q::@
 Space & w::%
 ; €
-Space & r::^
-Space & t::~
+; Space & r::^
+Space & r::Send '{ASC 0094}'
+; Space & t::~
+Space & t::Send '{ASC 0126}'
 Space & z::+
 Space & u::/
 Space & i::*
@@ -37,9 +39,11 @@ Space & a::Send '{LControl down}{RAlt down}7{RAlt up}{LControl up}' ; brace on g
 Space & s::[
 Space & d::]
 Space & f::Send '{LControl down}{RAlt down}0{RAlt up}{LControl up}' ; brace on german layout
-Space & g::\
+; Space & g::\
+Space & g::Send '{LControl down}{RAlt down}ß{RAlt up}{LControl up}' ; backslash avoids triggering wincompose
 Space & h::=
-Space & j::|
+; Space & j::|
+Space & j::Send '{ASC 0124}' ; pipe that avoids triggering wincompose
 Space & k::_
 Space & l::?
 Space & y::&
