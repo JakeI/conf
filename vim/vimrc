@@ -45,6 +45,8 @@ if full
     
     Plug 'tpope/vim-sleuth'  " change tab size based on file contents
 
+    Plug 'NoahTheDuke/vim-just'
+
     Plug 'powerman/vim-plugin-AnsiEsc'
 
     Plug 'itchyny/vim-cursorword'  " Underline occurrences of current word
