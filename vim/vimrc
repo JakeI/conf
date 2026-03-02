@@ -214,6 +214,8 @@ if full
 
     Plug 'kmonad/kmonad-vim'
 
+    Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+
     Plug 'tpope/vim-commentary'  " comment lines using `gc` mapping
 
     " Plug 'edluffy/hologram.nvim'  " This will be so cool once it's working
