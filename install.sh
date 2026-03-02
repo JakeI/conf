@@ -136,3 +136,5 @@ install_binary () {
 }
 
 install_binary "combining-chars" "~/.pandoc/filters/combining-chars/update.sh"
+
+./ahk/install-ahk-windows.sh
