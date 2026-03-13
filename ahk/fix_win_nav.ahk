@@ -222,13 +222,13 @@ FocusFirstWindow() {
 }
 
 ; Virtual desktop switching with Win+Shift+H/L
-#+s::  ; Win+Shift+h - switch to left desktop
+#w::  ; Win+w - switch to left desktop
 {
     Send("^#{Left}")
     ;FocusFirstWindow()
 }
 
-#+f::  ; Win+Shift+l - switch to right desktop
+#r::  ; Win+r - switch to right desktop
 {
     Send("^#{Right}")
     ;FocusFirstWindow()
