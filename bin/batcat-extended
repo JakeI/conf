@@ -43,7 +43,7 @@ handle_directory() {
 
 handle_csv() {
     local file="$1"
-    tv --color-always --force-all-rows -- "$file" | batcat --style=plain
+    tv -- "$file" | batcat --style=plain
 }
 
 handle_image() {
