@@ -288,21 +288,21 @@ else
 fi
 #  }}}
 
-#  list with exa {{{
-function l () { exa --git --icons --color=always --grid "$@" }  # list
-function ll () { exa --git --icons -l --time-style=long-iso --color=always "$@" | batcat --style=plain }  # long list
-function t () { exa --git --icons --tree --color=always "$@" | batcat --style=plain } # tree
-function tl () { exa --git --icons --tree -l --time-style=long-iso --color=always "$@" | batcat --style=plain }  # long tree
+#  list with eza {{{
+function l () { eza --git --icons --color=always --grid "$@" }  # list
+function ll () { eza --git --icons -l --time-style=long-iso --color=always "$@" | batcat --style=plain }  # long list
+function t () { eza --git --icons --tree --color=always "$@" | batcat --style=plain } # tree
+function tl () { eza --git --icons --tree -l --time-style=long-iso --color=always "$@" | batcat --style=plain }  # long tree
 # git ignore
-function lg () { exa --git --icons --git-ignore --color=always --grid "$@" }  # list
-function llg () { exa --git --icons -l --time-style=long-iso --git-ignore --color=always "$@" | batcat --style=plain }  # long list
-function tg () { exa --git --icons --tree --git-ignore --color=always "$@" | batcat --style=plain } # tree
-function tlg () { exa --git --icons --tree -l --time-style=long-iso --git-ignore --color=always "$@" | batcat --style=plain }  # long tree
+function lg () { eza --git --icons --git-ignore --color=always --grid "$@" }  # list
+function llg () { eza --git --icons -l --time-style=long-iso --git-ignore --color=always "$@" | batcat --style=plain }  # long list
+function tg () { eza --git --icons --tree --git-ignore --color=always "$@" | batcat --style=plain } # tree
+function tlg () { eza --git --icons --tree -l --time-style=long-iso --git-ignore --color=always "$@" | batcat --style=plain }  # long tree
 # with all
-function la () { exa --git --icons -a --color=always --grid "$@" }  # list
-function lla () { exa --git --icons -l --time-style=long-iso -a --color=always "$@" | batcat --style=plain }  # long list
-function ta () { exa --git --icons --tree -a --color=always "$@" | batcat --style=plain } # tree
-function tla () { exa --git --icons --tree -l --time-style=long-iso -a --color=always "$@" | batcat --style=plain }  # long tree
+function la () { eza --git --icons -a --color=always --grid "$@" }  # list
+function lla () { eza --git --icons -l --time-style=long-iso -a --color=always "$@" | batcat --style=plain }  # long list
+function ta () { eza --git --icons --tree -a --color=always "$@" | batcat --style=plain } # tree
+function tla () { eza --git --icons --tree -l --time-style=long-iso -a --color=always "$@" | batcat --style=plain }  # long tree
 #  }}}
 
 #  directory size {{{
