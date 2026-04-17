@@ -72,11 +72,14 @@
 <Multi_key> <Multi_key> <Multi_key> <parenleft> <parenright> <equal> : "💡" # ()=
 <Multi_key> <Multi_key> <Multi_key> <parenleft> <asterisk> <parenright> : "💣" # (*)  # Not included in the pandoc filter because the * starts/ends an italic text segment
 <Multi_key> <Multi_key> <Multi_key> <exclam> <question> : "⁉️" # !?
+<Multi_key> <Multi_key> <Multi_key> <question> <question> : "❓" # ??
 <Multi_key> <Multi_key> <Multi_key> <exclam> <exclam> : "‼️" # !!
 <Multi_key> <Multi_key> <Multi_key> <O> <minus> : "🔍" # O-
 <Multi_key> <Multi_key> <Multi_key> <minus> <O> : "🔎" # -O
 <Multi_key> <Multi_key> <Multi_key> <plus> <1> : "👍" # +1
 <Multi_key> <Multi_key> <Multi_key> <minus> <1> : "👎" # -1
+<Multi_key> <Multi_key> <Multi_key> <v> <i> <c> <t> <o> <r> <y> : "✌" # victory
+<Multi_key> <Multi_key> <Multi_key> <f> <u> : "🖕" # fu
 <Multi_key> <Multi_key> <Multi_key> <equal> <equal> : "🟰" # ==
 <Multi_key> <Multi_key> <Multi_key> <plus> <plus> : "➕" # ++
 <Multi_key> <Multi_key> <Multi_key> <minus> <minus> : "➖" # --
@@ -109,6 +112,9 @@
 <Multi_key> <Multi_key> <Multi_key> <t> <h> <o> <u> <g> <h> <t> : "💭" # thought
 <Multi_key> <Multi_key> <Multi_key> <n> <e> <w> <s> : "📰" # news
 <Multi_key> <Multi_key> <Multi_key> <l> <i> <n> <k> : "🔗" # link
+<Multi_key> <Multi_key> <Multi_key> <p> <e> <n> : "✏" # pen
+<Multi_key> <Multi_key> <Multi_key> <p> <o> <o> : "💩" # poo
+<Multi_key> <Multi_key> <Multi_key> <e> <a> <t> : "🍽️" # eat
 
 <Multi_key> <Multi_key> <Multi_key> <backslash> <parenleft> <parenright> : "🗨️" # \()
 <Multi_key> <Multi_key> <Multi_key> <slash> <parenleft> <parenright> : "💬" # /()
@@ -126,3 +132,253 @@
 
 # TODO: add all latex escape sequences using something like this https://github.com/jmadiot/xcompose-latex
 # maybe extract those from here https://ftp.rrze.uni-erlangen.de/ctan/macros/unicodetex/latex/unicode-math/unimath-symbols.pdf
+
+<Multi_key> <F> <a> <d> : "🇦🇩" # Andorra
+<Multi_key> <F> <a> <e> : "🇦🇪" # United Arab Emirates
+<Multi_key> <F> <a> <f> : "🇦🇫" # Afghanistan
+<Multi_key> <F> <a> <g> : "🇦🇬" # Antigua and Barbuda
+<Multi_key> <F> <a> <i> : "🇦🇮" # Anguilla
+<Multi_key> <F> <a> <l> : "🇦🇱" # Albania
+<Multi_key> <F> <a> <m> : "🇦🇲" # Armenia
+<Multi_key> <F> <a> <o> : "🇦🇴" # Angola
+<Multi_key> <F> <a> <q> : "🇦🇶" # Antarctica
+<Multi_key> <F> <a> <r> : "🇦🇷" # Argentina
+<Multi_key> <F> <a> <s> : "🇦🇸" # American Samoa
+<Multi_key> <F> <a> <t> : "🇦🇹" # Austria
+<Multi_key> <F> <a> <u> : "🇦🇺" # Australia
+<Multi_key> <F> <a> <w> : "🇦🇼" # Aruba
+<Multi_key> <F> <a> <x> : "🇦🇽" # Åland Islands
+<Multi_key> <F> <a> <z> : "🇦🇿" # Azerbaijan
+<Multi_key> <F> <b> <a> : "🇧🇦" # Bosnia and Herzegovina
+<Multi_key> <F> <b> <b> : "🇧🇧" # Barbados
+<Multi_key> <F> <b> <d> : "🇧🇩" # Bangladesh
+<Multi_key> <F> <b> <e> : "🇧🇪" # Belgium
+<Multi_key> <F> <b> <f> : "🇧🇫" # Burkina Faso
+<Multi_key> <F> <b> <g> : "🇧🇬" # Bulgaria
+<Multi_key> <F> <b> <h> : "🇧🇭" # Bahrain
+<Multi_key> <F> <b> <i> : "🇧🇮" # Burundi
+<Multi_key> <F> <b> <j> : "🇧🇯" # Benin
+<Multi_key> <F> <b> <l> : "🇧🇱" # Saint Barthélemy
+<Multi_key> <F> <b> <m> : "🇧🇲" # Bermuda
+<Multi_key> <F> <b> <n> : "🇧🇳" # Brunei Darussalam
+<Multi_key> <F> <b> <o> : "🇧🇴" # Bolivia
+<Multi_key> <F> <b> <q> : "🇧🇶" # Bonaire, Sint Eustatius and Saba
+<Multi_key> <F> <b> <r> : "🇧🇷" # Brazil
+<Multi_key> <F> <b> <s> : "🇧🇸" # Bahamas
+<Multi_key> <F> <b> <t> : "🇧🇹" # Bhutan
+<Multi_key> <F> <b> <v> : "🇧🇻" # Bouvet Island
+<Multi_key> <F> <b> <w> : "🇧🇼" # Botswana
+<Multi_key> <F> <b> <y> : "🇧🇾" # Belarus
+<Multi_key> <F> <b> <z> : "🇧🇿" # Belize
+<Multi_key> <F> <c> <a> : "🇨🇦" # Canada
+<Multi_key> <F> <c> <c> : "🇨🇨" # Cocos (Keeling) Islands
+<Multi_key> <F> <c> <d> : "🇨🇩" # Congo
+<Multi_key> <F> <c> <f> : "🇨🇫" # Central African Republic
+<Multi_key> <F> <c> <g> : "🇨🇬" # Congo
+<Multi_key> <F> <c> <h> : "🇨🇭" # Switzerland
+<Multi_key> <F> <c> <i> : "🇨🇮" # Côte D'Ivoire
+<Multi_key> <F> <c> <k> : "🇨🇰" # Cook Islands
+<Multi_key> <F> <c> <l> : "🇨🇱" # Chile
+<Multi_key> <F> <c> <m> : "🇨🇲" # Cameroon
+<Multi_key> <F> <c> <n> : "🇨🇳" # China
+<Multi_key> <F> <c> <o> : "🇨🇴" # Colombia
+<Multi_key> <F> <c> <r> : "🇨🇷" # Costa Rica
+<Multi_key> <F> <c> <u> : "🇨🇺" # Cuba
+<Multi_key> <F> <c> <v> : "🇨🇻" # Cape Verde
+<Multi_key> <F> <c> <w> : "🇨🇼" # Curaçao
+<Multi_key> <F> <c> <x> : "🇨🇽" # Christmas Island
+<Multi_key> <F> <c> <y> : "🇨🇾" # Cyprus
+<Multi_key> <F> <c> <z> : "🇨🇿" # Czech Republic
+<Multi_key> <F> <d> <e> : "🇩🇪" # Germany
+<Multi_key> <F> <d> <j> : "🇩🇯" # Djibouti
+<Multi_key> <F> <d> <k> : "🇩🇰" # Denmark
+<Multi_key> <F> <d> <m> : "🇩🇲" # Dominica
+<Multi_key> <F> <d> <o> : "🇩🇴" # Dominican Republic
+<Multi_key> <F> <d> <z> : "🇩🇿" # Algeria
+<Multi_key> <F> <e> <c> : "🇪🇨" # Ecuador
+<Multi_key> <F> <e> <e> : "🇪🇪" # Estonia
+<Multi_key> <F> <e> <g> : "🇪🇬" # Egypt
+<Multi_key> <F> <e> <h> : "🇪🇭" # Western Sahara
+<Multi_key> <F> <e> <r> : "🇪🇷" # Eritrea
+<Multi_key> <F> <e> <s> : "🇪🇸" # Spain
+<Multi_key> <F> <e> <t> : "🇪🇹" # Ethiopia
+<Multi_key> <F> <f> <i> : "🇫🇮" # Finland
+<Multi_key> <F> <f> <j> : "🇫🇯" # Fiji
+<Multi_key> <F> <f> <k> : "🇫🇰" # Falkland Islands (Malvinas)
+<Multi_key> <F> <f> <m> : "🇫🇲" # Micronesia
+<Multi_key> <F> <f> <o> : "🇫🇴" # Faroe Islands
+<Multi_key> <F> <f> <r> : "🇫🇷" # France
+<Multi_key> <F> <g> <a> : "🇬🇦" # Gabon
+<Multi_key> <F> <g> <b> : "🇬🇧" # United Kingdom
+<Multi_key> <F> <g> <d> : "🇬🇩" # Grenada
+<Multi_key> <F> <g> <e> : "🇬🇪" # Georgia
+<Multi_key> <F> <g> <f> : "🇬🇫" # French Guiana
+<Multi_key> <F> <g> <g> : "🇬🇬" # Guernsey
+<Multi_key> <F> <g> <h> : "🇬🇭" # Ghana
+<Multi_key> <F> <g> <i> : "🇬🇮" # Gibraltar
+<Multi_key> <F> <g> <l> : "🇬🇱" # Greenland
+<Multi_key> <F> <g> <m> : "🇬🇲" # Gambia
+<Multi_key> <F> <g> <n> : "🇬🇳" # Guinea
+<Multi_key> <F> <g> <p> : "🇬🇵" # Guadeloupe
+<Multi_key> <F> <g> <q> : "🇬🇶" # Equatorial Guinea
+<Multi_key> <F> <g> <r> : "🇬🇷" # Greece
+<Multi_key> <F> <g> <s> : "🇬🇸" # South Georgia
+<Multi_key> <F> <g> <t> : "🇬🇹" # Guatemala
+<Multi_key> <F> <g> <u> : "🇬🇺" # Guam
+<Multi_key> <F> <g> <w> : "🇬🇼" # Guinea‑Bissau
+<Multi_key> <F> <g> <y> : "🇬🇾" # Guyana
+<Multi_key> <F> <h> <k> : "🇭🇰" # Hong Kong
+<Multi_key> <F> <h> <m> : "🇭🇲" # Heard Island and Mcdonald Islands
+<Multi_key> <F> <h> <n> : "🇭🇳" # Honduras
+<Multi_key> <F> <h> <r> : "🇭🇷" # Croatia
+<Multi_key> <F> <h> <t> : "🇭🇹" # Haiti
+<Multi_key> <F> <h> <u> : "🇭🇺" # Hungary
+<Multi_key> <F> <i> <d> : "🇮🇩" # Indonesia
+<Multi_key> <F> <i> <e> : "🇮🇪" # Ireland
+<Multi_key> <F> <i> <l> : "🇮🇱" # Israel
+<Multi_key> <F> <i> <m> : "🇮🇲" # Isle of Man
+<Multi_key> <F> <i> <n> : "🇮🇳" # India
+<Multi_key> <F> <i> <o> : "🇮🇴" # British Indian Ocean Territory
+<Multi_key> <F> <i> <q> : "🇮🇶" # Iraq
+<Multi_key> <F> <i> <r> : "🇮🇷" # Iran
+<Multi_key> <F> <i> <s> : "🇮🇸" # Iceland
+<Multi_key> <F> <i> <t> : "🇮🇹" # Italy
+<Multi_key> <F> <j> <e> : "🇯🇪" # Jersey
+<Multi_key> <F> <j> <m> : "🇯🇲" # Jamaica
+<Multi_key> <F> <j> <o> : "🇯🇴" # Jordan
+<Multi_key> <F> <j> <p> : "🇯🇵" # Japan
+<Multi_key> <F> <k> <e> : "🇰🇪" # Kenya
+<Multi_key> <F> <k> <g> : "🇰🇬" # Kyrgyzstan
+<Multi_key> <F> <k> <h> : "🇰🇭" # Cambodia
+<Multi_key> <F> <k> <i> : "🇰🇮" # Kiribati
+<Multi_key> <F> <k> <m> : "🇰🇲" # Comoros
+<Multi_key> <F> <k> <n> : "🇰🇳" # Saint Kitts and Nevis
+<Multi_key> <F> <k> <p> : "🇰🇵" # North Korea
+<Multi_key> <F> <k> <r> : "🇰🇷" # South Korea
+<Multi_key> <F> <k> <w> : "🇰🇼" # Kuwait
+<Multi_key> <F> <k> <y> : "🇰🇾" # Cayman Islands
+<Multi_key> <F> <k> <z> : "🇰🇿" # Kazakhstan
+<Multi_key> <F> <l> <a> : "🇱🇦" # Lao People's Democratic Republic
+<Multi_key> <F> <l> <b> : "🇱🇧" # Lebanon
+<Multi_key> <F> <l> <c> : "🇱🇨" # Saint Lucia
+<Multi_key> <F> <l> <i> : "🇱🇮" # Liechtenstein
+<Multi_key> <F> <l> <k> : "🇱🇰" # Sri Lanka
+<Multi_key> <F> <l> <r> : "🇱🇷" # Liberia
+<Multi_key> <F> <l> <s> : "🇱🇸" # Lesotho
+<Multi_key> <F> <l> <t> : "🇱🇹" # Lithuania
+<Multi_key> <F> <l> <u> : "🇱🇺" # Luxembourg
+<Multi_key> <F> <l> <v> : "🇱🇻" # Latvia
+<Multi_key> <F> <l> <y> : "🇱🇾" # Libya
+<Multi_key> <F> <m> <a> : "🇲🇦" # Morocco
+<Multi_key> <F> <m> <c> : "🇲🇨" # Monaco
+<Multi_key> <F> <m> <d> : "🇲🇩" # Moldova
+<Multi_key> <F> <m> <e> : "🇲🇪" # Montenegro
+<Multi_key> <F> <m> <f> : "🇲🇫" # Saint Martin (French Part)
+<Multi_key> <F> <m> <g> : "🇲🇬" # Madagascar
+<Multi_key> <F> <m> <h> : "🇲🇭" # Marshall Islands
+<Multi_key> <F> <m> <k> : "🇲🇰" # Macedonia
+<Multi_key> <F> <m> <l> : "🇲🇱" # Mali
+<Multi_key> <F> <m> <m> : "🇲🇲" # Myanmar
+<Multi_key> <F> <m> <n> : "🇲🇳" # Mongolia
+<Multi_key> <F> <m> <o> : "🇲🇴" # Macao
+<Multi_key> <F> <m> <p> : "🇲🇵" # Northern Mariana Islands
+<Multi_key> <F> <m> <q> : "🇲🇶" # Martinique
+<Multi_key> <F> <m> <r> : "🇲🇷" # Mauritania
+<Multi_key> <F> <m> <s> : "🇲🇸" # Montserrat
+<Multi_key> <F> <m> <t> : "🇲🇹" # Malta
+<Multi_key> <F> <m> <u> : "🇲🇺" # Mauritius
+<Multi_key> <F> <m> <v> : "🇲🇻" # Maldives
+<Multi_key> <F> <m> <w> : "🇲🇼" # Malawi
+<Multi_key> <F> <m> <x> : "🇲🇽" # Mexico
+<Multi_key> <F> <m> <y> : "🇲🇾" # Malaysia
+<Multi_key> <F> <m> <z> : "🇲🇿" # Mozambique
+<Multi_key> <F> <n> <a> : "🇳🇦" # Namibia
+<Multi_key> <F> <n> <c> : "🇳🇨" # New Caledonia
+<Multi_key> <F> <n> <e> : "🇳🇪" # Niger
+<Multi_key> <F> <n> <f> : "🇳🇫" # Norfolk Island
+<Multi_key> <F> <n> <g> : "🇳🇬" # Nigeria
+<Multi_key> <F> <n> <i> : "🇳🇮" # Nicaragua
+<Multi_key> <F> <n> <l> : "🇳🇱" # Netherlands
+<Multi_key> <F> <n> <o> : "🇳🇴" # Norway
+<Multi_key> <F> <n> <p> : "🇳🇵" # Nepal
+<Multi_key> <F> <n> <r> : "🇳🇷" # Nauru
+<Multi_key> <F> <n> <u> : "🇳🇺" # Niue
+<Multi_key> <F> <n> <z> : "🇳🇿" # New Zealand
+<Multi_key> <F> <o> <m> : "🇴🇲" # Oman
+<Multi_key> <F> <p> <a> : "🇵🇦" # Panama
+<Multi_key> <F> <p> <e> : "🇵🇪" # Peru
+<Multi_key> <F> <p> <f> : "🇵🇫" # French Polynesia
+<Multi_key> <F> <p> <g> : "🇵🇬" # Papua New Guinea
+<Multi_key> <F> <p> <h> : "🇵🇭" # Philippines
+<Multi_key> <F> <p> <k> : "🇵🇰" # Pakistan
+<Multi_key> <F> <p> <l> : "🇵🇱" # Poland
+<Multi_key> <F> <p> <m> : "🇵🇲" # Saint Pierre and Miquelon
+<Multi_key> <F> <p> <n> : "🇵🇳" # Pitcairn
+<Multi_key> <F> <p> <r> : "🇵🇷" # Puerto Rico
+<Multi_key> <F> <p> <s> : "🇵🇸" # Palestinian Territory
+<Multi_key> <F> <p> <t> : "🇵🇹" # Portugal
+<Multi_key> <F> <p> <w> : "🇵🇼" # Palau
+<Multi_key> <F> <p> <y> : "🇵🇾" # Paraguay
+<Multi_key> <F> <q> <a> : "🇶🇦" # Qatar
+<Multi_key> <F> <r> <e> : "🇷🇪" # Réunion
+<Multi_key> <F> <r> <o> : "🇷🇴" # Romania
+<Multi_key> <F> <r> <s> : "🇷🇸" # Serbia
+<Multi_key> <F> <r> <u> : "🇷🇺" # Russia
+<Multi_key> <F> <r> <w> : "🇷🇼" # Rwanda
+<Multi_key> <F> <s> <a> : "🇸🇦" # Saudi Arabia
+<Multi_key> <F> <s> <b> : "🇸🇧" # Solomon Islands
+<Multi_key> <F> <s> <c> : "🇸🇨" # Seychelles
+<Multi_key> <F> <s> <d> : "🇸🇩" # Sudan
+<Multi_key> <F> <s> <e> : "🇸🇪" # Sweden
+<Multi_key> <F> <s> <g> : "🇸🇬" # Singapore
+<Multi_key> <F> <s> <h> : "🇸🇭" # Saint Helena, Ascension and Tristan Da Cunha
+<Multi_key> <F> <s> <i> : "🇸🇮" # Slovenia
+<Multi_key> <F> <s> <j> : "🇸🇯" # Svalbard and Jan Mayen
+<Multi_key> <F> <s> <k> : "🇸🇰" # Slovakia
+<Multi_key> <F> <s> <l> : "🇸🇱" # Sierra Leone
+<Multi_key> <F> <s> <m> : "🇸🇲" # San Marino
+<Multi_key> <F> <s> <n> : "🇸🇳" # Senegal
+<Multi_key> <F> <s> <o> : "🇸🇴" # Somalia
+<Multi_key> <F> <s> <r> : "🇸🇷" # Suriname
+<Multi_key> <F> <s> <s> : "🇸🇸" # South Sudan
+<Multi_key> <F> <s> <t> : "🇸🇹" # Sao Tome and Principe
+<Multi_key> <F> <s> <v> : "🇸🇻" # El Salvador
+<Multi_key> <F> <s> <x> : "🇸🇽" # Sint Maarten (Dutch Part)
+<Multi_key> <F> <s> <y> : "🇸🇾" # Syrian Arab Republic
+<Multi_key> <F> <s> <z> : "🇸🇿" # Swaziland
+<Multi_key> <F> <t> <c> : "🇹🇨" # Turks and Caicos Islands
+<Multi_key> <F> <t> <d> : "🇹🇩" # Chad
+<Multi_key> <F> <t> <f> : "🇹🇫" # French Southern Territories
+<Multi_key> <F> <t> <g> : "🇹🇬" # Togo
+<Multi_key> <F> <t> <h> : "🇹🇭" # Thailand
+<Multi_key> <F> <t> <j> : "🇹🇯" # Tajikistan
+<Multi_key> <F> <t> <k> : "🇹🇰" # Tokelau
+<Multi_key> <F> <t> <l> : "🇹🇱" # Timor‑Leste
+<Multi_key> <F> <t> <m> : "🇹🇲" # Turkmenistan
+<Multi_key> <F> <t> <n> : "🇹🇳" # Tunisia
+<Multi_key> <F> <t> <o> : "🇹🇴" # Tonga
+<Multi_key> <F> <t> <r> : "🇹🇷" # Turkey
+<Multi_key> <F> <t> <t> : "🇹🇹" # Trinidad and Tobago
+<Multi_key> <F> <t> <v> : "🇹🇻" # Tuvalu
+<Multi_key> <F> <t> <w> : "🇹🇼" # Taiwan
+<Multi_key> <F> <t> <z> : "🇹🇿" # Tanzania
+<Multi_key> <F> <u> <a> : "🇺🇦" # Ukraine
+<Multi_key> <F> <u> <g> : "🇺🇬" # Uganda
+<Multi_key> <F> <u> <m> : "🇺🇲" # United States Minor Outlying Islands
+<Multi_key> <F> <u> <s> : "🇺🇸" # United States
+<Multi_key> <F> <u> <y> : "🇺🇾" # Uruguay
+<Multi_key> <F> <u> <z> : "🇺🇿" # Uzbekistan
+<Multi_key> <F> <v> <a> : "🇻🇦" # Vatican City
+<Multi_key> <F> <v> <c> : "🇻🇨" # Saint Vincent and The Grenadines
+<Multi_key> <F> <v> <e> : "🇻🇪" # Venezuela
+<Multi_key> <F> <v> <g> : "🇻🇬" # Virgin Islands, British
+<Multi_key> <F> <v> <i> : "🇻🇮" # Virgin Islands, U.S.
+<Multi_key> <F> <v> <n> : "🇻🇳" # Viet Nam
+<Multi_key> <F> <v> <u> : "🇻🇺" # Vanuatu
+<Multi_key> <F> <w> <f> : "🇼🇫" # Wallis and Futuna
+<Multi_key> <F> <w> <s> : "🇼🇸" # Samoa
+<Multi_key> <F> <y> <e> : "🇾🇪" # Yemen
+<Multi_key> <F> <y> <t> : "🇾🇹" # Mayotte
+<Multi_key> <F> <z> <a> : "🇿🇦" # South Africa
+<Multi_key> <F> <z> <m> : "🇿🇲" # Zambia
+<Multi_key> <F> <z> <w> : "🇿🇼" # Zimbabwe

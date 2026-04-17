@@ -62,8 +62,8 @@
 <Multi_key> <f> <f>              	: "ﬀ"   Ufb00 # LATIN SMALL LIGATURE FF
 <Multi_key> <f> <i>              	: "ﬁ"   Ufb01 # LATIN SMALL LIGATURE FI
 <Multi_key> <f> <l>              	: "ﬂ"   Ufb02 # LATIN SMALL LIGATURE FL
-<Multi_key> <F> <i>              	: "ﬃ"   Ufb03 # LATIN SMALL LIGATURE FFI
-<Multi_key> <F> <l>              	: "ﬄ"   Ufb04 # LATIN SMALL LIGATURE FFL
+<Multi_key> <f> <f> <i>          	: "ﬃ"   Ufb03 # LATIN SMALL LIGATURE FFI
+<Multi_key> <f> <f> <l>          	: "ﬄ"   Ufb04 # LATIN SMALL LIGATURE FFL
 <Multi_key> <I> <J>              	: "Ĳ"   U0132 # LATIN CAPITAL LIGATURE IJ
 <Multi_key> <I> <j>              	: "Ĳ"   U0132 # LATIN CAPITAL LIGATURE IJ
 <Multi_key> <i> <j>              	: "ĳ"   U0133 # LATIN SMALL LIGATURE IJ
@@ -96,7 +96,7 @@
 <Multi_key> <C> <slash>          	: "₡"   U20a1 # COLON SIGN
 <Multi_key> <slash> <C>          	: "₡"   U20a1 # COLON SIGN
 <Multi_key> <C> <r>              	: "₢"   U20a2 # CRUZEIRO SIGN
-<Multi_key> <F> <r>              	: "₣"   U20a3 # FRENCH FRANC SIGN
+<Multi_key> <f> <r>              	: "₣"   U20a3 # FRENCH FRANC SIGN
 <Multi_key> <L> <equal>          	: "₤"   U20a4 # LIRA SIGN
 <Multi_key> <equal> <L>          	: "₤"   U20a4 # LIRA SIGN
 <Multi_key> <m> <slash>          	: "₥"   U20a5 # MILL SIGN
@@ -334,9 +334,6 @@
 <Multi_key> <colon> <parenleft>         : "☹"   U2639 # WHITE FROWNING FACE
 <Multi_key> <backslash> <o> <slash>		: "🙌"		# PERSON RAISING BOTH HANDS IN CELEBRATION
 
-<Multi_key> <p> <o> <o>                 : "💩"  U1F4A9 # PILE OF POO
-
-<Multi_key> <F> <U>                     : "🖕"  U1F595 # REVERSED HAND WITH MIDDLE FINGER EXTENDED
 <Multi_key> <L> <L> <A> <P>             : "🖖"  U1F596 # RAISED HAND WITH PART BETWEEN MIDDLE AND RING FINGERS
 
 <Multi_key> <ampersand> <at>    :   "⅋" U214B   # TURNED AMPERSAND
@@ -442,17 +439,15 @@
 # other boring things.  The arrow symbols have alternate keystrokes.  Do
 # we need others for these printer's fists?  If so, what?  The -= and =-
 # we had before are not necessarily the best choices.
-# <Multi_key> <F> <Left>		: "☚"	U261A		# BLACK LEFT POINTING INDEX
-# <Multi_key> <F> <Right>		: "☛"	U261B		# BLACK RIGHT POINTING INDEX
-<Multi_key> <F> <Left>		: "☜"	U261C		# WHITE LEFT POINTING INDEX
-<Multi_key> <F> <Up>		: "☝"	U261D		# WHITE UP POINTING INDEX
-<Multi_key> <F> <Right>		: "☞"	U261E		# WHITE RIGHT POINTING INDEX
-<Multi_key> <F> <Down>		: "☟"	U261F		# WHITE DOWN POINTING INDEX
-<Multi_key> <F> <v>   		: "✌"   U270C   	# VICTORY HAND
-<Multi_key> <F> <w>   		: "✍"   U270D   	# WRITING HAND
-<Multi_key> <F> <p> <Down>	: "✎"   U270E   	# LOWER RIGHT PENCIL
-<Multi_key> <F> <p> <Right>	: "✏"   U270F   	# PENCIL
-<Multi_key> <F> <p> <Up>	: "✐"   U2710   	# UPPER RIGHT PENCIL
+# <Multi_key> <f> <Left>		: "☚"	U261A		# BLACK LEFT POINTING INDEX
+# <Multi_key> <f> <Right>		: "☛"	U261B		# BLACK RIGHT POINTING INDEX
+<Multi_key> <f> <Left>		: "☜"	U261C		# WHITE LEFT POINTING INDEX
+<Multi_key> <f> <Up>		: "☝"	U261D		# WHITE UP POINTING INDEX
+<Multi_key> <f> <Right>		: "☞"	U261E		# WHITE RIGHT POINTING INDEX
+<Multi_key> <f> <Down>		: "☟"	U261F		# WHITE DOWN POINTING INDEX
+<Multi_key> <f> <w>   		: "✍"   U270D   	# WRITING HAND
+<Multi_key> <p> <Down>	: "✎"   U270E   	# LOWER RIGHT PENCIL
+<Multi_key> <p> <Up>	: "✐"   U2710   	# UPPER RIGHT PENCIL
 
 # For some logical statements.  I prefer doubled arrows for implication.
 <Multi_key> <equal> <greater>		: "⇒"	U21D2		# RIGHTWARDS DOUBLE ARROW
