@@ -1342,10 +1342,10 @@ if full
     " better key bindings for UltiSnipsExpandTrigger
     let g:UltiSnipsExpandTrigger       = "<C-j>"
     let g:empty_keymap['<C-j>'] = "snippet expand"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-h>"
-    let g:empty_keymap['<C-h>'] = "snippet next field"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-l>"
-    let g:empty_keymap['<C-l>'] = "snippet previous filed"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-l>"
+    let g:empty_keymap['<C-l>'] = "snippet next field"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-h>"
+    let g:empty_keymap['<C-h>'] = "snippet previous filed"
 
     " UltiSnips
     let g:UltiSnipsEditSplit="vertical"
