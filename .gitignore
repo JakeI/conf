@@ -22,3 +22,4 @@ stt/*
 !"vscode.ttf"
 tenpo/target/*
 **/Cargo.lock
+comp/*.warning
