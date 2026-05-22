@@ -634,6 +634,7 @@
 <Multi_key> <N> <O> : "№"
 <Multi_key> <N> <asciitilde> : "Ñ"
 <Multi_key> <N> <o> : "№"
+<Multi_key> <O> <1> : "∳"
 <Multi_key> <O> <A> : "Ⓐ"
 <Multi_key> <O> <C> : "©"
 <Multi_key> <O> <E> : "Œ"
