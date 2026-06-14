@@ -1,5 +1,4 @@
 <Multi_key> <apostrophe> <quotedbl> 	: "´"   acute # ACUTE ACCENT
-<Multi_key> <asciicircum> <minus> : "¯"   macron # MACRON
 <Multi_key> <parenleft> <space> 		: "˘"   breve # BREVE
 <Multi_key> <quotedbl> <quotedbl> 	: "¨"   diaeresis # DIAERESIS
 <Multi_key> <less> <space> 	: "ˇ"   caron # CARON
@@ -8,7 +7,6 @@
 # ASCII characters that may be difficult to access
 # on some keyboards.
 #<Multi_key> <plus> <plus>        	: "#"   numbersign # NUMBER SIGN
-<Multi_key> <apostrophe> <space> 	: "'"   apostrophe # APOSTROPHE
 <Multi_key> <apostrophe> <space> 	: "'"   apostrophe # APOSTROPHE
 <Multi_key> <A> <T>              	: "@"   at # COMMERCIAL AT
 <Multi_key> <parenleft> <parenleft> 	: "["   bracketleft # LEFT SQUARE BRACKET
@@ -37,9 +35,8 @@
 <Multi_key> <period> <less>      	: "‹"   U2039 # SINGLE LEFT-POINTING ANGLE QUOTATION MARK
 <Multi_key> <period> <period>    	: "…"   ellipsis # HORIZONTAL ELLIPSIS
 <Multi_key> <period> <minus>    	: "·"   periodcentered # MIDDLE DOT
-<Multi_key> <period> <asciicircum> 	: "·"   periodcentered # MIDDLE DOT
 <Multi_key> <period> <equal>    	: "•"   enfilledcircbullet # BULLET
-<Multi_key> <exclam> <asciicircum> 	: "¦"   brokenbar # BROKEN BAR
+<Multi_key> <exclam> <bar> 	: "¦"   brokenbar # BROKEN BAR  
 <Multi_key> <exclam> <exclam>    	: "¡"   exclamdown # INVERTED EXCLAMATION MARK
 <Multi_key> <p> <exclam>         	: "¶"   paragraph # PILCROW SIGN
 <Multi_key> <P> <exclam>         	: "¶"   paragraph # PILCROW SIGN
@@ -102,7 +99,6 @@
 # "₵" U20b5 CEDI SIGN
 <Multi_key> <equal> <R>          	: "₹" U20b9 # INDIAN RUPEE SIGN
 
-<Multi_key> <bar> <c>			: "¢"   cent # CENT SIGN
 <Multi_key> <minus> <L>          	: "£"   sterling # POUND SIGN
 <Multi_key> <equal> <Y>          	: "¥"   yen # YEN SIGN
 
@@ -283,9 +279,8 @@
 <Multi_key> <space> <minus> <space>             : " — "                 # EM DASH surrounded by THIN SPACEs.
 
 # Convenience shortcuts for quotation marks.
-<Multi_key> <quotedbl> <space>         : " “"                  # space followed by LEFT DOUBLE QUOTATION MARK
-<Multi_key> <quotedbl> <space>         : "” "                  # RIGHT DOUBLE QUOTATION MARK followed by space
-<Multi_key> <apostrophe> <space>       : " ‘"                # space followed by LEFT SINGLE QUOTATION MARK
+<Multi_key> <quotedbl> <less> <space>         : "“"                  # space followed by LEFT DOUBLE QUOTATION MARK
+<Multi_key> <quotedbl> <greater> <space>         : "”"                  # RIGHT DOUBLE QUOTATION MARK followed by space
 
 <Multi_key> <comma> <at>		: "⸲"	U2E32		# TURNED COMMA
 # Conflicts with system def? (·)
@@ -296,7 +291,7 @@
 # Convlicts with system def? (⍭)
 <Multi_key> <asciitilde> <bar>		: "ⸯ"	U2E2F		# VERTICAL TILDE
 <Multi_key> <minus> <equal>		: "⹀"	U2E40		# DOUBLE HYPHEN
-<Multi_key> <comma> <less>		: "⹁"	U2E41		# REVERSED COMMA
+<Multi_key> <less> <comma>		: "⹁"	U2E41		# REVERSED COMMA
 <Multi_key> <less> <bar>		: "↵"	U21B5		# DOWNWARDS ARROW WITH CORNER LEFTWARDS
 # The bullet was <o> <period>, but it clashes with ꙭ
 <Multi_key> <asterisk> <1>		: "•"	U2022		# BULLET
@@ -393,7 +388,7 @@
 
 <Multi_key> <c> <period>    : "⋅" # ASTERISK OPERATOR
 <Multi_key> <asterisk> <period>    : "∗"   U2217 # ASTERISK OPERATOR
-<Multi_key> <backslash> <backslash> : "∖"
+<Multi_key> <backslash> <backslash> <backslash> : "∖"
 <Multi_key> <bar> <minus> <greater>    : "▷"
 <Multi_key> <bracketleft> <p> <bracketright> : "■"
 <Multi_key> <bracketleft> <i> <bracketright> : "□"
@@ -480,7 +475,6 @@
 <Multi_key> <Multi_key> <l> : "⎕"
 <Multi_key> <Multi_key> <semicolon> : "⍎"
 <Multi_key> <Multi_key> <apostrophe> : "⍕"
-<Multi_key> <Multi_key> <numbersign> : "⊢"
 
 <Multi_key> <Multi_key> <A> : "⍶"
 <Multi_key> <Multi_key> <S> : "⌈"
