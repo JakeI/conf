@@ -4,6 +4,8 @@ LINKS=$(cat <<EOF
 ln zsh/zshrc                         $HOME/.zshrc
 ln vim/vimrc                         $HOME/.vimrc
 ln vim/UltiSnips                     $HOME/.vim/UltiSnips
+ln vim/syntax                        $HOME/.vim/syntax
+ln vim/ftdetect                      $HOME/.vim/ftdetect
 ln vim/colors                        $HOME/.vim/colors
 ln vim/init.vim                      $HOME/.config/nvim/init.vim
 ln vim/standalone                    $HOME/bin/standalone
@@ -15,6 +17,14 @@ ln bin/ascii2box.pl                  $HOME/bin/ascii2box.pl
 ln bin/pageedripgrap                 $HOME/bin/pageedripgrap
 ln bin/pdfpagelist                   $HOME/bin/pdfpagelist
 ln bin/Ansel-675c000-x86_64.AppImage $HOME/bin/ansel.AppImage
+ln bin/anonymize-pdf                 $HOME/bin/anonymize-pdf
+ln bin/extract-pdf-annotations       $HOME/bin/extract-pdf-annotations
+ln bin/modern-latexmk                $HOME/bin/modern-latexmk
+ln bin/pplatex                       $HOME/bin/pplatex
+ln bin/graphml2unicode.py            $HOME/bin/graphml2unicode
+ln bin/batcat-extended               $HOME/bin/batcat-extended
+ln bin/md2table                      $HOME/bin/md2table
+ln bin/mount-val                     $HOME/bin/mount-val
 ln desktop/photos.ansel.app.desktop  $HOME/.local/share/applications/photos.ansel.app.desktop
 ln desktop/feh.desktop               $HOME/.local/share/applications/feh.desktop
 ln pandoc                            $HOME/.pandoc
@@ -52,12 +62,29 @@ ln vscode/snippets                   $HOME/.config/Code/User/snippets
 ln nb/nbrc                           $HOME/.nbrc
 ln emacs/emacs.d                     $HOME/.emacs.d
 ln emacs/spacemacs                   $HOME/.spacemacs
+ln zellij/config.kdl                 $HOME/.config/zellij/config.kdl
+ln nu/config.nu                      $HOME/.config/nushell/config.nu
+ln nu/env.nu                         $HOME/.config/nushell/env.nu
+ln utt/utt-reporter.py               $HOME/bin/utt-reporter
 EOF
 )
 
 mkdir -p $HOME/bin/hosts
-mkdir -p /home/ji/texmf/tex/latex/local
+mkdir -p $HOME/texmf/tex/latex/local
 mkdir -p $HOME/.config/kmonad
+mkdir -p $HOME/.config/nvim
+mkdir -p $HOME/.vim
+mkdir -p $HOME/bin
+mkdir -p $HOME/.ipython/profile_default/startup
+mkdir -p $HOME/.jupyter
+mkdir -p $HOME/.config/systemd/user
+mkdir -p $HOME/.config/nix
+mkdir -p $HOME/.config/kitty
+mkdir -p $HOME/.config/zathura
+mkdir -p $HOME/.config/Code/User
+mkdir -p $HOME/.config/Code/User/snippets
+mkdir -p $HOME/.config/zellij
+
 
 SCRIPT=$(realpath "$0")
 CONFIGDIR=$(dirname "$SCRIPT")
@@ -109,3 +136,5 @@ install_binary () {
 }
 
 install_binary "combining-chars" "~/.pandoc/filters/combining-chars/update.sh"
+
+./ahk/install-ahk-windows.sh

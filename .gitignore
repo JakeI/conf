@@ -20,4 +20,6 @@ stt/*
 !"SourceCodePro-Regular.ttf"
 !"TokiTengwar.ttf"
 !"vscode.ttf"
-
+tenpo/target/*
+**/Cargo.lock
+comp/*.warning

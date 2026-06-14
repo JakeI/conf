@@ -1,0 +1,15 @@
+[package]
+name = "tenpo"
+version = "0.1.0"
+edition = "2024"
+description = "read utt files and run sql queries on those files"
+
+[dependencies]
+chrono = "0.4"
+polars = { version = "0.52", default-features = false, features = ["lazy", "temporal", "csv"] }
+polars-sql = "0.52"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+panic = "abort"

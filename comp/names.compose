@@ -1,13 +1,8 @@
 <Multi_key> <apostrophe> <quotedbl> 	: "´"   acute # ACUTE ACCENT
-<Multi_key> <minus> <asciicircum> 	: "¯"   macron # MACRON
-<Multi_key> <asciicircum> <minus> 	: "¯"   macron # MACRON
-<Multi_key> <underscore> <underscore> 	: "¯"   macron # MACRON
-<Multi_key> <underscore> <asciicircum> 	: "¯"   macron # MACRON
+<Multi_key> <asciicircum> <minus> : "¯"   macron # MACRON
 <Multi_key> <parenleft> <space> 		: "˘"   breve # BREVE
-<Multi_key> <parenleft> <space>		: "˘"   breve # BREVE
 <Multi_key> <quotedbl> <quotedbl> 	: "¨"   diaeresis # DIAERESIS
 <Multi_key> <less> <space> 	: "ˇ"   caron # CARON
-<Multi_key> <less> <space> 		: "ˇ"   caron # CARON
 
 
 # ASCII characters that may be difficult to access
@@ -43,14 +38,12 @@
 <Multi_key> <period> <period>    	: "…"   ellipsis # HORIZONTAL ELLIPSIS
 <Multi_key> <period> <minus>    	: "·"   periodcentered # MIDDLE DOT
 <Multi_key> <period> <asciicircum> 	: "·"   periodcentered # MIDDLE DOT
-<Multi_key> <asciicircum> <period> 	: "·"   periodcentered # MIDDLE DOT
 <Multi_key> <period> <equal>    	: "•"   enfilledcircbullet # BULLET
 <Multi_key> <exclam> <asciicircum> 	: "¦"   brokenbar # BROKEN BAR
 <Multi_key> <exclam> <exclam>    	: "¡"   exclamdown # INVERTED EXCLAMATION MARK
 <Multi_key> <p> <exclam>         	: "¶"   paragraph # PILCROW SIGN
 <Multi_key> <P> <exclam>         	: "¶"   paragraph # PILCROW SIGN
 <Multi_key> <plus> <minus>       	: "±"   plusminus # PLUS-MINUS SIGN
-<Multi_key> <minus> <plus> 		: "±"   plusminus # PLUS-MINUS SIGN
 <Multi_key> <question> <question> 	: "¿"   questiondown # INVERTED QUESTION MARK
 <Multi_key> <s> <s>              	: "ß"   ssharp # LATIN SMALL LETTER SHARP S
 <Multi_key> <S> <S>              	: "ẞ"   U1e9e # LATIN CAPITAL LETTER SHARP S
@@ -59,33 +52,25 @@
 <Multi_key> <O> <E>              	: "Œ"   OE # LATIN CAPITAL LIGATURE OE
 <Multi_key> <a> <e>              	: "æ"   ae # LATIN SMALL LETTER AE
 <Multi_key> <A> <E>              	: "Æ"   AE # LATIN CAPITAL LETTER AE
-<Multi_key> <f> <f>              	: "ﬀ"   Ufb00 # LATIN SMALL LIGATURE FF
-<Multi_key> <f> <i>              	: "ﬁ"   Ufb01 # LATIN SMALL LIGATURE FI
-<Multi_key> <f> <l>              	: "ﬂ"   Ufb02 # LATIN SMALL LIGATURE FL
-<Multi_key> <F> <i>              	: "ﬃ"   Ufb03 # LATIN SMALL LIGATURE FFI
-<Multi_key> <F> <l>              	: "ﬄ"   Ufb04 # LATIN SMALL LIGATURE FFL
+<Multi_key> <l> <f> <f> 	: "ﬀ"   Ufb00 # LATIN SMALL LIGATURE FF
+<Multi_key> <l> <f> <i>              	: "ﬁ"   Ufb01 # LATIN SMALL LIGATURE FI
+<Multi_key> <l> <f> <l>              	: "ﬂ"   Ufb02 # LATIN SMALL LIGATURE FL
+<Multi_key> <l> <f> <f> <i>          	: "ﬃ"   Ufb03 # LATIN SMALL LIGATURE FFI
+<Multi_key> <l> <f> <f> <l>          	: "ﬄ"   Ufb04 # LATIN SMALL LIGATURE FFL
 <Multi_key> <I> <J>              	: "Ĳ"   U0132 # LATIN CAPITAL LIGATURE IJ
 <Multi_key> <I> <j>              	: "Ĳ"   U0132 # LATIN CAPITAL LIGATURE IJ
 <Multi_key> <i> <j>              	: "ĳ"   U0133 # LATIN SMALL LIGATURE IJ
 
-<Multi_key> <o> <o>              	: "°"   degree # DEGREE SIGN
 <Multi_key> <asterisk> <0> 		: "°"   degree # DEGREE SIGN
-<Multi_key> <0> <asterisk> 		: "°"   degree # DEGREE SIGN
 
 # Quotation marks
 <Multi_key> <less> <less>        	: "«"   guillemotleft # LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
 <Multi_key> <greater> <greater>  	: "»"   guillemotright # RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
-<Multi_key> <less> <apostrophe>  	: "‘"   U2018 # LEFT SINGLE QUOTATION MARK
 <Multi_key> <apostrophe> <less>  	: "‘"   U2018 # LEFT SINGLE QUOTATION MARK
-<Multi_key> <greater> <apostrophe> 	: "’"   U2019 # RIGHT SINGLE QUOTATION MARK
 <Multi_key> <apostrophe> <greater> 	: "’"   U2019 # RIGHT SINGLE QUOTATION MARK
-<Multi_key> <comma> <apostrophe> 	: "‚"   U201a # SINGLE LOW-9 QUOTATION MARK
-<Multi_key> <apostrophe> <comma> 	: "‚"   U201a # SINGLE LOW-9 QUOTATION MARK
-<Multi_key> <less> <quotedbl>    	: "“"   U201c # LEFT DOUBLE QUOTATION MARK
-<Multi_key> <quotedbl> <less>    	: "“"   U201c # LEFT DOUBLE QUOTATION MARK
-<Multi_key> <greater> <quotedbl> 	: "”"   U201d # RIGHT DOUBLE QUOTATION MARK
-<Multi_key> <quotedbl> <greater> 	: "”"   U201d # RIGHT DOUBLE QUOTATION MARK
-<Multi_key> <comma> <quotedbl>   	: "„"   U201e # DOUBLE LOW-9 QUOTATION MARK
+<Multi_key> <comma> <less> 	: "‚"   U201a # SINGLE LOW-9 QUOTATION MARK
+<Multi_key> <quotedbl> <greater>    	: "“"   U201c # LEFT DOUBLE QUOTATION MARK
+<Multi_key> <quotedbl> <less> 	: "”"   U201d # RIGHT DOUBLE QUOTATION MARK
 <Multi_key> <quotedbl> <comma>   	: "„"   U201e # DOUBLE LOW-9 QUOTATION MARK
 
 # Per xxx
@@ -93,43 +78,19 @@
 
 # Currencies
 <Multi_key> <C> <E>              	: "₠"   U20a0 # EURO-CURRENCY SIGN
-<Multi_key> <C> <slash>          	: "₡"   U20a1 # COLON SIGN
 <Multi_key> <slash> <C>          	: "₡"   U20a1 # COLON SIGN
 <Multi_key> <C> <r>              	: "₢"   U20a2 # CRUZEIRO SIGN
 <Multi_key> <F> <r>              	: "₣"   U20a3 # FRENCH FRANC SIGN
-<Multi_key> <L> <equal>          	: "₤"   U20a4 # LIRA SIGN
 <Multi_key> <equal> <L>          	: "₤"   U20a4 # LIRA SIGN
-<Multi_key> <m> <slash>          	: "₥"   U20a5 # MILL SIGN
 <Multi_key> <slash> <m>          	: "₥"   U20a5 # MILL SIGN
-<Multi_key> <N> <equal>          	: "₦"   U20a6 # NAIRA SIGN
 <Multi_key> <equal> <N>          	: "₦"   U20a6 # NAIRA SIGN
 <Multi_key> <P> <t>              	: "₧"   U20a7 # PESETA SIGN
 <Multi_key> <R> <s>              	: "₨"   U20a8 # RUPEE SIGN
-<Multi_key> <W> <equal>          	: "₩"   U20a9 # WON SIGN
 <Multi_key> <equal> <W>          	: "₩"   U20a9 # WON SIGN
 # "₪" U20aa NEW SHEQEL SIGN
-<Multi_key> <d> <equal>          	: "₫"   U20ab # DONG SIGN
-<Multi_key> <equal> <d>          	: "₫"   U20ab # DONG SIGN
-<Multi_key> <C> <equal>          	: "€"   EuroSign # EURO SIGN
-<Multi_key> <equal> <C>          	: "€"   EuroSign # EURO SIGN
-<Multi_key> <c> <equal>          	: "€"   EuroSign # EURO SIGN
-<Multi_key> <equal> <c>          	: "€"   EuroSign # EURO SIGN
-<Multi_key> <E> <equal>          	: "€"   EuroSign # EURO SIGN
+<Multi_key> <minus> <d>          	: "₫"   U20ab # DONG SIGN
 <Multi_key> <equal> <E>          	: "€"   EuroSign # EURO SIGN
-<Multi_key> <e> <equal>          	: "€"   EuroSign # EURO SIGN
-<Multi_key> <equal> <e>          	: "€"   EuroSign # EURO SIGN
-<Multi_key> <Cyrillic_ES> <equal>	: "€"   EuroSign # EURO SIGN
-<Multi_key> <equal> <Cyrillic_ES>	: "€"   EuroSign # EURO SIGN
-<Multi_key> <Cyrillic_IE> <equal>	: "€"   EuroSign # EURO SIGN
-<Multi_key> <equal> <Cyrillic_IE>	: "€"   EuroSign # EURO SIGN
-<Multi_key> <P> <equal>          	: "₽"   U20bd # ROUBLE SIGN
-<Multi_key> <p> <equal>          	: "₽"   U20bd # ROUBLE SIGN
 <Multi_key> <equal> <P>          	: "₽"   U20bd # ROUBLE SIGN
-<Multi_key> <equal> <p>          	: "₽"   U20bd # ROUBLE SIGN
-<Multi_key> <Cyrillic_ZE> <equal>	: "₽"   U20bd # ROUBLE SIGN
-<Multi_key> <Cyrillic_ze> <equal>	: "₽"   U20bd # ROUBLE SIGN
-<Multi_key> <equal> <Cyrillic_ZE>	: "₽"   U20bd # ROUBLE SIGN
-<Multi_key> <equal> <Cyrillic_ze>	: "₽"   U20bd # ROUBLE SIGN
 # "₭" U20ad KIP SIGN
 # "₮" U20ae TUGRIK SIGN
 # "₯" U20af DRACHMA SIGN
@@ -139,31 +100,14 @@
 # "₳" U20b3 AUSTRAL SIGN
 # "₴" U20b4 HRYVNIA SIGN
 # "₵" U20b5 CEDI SIGN
-<Multi_key> <R> <equal>          	: "₹" U20b9 # INDIAN RUPEE SIGN
 <Multi_key> <equal> <R>          	: "₹" U20b9 # INDIAN RUPEE SIGN
-<Multi_key> <r> <equal>          	: "₹" U20b9 # INDIAN RUPEE SIGN
-<Multi_key> <equal> <r>          	: "₹" U20b9 # INDIAN RUPEE SIGN
 
-<Multi_key> <C> <bar>            	: "¢"   cent # CENT SIGN
-<Multi_key> <bar> <C>			: "¢"   cent # CENT SIGN
-<Multi_key> <c> <bar>            	: "¢"   cent # CENT SIGN
 <Multi_key> <bar> <c>			: "¢"   cent # CENT SIGN
-<Multi_key> <c> <slash>          	: "¢"   cent # CENT SIGN
-<Multi_key> <slash> <c>          	: "¢"   cent # CENT SIGN
-<Multi_key> <L> <minus>          	: "£"   sterling # POUND SIGN
 <Multi_key> <minus> <L>          	: "£"   sterling # POUND SIGN
-<Multi_key> <l> <minus> 		: "£"   sterling # POUND SIGN
-<Multi_key> <minus> <l>          	: "£"   sterling # POUND SIGN
-<Multi_key> <Y> <equal>          	: "¥"   yen # YEN SIGN
 <Multi_key> <equal> <Y>          	: "¥"   yen # YEN SIGN
-<Multi_key> <y> <equal> 		: "¥"   yen # YEN SIGN
-<Multi_key> <equal> <y>          	: "¥"   yen # YEN SIGN
-<Multi_key> <Y> <minus> 		: "¥"   yen # YEN SIGN
-<Multi_key> <minus> <Y> 		: "¥"   yen # YEN SIGN
-<Multi_key> <y> <minus> 		: "¥"   yen # YEN SIGN
-<Multi_key> <minus> <y> 		: "¥"   yen # YEN SIGN
 
 <Multi_key> <F12> <A>     : "₳"  # U20b3 AUSTRAL SIGN
+<Multi_key> <F12> <B>     : "₽"  # ROUBLE
 <Multi_key> <F12> <C>     : "₵"  # U20b5 CEDI SIGN
 <Multi_key> <F12> <D>     : "₯"  # U20af DRACHMA SIGN
 <Multi_key> <F12> <G>     : "₲"  # U20b2 GUARANI SIGN
@@ -173,7 +117,6 @@
 <Multi_key> <F12> <S>     : "₴"  # U20b4 HRYVNIA SIGN
 <Multi_key> <F12> <T>     : "₮"  # U20ae TUGRIK SIGN
 <Multi_key> <F12> <c>     : "¢"  # CENT
-<Multi_key> <F12> <c>     : "₢"  # CRUZEIRO
 <Multi_key> <F12> <d>     : "₫"  # DONG
 <Multi_key> <F12> <E>     : "₠"  # EURO-CURRENCY
 <Multi_key> <F12> <e>     : "€"  # EURO
@@ -182,7 +125,7 @@
 <Multi_key> <F12> <L>     : "₤"  # LIRA
 <Multi_key> <F12> <m>     : "₥"  # MILL
 <Multi_key> <F12> <N>     : "₦"  # NAIRA
-<Multi_key> <F12> <P>     : "₽"  # ROUBLE
+<Multi_key> <F12> <Q>     : "₢"  # CRUZEIRO
 <Multi_key> <F12> <r>     : "₹"  # RUPEE
 <Multi_key> <F12> <R>     : "₨"  # PUPEE
 <Multi_key> <F12> <slash> : "₡"  # COLON
@@ -190,13 +133,13 @@
 <Multi_key> <F12> <Y>     : "¥"  # YEN
 
 # Musical alterations
-<Multi_key> <numbersign> <q>    	: "♩"   U2669 # QUARTER NOTE
-<Multi_key> <numbersign> <e>    	: "♪"   U266a # EIGHTH NOTE
-<Multi_key> <numbersign> <E>    	: "♫"   U266b # BEAMED EIGHTH NOTES
-<Multi_key> <numbersign> <S>    	: "♬"   U266c # BEAMED SIXTEENTH NOTES
-<Multi_key> <numbersign> <b>     	: "♭"   U266d # MUSIC FLAT SIGN
-<Multi_key> <numbersign> <f>     	: "♮"   U266e # MUSIC NATURAL SIGN
-<Multi_key> <numbersign> <numbersign> 	: "♯"   U266f # MUSIC SHARP SIGN
+<Multi_key> <M> <q>    	: "♩"   U2669 # QUARTER NOTE
+<Multi_key> <M> <e>    	: "♪"   U266a # EIGHTH NOTE
+<Multi_key> <M> <E>    	: "♫"   U266b # BEAMED EIGHTH NOTES
+<Multi_key> <M> <S>    	: "♬"   U266c # BEAMED SIXTEENTH NOTES
+<Multi_key> <M> <b>     	: "♭"   U266d # MUSIC FLAT SIGN
+<Multi_key> <M> <f>     	: "♮"   U266e # MUSIC NATURAL SIGN
+<Multi_key> <M> <numbersign> 	: "♯"   U266f # MUSIC SHARP SIGN
 
 <Multi_key> <P> <P>              	: "¶"   paragraph # PILCROW SIGN
 
@@ -208,17 +151,19 @@
 <Multi_key> <question> <exclam>         : "⸘"   U2E18 # INVERTED INTERROBANG
 <Multi_key> <exclam> <question>         : "‽"   U203D # INTERROBANG
 
-## Segmented digits?
-<Multi_key> <numbersign> <0>    :  "🯰"  U1FBF0    # SEGMENTED DIGIT ZERO
-<Multi_key> <numbersign> <1>    :  "🯱"  U1FBF1    # SEGMENTED DIGIT ONE
-<Multi_key> <numbersign> <2>    :  "🯲"  U1FBF2    # SEGMENTED DIGIT TWO
-<Multi_key> <numbersign> <3>    :  "🯳"  U1FBF3    # SEGMENTED DIGIT THREE
-<Multi_key> <numbersign> <4>    :  "🯴"  U1FBF4    # SEGMENTED DIGIT FOUR
-<Multi_key> <numbersign> <5>    :  "🯵"  U1FBF5    # SEGMENTED DIGIT FIVE
-<Multi_key> <numbersign> <6>    :  "🯶"  U1FBF6    # SEGMENTED DIGIT SIX
-<Multi_key> <numbersign> <7>    :  "🯷"  U1FBF7    # SEGMENTED DIGIT SEVEN
-<Multi_key> <numbersign> <8>    :  "🯸"  U1FBF8    # SEGMENTED DIGIT EIGHT
-<Multi_key> <numbersign> <9>    :  "🯹"  U1FBF9    # SEGMENTED DIGIT NINE
+## Segmented digits? 
+## Won't even render in most fonts and numbersign colides with the box drawing chars in greek.sty
+## Drop those for now
+# <Multi_key> <numbersign> <0>    :  "🯰"  U1FBF0    # SEGMENTED DIGIT ZERO
+# <Multi_key> <numbersign> <1>    :  "🯱"  U1FBF1    # SEGMENTED DIGIT ONE
+# <Multi_key> <numbersign> <2>    :  "🯲"  U1FBF2    # SEGMENTED DIGIT TWO
+# <Multi_key> <numbersign> <3>    :  "🯳"  U1FBF3    # SEGMENTED DIGIT THREE
+# <Multi_key> <numbersign> <4>    :  "🯴"  U1FBF4    # SEGMENTED DIGIT FOUR
+# <Multi_key> <numbersign> <5>    :  "🯵"  U1FBF5    # SEGMENTED DIGIT FIVE
+# <Multi_key> <numbersign> <6>    :  "🯶"  U1FBF6    # SEGMENTED DIGIT SIX
+# <Multi_key> <numbersign> <7>    :  "🯷"  U1FBF7    # SEGMENTED DIGIT SEVEN
+# <Multi_key> <numbersign> <8>    :  "🯸"  U1FBF8    # SEGMENTED DIGIT EIGHT
+# <Multi_key> <numbersign> <9>    :  "🯹"  U1FBF9    # SEGMENTED DIGIT NINE
 
 # Keystrokes okay?
 <Multi_key> <Multi_key> <Multi_key> <f> <d> <l>   	        : "⚜"	U269C	  # FLEUR-DE-LIS
@@ -236,9 +181,6 @@
 <Multi_key> <Multi_key> <Multi_key> <b> <i> <o> <h>	<a> <z>	: "☣"	U2623		# BIOHAZARD SIGN
 # Changing this from ⚝
 <Multi_key> <Multi_key> <Multi_key> <A> <A> <A> <A> <A>	:	"⛤" U26E4 # PENTAGRAM (pentalpha, get it?)
-<Multi_key> <Multi_key> <Multi_key> <p> <l> <a> <n> <e>	: "✈"   U2708	  # AIRPLANE
-<Multi_key> <Multi_key> <Multi_key> <m> <a> <i> <l>		: "✉"	U2709	  # ENVELOPE
-<Multi_key> <Multi_key> <Multi_key> <m> <e> <d> 		: "☤"	U2624	  # CADEUCEUS
 
 <Multi_key> <o> <minus> <plus>		: "♀"	U2640		# FEMALE SIGN
 <Multi_key> <o> <minus> <greater>	: "♂"	U2642		# MALE SIGN
@@ -289,8 +231,8 @@
 <Multi_key> <bracketleft> <k> <bracketright>:    "⃣"  U20E3     # COMBINING ENCLOSING KEYCAP
 <Multi_key> <bracketleft> <t> <bracketright>:    "⃤"  U20E4     # COMBINING ENCLOSING TRIANGLE
 <Multi_key> <2> <slash>:  "⃫"  U20EB              # COMBINING LONG DOUBLE SOLIDUS OVERLAY
-<Multi_key> <asterisk>:   "⃰"  U20F0     # COMBINING ASTERISK ABOVE
-<Multi_key> <exclam>	: "̣"   U0323   # COMBINING DOT BELOW
+<Multi_key> <asciitilde> <asterisk>:   "⃰"  U20F0     # COMBINING ASTERISK ABOVE
+<Multi_key> <underscore> <colon>	: "̣"   U0323   # COMBINING DOT BELOW
 # With only one underscore it conflicts with stuff.
 <Multi_key> <backslash> <underscore> <underscore>	: "̱"	U0331	# COMBINING MACRON BELOW
 <Multi_key> <backslash> <backslash> <underscore>	: "̲"	U0332	# COMBINING LOW LINE
@@ -334,30 +276,11 @@
 <Multi_key> <colon> <parenleft>         : "☹"   U2639 # WHITE FROWNING FACE
 <Multi_key> <backslash> <o> <slash>		: "🙌"		# PERSON RAISING BOTH HANDS IN CELEBRATION
 
-<Multi_key> <p> <o> <o>                 : "💩"  U1F4A9 # PILE OF POO
-
-<Multi_key> <F> <U>                     : "🖕"  U1F595 # REVERSED HAND WITH MIDDLE FINGER EXTENDED
 <Multi_key> <L> <L> <A> <P>             : "🖖"  U1F596 # RAISED HAND WITH PART BETWEEN MIDDLE AND RING FINGERS
 
 <Multi_key> <ampersand> <at>    :   "⅋" U214B   # TURNED AMPERSAND
 <Multi_key> <backslash> <space>		: "␣"	U2423		# OPEN BOX
 <Multi_key> <space> <minus> <space>             : " — "                 # EM DASH surrounded by THIN SPACEs.
-
-<Multi_key> <comma> <space>		: "‚"	U201A		# SINGLE LOW-9 QUOTATION MARK
-<Multi_key> <comma> <comma>		: "„"	U201E		# DOUBLE LOW-9 QUOTATION MARK
-<Multi_key> <less> <comma> <comma>	: "⹂"	U2E42		# DOUBLE LOW-REVERSED-9 QUOTATION MARK
-<Multi_key> <apostrophe> <space>	: "’"	U2019		# RIGHT SINGLE QUOTATION MARK
-<Multi_key> <apostrophe> <apostrophe>	: "”"	U201D		# RIGHT DOUBLE QUOTATION MARK
-<Multi_key> <grave> <space>		: "‘"	U2018		# LEFT SINGLE QUOTATION MARK
-<Multi_key> <grave> <grave>		: "“"	U201C		# LEFT DOUBLE QUOTATION MARK
-<Multi_key> <6> <apostrophe>		: "‘"	U2018		# LEFT SINGLE QUOTATION MARK (high 6)
-<Multi_key> <6> <quotedbl>		: "“"	U201C		# LEFT DOUBLE QUOTATION MARK (66)
-<Multi_key> <9> <apostrophe>		: "’"	U2019		# RIGHT SINGLE QUOTATION MARK (high 9)
-<Multi_key> <9> <quotedbl>		: "”"	U201D		# RIGHT DOUBLE QUOTATION MARK (99)
-<Multi_key> <less> <9> <apostrophe>	: "‛"	U201B		# SINGLE HIGH-REVERSED-9 QUOTATION MARK
-<Multi_key> <less> <9> <quotedbl>	: "‟"	U201F		# DOUBLE HIGH-REVERSED-9 QUOTATION MARK
-<Multi_key> <comma> <apostrophe>	: "‚"	U201A		# SINGLE LOW-9 QUOTATION MARK (quote resembling a comma)
-<Multi_key> <comma> <quotedbl>		: "„"	U201E		# DOUBLE LOW-9 QUOTATION MARK
 
 # Convenience shortcuts for quotation marks.
 <Multi_key> <quotedbl> <space>         : " “"                  # space followed by LEFT DOUBLE QUOTATION MARK
@@ -372,7 +295,6 @@
 <Multi_key> <semicolon> <at>		: "⸵"	U2E35		# TURNED SEMICOLON
 # Convlicts with system def? (⍭)
 <Multi_key> <asciitilde> <bar>		: "ⸯ"	U2E2F		# VERTICAL TILDE
-<Multi_key> <asciicircum> <bar>		: "ⸯ"	U2E2F		# VERTICAL TILDE
 <Multi_key> <minus> <equal>		: "⹀"	U2E40		# DOUBLE HYPHEN
 <Multi_key> <comma> <less>		: "⹁"	U2E41		# REVERSED COMMA
 <Multi_key> <less> <bar>		: "↵"	U21B5		# DOWNWARDS ARROW WITH CORNER LEFTWARDS
@@ -398,14 +320,14 @@
 <Multi_key> <s> <e> <c> : "§"   U00A7   # SECTION SIGN
 <Multi_key> <p> <a> : "§"
 # It's in the Asian section, but it's a general-purpose punctuation:
-<Multi_key> <quotedbl> <quotedbl>       : "〃"	U3003		# DITTO MARK
+<Multi_key> <quotedbl> <slash>       : "〃"	U3003		# DITTO MARK
 # Working with the pattern from FLOOR/CEILING
 <Multi_key> <7> <asciicircum> <bracketleft>  : "⸢"  U2E22	# TOP LEFT HALF BRACKET
 <Multi_key> <7> <asciicircum> <bracketright> : "⸣"  U2E23	# TOP RIGHT HALF BRACKET
 <Multi_key> <L> <underscore> <bracketleft>   : "⸤"  U2E24	# BOTTOM LEFT HALF BRACKET
 <Multi_key> <L> <underscore> <bracketright>  : "⸥"  U2E25	# BOTTOM RIGHT HALF BRACKET
 # Consider <7> <less>/<greater> for ⸂⸃ maybe? <S> and <slash> for ⸉⸊⸌⸍ ...?
-# I guess we can get by with sub/superset for ⸦⸧.
+# I guess we can get by with sub/superset for ⸦ ⸧ .
 
 <Multi_key> <minus> <less>		: "←"	leftarrow	# LEFTWARDS ARROW
 <Multi_key> <minus> <asciicircum>	: "↑"	uparrow		# UPWARDS ARROW
@@ -413,8 +335,8 @@
 <Multi_key> <minus> <v>			: "↓"	downarrow	# DOWNWARDS ARROW
 <Multi_key> <less> <minus> <greater>	: "↔"	U2194           # LEFT RIGHT ARROW (kragen's)
 
-<Multi_key> <Left> <Left>		: "←"	leftarrow	# LEFTWARDS ARROW
-<Multi_key> <Up> <Up>			: "↑"	uparrow		# UPWARDS ARROW
+# Name crash when using <Left> as windows compatible <grave>      <Multi_key> <Left> <Left>		: "←"	leftarrow	# LEFTWARDS ARROW
+# Name crash when using <Up> as windows compatible <asciicircum>      <Multi_key> <Up> <Up>			: "↑"	uparrow		# UPWARDS ARROW
 <Multi_key> <Right> <Right>		: "→"	rightarrow	# RIGHTWARDS ARROW
 <Multi_key> <Down> <Down>		: "↓"	downarrow	# DOWNWARDS ARROW
 <Multi_key> <Left> <Right>		: "↔"	U2194           # LEFT RIGHT ARROW (kragen's)
@@ -422,37 +344,34 @@
 <Multi_key> <Up> <Down>			: "↕"	U2195           # UP DOWN ARROW (kragen's)
 <Multi_key> <Up> <ampersand> <Down>     : "⇵"	U21F5		# DOWNWARDS ARROW LEFTWARDS OF UPWARDS ARROW
 <Multi_key> <Down> <Left>		: "↵"	U21B5		# DOWNWARDS ARROW WITH CORNER LEFTWARDS
-<Multi_key> <Left> <o>			: "⟲"	U27F2		# ANTICLOCKWISE GAPPED CIRCLE ARROW
-<Multi_key> <Right> <o>			: "⟳"	U27F3		# CLOCKWISE GAPPED CIRCLE ARROW
-<Multi_key> <Left> <c>			: "↺"	U21BA		# ANTICLOCKWISE OPEN CIRCLE ARROW
-<Multi_key> <Right> <c>			: "↻"	U21BB		# CLOCKWISE OPEN CIRCLE ARROW
+<Multi_key> <O> <Left> <o>			: "⟲"	U27F2		# ANTICLOCKWISE GAPPED CIRCLE ARROW
+<Multi_key> <O> <Right> <o>			: "⟳"	U27F3		# CLOCKWISE GAPPED CIRCLE ARROW
+<Multi_key> <O> <Left> <c>			: "↺"	U21BA		# ANTICLOCKWISE OPEN CIRCLE ARROW
+<Multi_key> <O> <Right> <c>			: "↻"	U21BB		# CLOCKWISE OPEN CIRCLE ARROW
 <Multi_key> <Left> <asciitilde>		: "⇜"	U21DC		# LEFTWARDS SQUIGGLE ARROW
 <Multi_key> <asciitilde> <Left> <asciitilde>    : "⬳"  U2B33    # LONG LEFTWARDS SQUIGGLE ARROW
 <Multi_key> <Right> <asciitilde>	: "⇝"	U21DD		# RIGHTWARDS SQUIGGLE ARROW
 <Multi_key> <asciitilde> <Right> <asciitilde>   : "⟿"  U27FF    # LONG RIGHTWARDS SQUIGGLE ARROW
-<Multi_key> <Left> <bar>       		: "⇤"	U21E4		# LEFTWARDS ARROW TO BAR
-<Multi_key> <Right> <bar>       	: "⇥"	U21E5		# RIGHTWARDS ARROW TO BAR
-<Multi_key> <Left> <minus>     		: "⇠"	U21E0		# LEFTWARDS DASHED ARROW
-<Multi_key> <Up> <minus>     		: "⇡"	U21E1		# UPWARDS DASHED ARROW
-<Multi_key> <Right> <minus>     	: "⇢"	U21E2		# RIGHTWARDS DASHED ARROW
-<Multi_key> <Down> <minus>      	: "⇣"	U21E3		# DOWNWARDS DASHED ARROW
+<Multi_key> <Left> <period> <bar>       		: "⇤"	U21E4		# LEFTWARDS ARROW TO BAR
+<Multi_key> <Right> <period> <bar>       	: "⇥"	U21E5		# RIGHTWARDS ARROW TO BAR
+<Multi_key> <Left> <period> <minus>     		: "⇠"	U21E0		# LEFTWARDS DASHED ARROW
+<Multi_key> <Up> <period> <minus>     		: "⇡"	U21E1		# UPWARDS DASHED ARROW
+<Multi_key> <Right> <period> <minus>     	: "⇢"	U21E2		# RIGHTWARDS DASHED ARROW
+<Multi_key> <Down> <period> <minus>      	: "⇣"	U21E3		# DOWNWARDS DASHED ARROW
 <Multi_key> <z> <z> <greater>           : "↯"   U21AF           # DOWNWARDS ZIGZAG ARROW
 
 # Arrow keys don't always work: some apps trap them for cursor control and
 # other boring things.  The arrow symbols have alternate keystrokes.  Do
 # we need others for these printer's fists?  If so, what?  The -= and =-
 # we had before are not necessarily the best choices.
-# <Multi_key> <F> <Left>		: "☚"	U261A		# BLACK LEFT POINTING INDEX
-# <Multi_key> <F> <Right>		: "☛"	U261B		# BLACK RIGHT POINTING INDEX
-<Multi_key> <F> <Left>		: "☜"	U261C		# WHITE LEFT POINTING INDEX
-<Multi_key> <F> <Up>		: "☝"	U261D		# WHITE UP POINTING INDEX
-<Multi_key> <F> <Right>		: "☞"	U261E		# WHITE RIGHT POINTING INDEX
-<Multi_key> <F> <Down>		: "☟"	U261F		# WHITE DOWN POINTING INDEX
-<Multi_key> <F> <v>   		: "✌"   U270C   	# VICTORY HAND
-<Multi_key> <F> <w>   		: "✍"   U270D   	# WRITING HAND
-<Multi_key> <F> <p> <Down>	: "✎"   U270E   	# LOWER RIGHT PENCIL
-<Multi_key> <F> <p> <Right>	: "✏"   U270F   	# PENCIL
-<Multi_key> <F> <p> <Up>	: "✐"   U2710   	# UPPER RIGHT PENCIL
+# <Multi_key> <f> <Left>		: "☚"	U261A		# BLACK LEFT POINTING INDEX
+# <Multi_key> <f> <Right>		: "☛"	U261B		# BLACK RIGHT POINTING INDEX
+<Multi_key> <f> <Left>		: "☜"	U261C		# WHITE LEFT POINTING INDEX
+<Multi_key> <f> <Up>		: "☝"	U261D		# WHITE UP POINTING INDEX
+<Multi_key> <f> <Right>		: "☞"	U261E		# WHITE RIGHT POINTING INDEX
+<Multi_key> <f> <Down>		: "☟"	U261F		# WHITE DOWN POINTING INDEX
+<Multi_key> <p> <Down>	: "✎"   U270E   	# LOWER RIGHT PENCIL
+<Multi_key> <p> <Up>	: "✐"   U2710   	# UPPER RIGHT PENCIL
 
 # For some logical statements.  I prefer doubled arrows for implication.
 <Multi_key> <equal> <greater>		: "⇒"	U21D2		# RIGHTWARDS DOUBLE ARROW
@@ -474,8 +393,6 @@
 
 <Multi_key> <c> <period>    : "⋅" # ASTERISK OPERATOR
 <Multi_key> <asterisk> <period>    : "∗"   U2217 # ASTERISK OPERATOR
-<Multi_key> <0> <0> : "●"
-<Multi_key> <0> <o> : "◯"
 <Multi_key> <backslash> <backslash> : "∖"
 <Multi_key> <bar> <minus> <greater>    : "▷"
 <Multi_key> <bracketleft> <p> <bracketright> : "■"
@@ -575,7 +492,7 @@
 <Multi_key> <Multi_key> <K> : "⌸"
 <Multi_key> <Multi_key> <L> : "⌷"
 <Multi_key> <Multi_key> <colon> : "≡"
-<Multi_key> <Multi_key> <at> : "≢"
+<Multi_key> <Multi_key> <quotedbl> : "≢"
 <Multi_key> <Multi_key> <asciitilde> : "⊣"
 
 <Multi_key> <Multi_key> <backslash> : "⊢"

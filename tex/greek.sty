@@ -328,6 +328,7 @@
 \newunicodechar{ħ}{\hbar}           % ħ  0127  §-h
 \newunicodechar{≈}{\approx}         % ≈  2248  §~~
 \newunicodechar{≡}{\equiv}          % ≡  2261  §==
+\newunicodechar{≅}{\cong}           %  §=~
 \newunicodechar{≠}{\neq}            % ≠  2260  §/=
 \newunicodechar{≫}{\gg}             % ≫  compose +>  226B  §+>
 \newunicodechar{≪}{\ll}             % ≪  compose +<  226A  §+<
@@ -344,6 +345,9 @@
 \newunicodechar{≥}{\geq}            % ≥  2265    §>_
 \newunicodechar{∃}{\exists}         % ∃  2203    §EE
 \newunicodechar{∄}{\not\exists}     % ∄          §/E
+\newunicodechar{♯}{\sharp}          %            §##
+\newunicodechar{♭}{\flat}           %            §#b
+\newunicodechar{♮}{\natural}        %            §#n
 
 \newunicodechar{∪}{\cup}      % ∪ compose {u  §{u
 \newunicodechar{∩}{\cap}      % ∩ compose {^  §{^
@@ -391,6 +395,7 @@
 \newunicodechar{∮}{\oint}          % ∮  222E  §o1
 \newunicodechar{∯}{\oiint}         % §o2
 \newunicodechar{∰}{\oiiint}        % §o3
+\newunicodechar{∳}{\ointctrclockwise} % §O1  % maybe avoid using this the arrow is annoyingly small
 \newunicodechar{⮃}{\limits}        % §il
 
 \newunicodechar{⟨}{\langle}        % ⟨  27E8  §<(
@@ -778,6 +783,7 @@
 
 \newunicodechar{⊤}{\top}          % transpose   multi _!_  §_!
 \newunicodechar{ℓ}{\ell}  % §ll
+\newunicodechar{ᵀ}{^\top} % §^T
 
 \DeclareMathOperator*{\laplaceop}{\laplace}
 \DeclareMathOperator*{\Laplaceop}{\Laplace}
@@ -793,9 +799,9 @@
 % \catcode`⏟=\active
 % \catcode`⏟ = 13
 % \def #1⏟#2{\underbrace{#1}_{#2}}
-\newunicodechar{⏞}{\overbrace}   % multi ^ ,   §^,
+\newunicodechar{⏞}{\overbrace}   % §^,
 
-\newunicodechar{▲}{\blacktriangle}  % multi ^ v  §^v
+\newunicodechar{▲}{\blacktriangle}  % §Tv
 
 \newunicodechar{⟼}{\mapsto}  %  §|>
 \newunicodechar{∝}{\propto}  %  §oc
@@ -824,7 +830,9 @@
 \newunicodechar{⅐}{\nicefrac{1}{7}}  % §17
 \newunicodechar{⅛}{\nicefrac{1}{8}}  % §18
 \newunicodechar{⅑}{\nicefrac{1}{9}}  % §19
-\newunicodechar{†}{\dagger}    % §++
+
+\newunicodechar{†}{\dagger}          % §++
+\newunicodechar{‡}{\ddagger}         % §+2
 
 \newunicodechar{🗲}{\lightning}    % 🗲  1F5F2  §lb
 \newunicodechar{✗}{\texttimes} % §no
@@ -833,7 +841,12 @@
 \newunicodechar{●}{\CIRCLE} % §0F
 \newunicodechar{✓}{\checkmark} % §ys
 
-\newcommand{\notimplemented}{NOT_IMPLEMENTED_CHAR}
+\newunicodechar{⌞}{\llcorner} % §e1  % e for german ecke, numbers for corners based on postion on number block
+\newunicodechar{⌞}{\lrcorner} % §e3
+\newunicodechar{⌜}{\ulcorner} % §e7
+\newunicodechar{⌝}{\urcorner} % §e9
+
+\newcommand{\notimplemented}{NOT\_IMPLEMENTED\_CHAR}
 \newunicodechar{•}{\bullet}  % §bl
 \newunicodechar{‣}{\notimplemented}  % §tt
 
@@ -957,7 +970,7 @@
 \newunicodechar{📁}{\iconChoice{file-folder}{folder}} %  % folder
 \newunicodechar{📂}{\iconChoice{open-file-folder}{folder-open}} %   % open folder
 \newunicodechar{🗀}{\iconChoice{file-folder}{folder}} % §Of
-\newunicodechar{🗁}{\iconChoice{open-file-folder}{folder-open}} % §Oo
+\newunicodechar{🗁}{\iconChoice{open-file-folder}{folder-open}} % §OF
 % \newunicodechar{🖿}{} %
 \newunicodechar{🗂}{\emoji{card-index}} % §Oi 📇
 \newunicodechar{}{\emoji{clipboard}} % §Oy  % yank      📋
@@ -992,13 +1005,13 @@
 % \faQuoteRight
 % \faRadiation
 
-% maybe ♫ ☼ ✄ ✘ ✪ ✰ ✧ ✦ ❆ ❅ ♤ ♡ ✣ ⮱
+% maybe add at some point ♫ ☼ ✄ ✘ ✪ ✰ ✧ ✦ ❆ ❅ ♤ ♡ ✣ ⮱
 
 % Books
 \newunicodechar{}{\emoji{bookmark}} % §Lm
 \newunicodechar{🗏}{\emoji{page-facing-up}} % §Lp
-\newunicodechar{}{\emoji{book}} % §Lb
-\newunicodechar{}{\emoji{books}} % §Ll  % library
+\newunicodechar{}{\emoji{book}} % §Lk % last char bewcause Lb already exists
+\newunicodechar{}{\emoji{books}} % §LK  % Big K for a big library
 % \newunicodechar{}{\emoji{orange-book}} % Bo
 % \newunicodechar{}{\emoji{green-book}} % Bg
 % \newunicodechar{}{\emoji{blue-book}} % Bk
@@ -1018,7 +1031,6 @@
     % \raisebox{0.5em}{\rotatebox{-90}{\raisebox{-0.5em}{\faLevelUp*}}}
 }
 \newunicodechar{↳}{\downarrowwithtiprightwards} % §|_
-
 
 % Checklist Chars working with item-icons pandoc filter
 % \newcommand{\checkboxCheck}{\faCheckCircle[regular]}
@@ -1189,8 +1201,8 @@
 % Quotation marks
 \newunicodechar{„}{\glqq}   % §",
 \newunicodechar{“}{\grqq{}} % §"'
-\newunicodechar{«}{\frqq}   % §"<
-\newunicodechar{»}{\flqq{}} % §">
+\newunicodechar{«}{\frqq}   % §<<
+\newunicodechar{»}{\flqq{}} % §>>
 \newunicodechar{‚}{\glq} % §`,
 \newunicodechar{‘}{\grq{}} % §`'
 \newunicodechar{‹}{\frq} % §`<
