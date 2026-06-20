@@ -160,7 +160,7 @@
 % \newcommand{\overgroup}[1]{\aoverbrace[L1R]{#1}[U]}
 % \newcommand{\groupdot}[1]{\aoverbrace[l1r]{#1}[U]^{\cdot}}
 
-\newunicodechar{←}{\leftarrow}  % §<-
+\newunicodechar{←}{\leftarrow}  % §-<
 \newunicodechar{↓}{\downarrow}  % §v|
 \newunicodechar{↑}{\uparrow}    % §^|
 \newunicodechar{→}{\rightarrow} % §->
@@ -199,7 +199,7 @@
 % \newunicodechar{̂}{}            % §^^  â \^
 % \newunicodechar{⃒}{}            % §|   a⃒   % TODO: add \vertoverlay
 % \newunicodechar{⃐}{}            % §hl  a⃐   % TODO: add \leftharpoonaccent (or maybe using stuff from \hm (half matrix))
-% \newunicodechar{⃑}{}            % §hr  a⃑   % TODO: add \rightharpoonaccent (or maybe using stuff from \hv (half vector))
+% \newunicodechar{⃑}{}            % §>h  a⃑   % TODO: add \rightharpoonaccent (or maybe using stuff from \hv (half vector))
 
 % TODO: Add remaining accent marks starting at 0x030B
 
@@ -939,7 +939,7 @@
 
 % Those tow look the same in constant width fonts not ideal so just define them
 % to be the same thisn
-\newunicodechar{―}{---} % §hb  % Horizontal bar
+\newunicodechar{―}{---} % §H|  % Horizontal bar
 \newunicodechar{–}{---} % §-_  % EM Dash
 
 
@@ -948,7 +948,7 @@
 %   ㎠	㎡	㎢	㎣	㎤	㎥	㎦	㎧	㎨	㎩	㎪	㎫	㎬	㎭	㎮	㎯	㎰	㎱	㎲	㎳	㎴	㎵	㎶	㎷	㎸	㎹	㎺	㎻	㎼	㎽	㎾	㎿
 %   ㏀	㏁	㏂	㏃	㏄	㏅	㏆	㏇	㏈	㏉	㏊	㏋	㏌	㏍	㏎	㏏	㏐	㏑	㏒	㏓	㏔	㏕	㏖	㏗	㏘	㏙	㏚	㏛	㏜	㏝	㏞	㏟
 \newunicodechar{㏑}{\ln} % §ln
-\newunicodechar{㏒}{\ln} % §lg
+\newunicodechar{㏒}{\log} % §lg
 
 \usepackage{iftex}
 \ifLuaTeX
