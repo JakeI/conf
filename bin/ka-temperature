@@ -1,0 +1,249 @@
+#!/usr/bin/env -S uv run --script
+import sys, json, urllib.request
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+import shutil, subprocess, tempfile
+
+# Benutzt das städische Klimasensornetzwerk (mit mehr als 100 Sensoren)
+# Nutze die Karte um standorte von zu finden
+# https://geoportal.karlsruhe.de/stadtplan_heisse_tage_ps04/?page=Karte#data_s=id%3AdataSource_6-19dfc57d2d0-layer-12%3A1136%3A1136
+# clicking dann zum Temperaturverlauf weiter
+# https://geoportal.karlsruhe.de/ps04/apps/dashboards/b0f05535ae9f4e6a86442df5c64dbb65#device_id=dac82f23-a9c4-4e03-bce9-f08aaef200e9
+# und benutze diese device_id
+
+# Offenbar wird in der Regel auch Luftfeuchte und Luftdruck gemessen
+# Hier gibt es die viel bessere Karte um sensoren zu finden
+# https://geoportal.karlsruhe.de/sensorcity/Dashboard/?page=Seite&views=Gesamt#data_s=id%3AdataSource_7-19daecd09e7-layer-6-19daecd0a23-layer-10%3A2913
+
+BASE = "https://geoportal.karlsruhe.de/ags04/rest/services/Hosted/Sensordaten_NodeRED/FeatureServer/2/query"
+
+SENSORS = dict(
+    durlacher_tor="dac82f23-a9c4-4e03-bce9-f08aaef200e9",
+    schlossplatz="836952e2-1e16-4f5c-864f-471e0c6995f9",
+    ostring="5658d7a4-3bd1-4262-8c41-f0db27ad293a",
+    kühler_krug="fe9634e5-ab39-4a56-a921-5548c9ef9708",
+    wher_an_alb="acfe4c22-4203-48c3-8c40-a719cc952912",
+    rhein_strandbad="a919cdff-9880-4c87-a348-68d24cd20824",
+    turmberg="503b3653-0512-469d-823d-896fa9ea61ec"
+)
+
+DE = ZoneInfo("Europe/Berlin")
+
+
+def help():
+    print("""usage:
+  ka-temperature [options]
+
+options:
+  -l, --location NAME   sensor key (repeatable, default: durlacher_tor)
+  -n, --num N           number of results per sensor (default: 1)
+  --csv                 CSV output
+  --table               force table output (default)
+  --plot                call gnuplot.exe to render data as a plot
+  --no-header           disable header row
+  --no-location         omit location column
+  -h, --help            show this help
+""")
+    sys.exit(0)
+
+
+def error(msg):
+    print(f"error: {msg}\n")
+    help()
+    sys.exit(1)
+
+
+def t(ms):
+    return datetime.fromtimestamp(ms/1000, tz=timezone.utc).astimezone(DE).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def fetch(device, n):
+    url = (f"{BASE}?where=device_id%3D%27{device}%27"
+           f"&outFields=temp,measured_at"
+           f"&orderByFields=measured_at%20DESC"
+           f"&resultRecordCount={n}&f=json")
+    return json.load(urllib.request.urlopen(url))["features"]
+
+
+def has_gnuplot():
+    return shutil.which("gnuplot.exe") is not None
+
+def plot(rows, show_loc):
+    if not has_gnuplot():
+        error("gnuplot.exe not found on PATH")
+
+    series = {}
+    for loc, ti, te in rows:
+        series.setdefault(loc, []).append((ti, te))
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".gp", mode="w")
+
+    tmp.write("""\
+        set term wxt
+        set datafile missing "NaN"
+
+        set xdata time
+        set timefmt "%Y-%m-%d_%H:%M:%S"
+        # using Chinese char because it's nice and short
+        set format x "日%d %H:%M"
+
+        # --- spacing fixes ---
+        set tmargin 1
+        set bmargin 2
+        set lmargin 5
+        set rmargin 1
+        set xtics offset 0,0.3
+        set ytics offset 0.5,0
+
+        set grid
+        set key inside box opaque samplen 1 spacing 0.8 font ",9"
+
+        set xlabel "time"
+        set ylabel "temperature"
+
+        plot """)
+
+    plots = []
+    for loc, data in series.items():
+        fname = tempfile.NamedTemporaryFile(delete=False, mode="w").name
+        with open(fname, "w") as f:
+            for tstr, temp in reversed(data):
+                f.write(f"{tstr.replace(" ", "_")} {temp}\n")
+
+        plots.append(
+            f"'{fname}' using 1:2 with linespoints "
+            f"pointtype 7 pointsize 0.6 title '{loc.replace("_", "\\_")}'"
+        )
+
+    tmp.write(", ".join(plots))
+    tmp.close()
+
+    subprocess.run(
+        ["gnuplot.exe", "-persist", tmp.name],
+        stderr=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL
+    )
+
+def table(rows, show_loc, header):
+    w0 = (max(len(r[0]) for r in rows) + 1) if show_loc else 0
+    w1, w2 = 19 + 1, 6 + 1
+
+    if header:
+        if show_loc:
+            print(f"┌{'─'*w0}─┬{'─'*w1}─┬{'─'*w2}─┐")
+            print(f"│ {'location'.ljust(w0-1)} │ time                │ temp   │")
+            print(f"├{'─'*w0}─┼{'─'*w1}─┼{'─'*w2}─┤")
+        else:
+            print(f"┌{'─'*w1}─┬{'─'*w2}─┐")
+            print(f"│ time                │ temp   │")
+            print(f"├{'─'*w1}─┼{'─'*w2}─┤")
+
+    for loc, ti, te in rows:
+        if show_loc:
+            print(f"│ {loc.ljust(w0-1)} │ {ti} │ {str(te).rjust(w2-1)} │")
+        else:
+            print(f"│ {ti} │ {str(te).rjust(w2-1)} │")
+
+    if header:
+        if show_loc:
+            print(f"└{'─'*w0}─┴{'─'*w1}─┴{'─'*w2}─┘")
+        else:
+            print(f"└{'─'*w1}─┴{'─'*w2}─┘")
+
+
+def csv(rows, show_loc, header):
+    if header:
+        print("location,time,temp")
+    for loc, ti, te in rows:
+        if show_loc:
+            print(f"{loc},{ti},{te}")
+        else:
+            print(f"{ti},{te}")
+
+
+def parse():
+    if "-h" in sys.argv or "--help" in sys.argv:
+        help()
+
+    args = sys.argv[1:]
+
+    # defaults
+    locs = []
+    n = 1
+    mode = "table"
+    header = True
+    show_loc = True
+
+    i = 0
+    while i < len(args):
+        a = args[i]
+
+        if a in ("-l", "--location"):
+            if i + 1 >= len(args):
+                error("missing value for -l/--location")
+            locs.append(args[i+1])
+            i += 2
+
+        elif a in ("-n", "--num"):
+            if i + 1 >= len(args):
+                error("missing value for -n/--num")
+            n = int(args[i+1])
+            i += 2
+
+        elif a == "--csv":
+            mode = "csv"
+            i += 1
+
+        elif a == "--table":
+            mode = "table"
+            i += 1
+
+        elif a == "--plot":
+            mode = "plot"
+            i += 1
+
+        elif a == "--no-header":
+            header = False
+            i += 1
+
+        elif a == "--no-location":
+            show_loc = False
+            i += 1
+
+        else:
+            error(f"unknown argument: {a}")
+
+    if not locs:
+        locs = ["durlacher_tor"]
+
+    devices = []
+    for l in locs:
+        if l not in SENSORS:
+            error(f"unknown location: {l}")
+        devices.append((l, SENSORS[l]))
+
+    return devices, n, mode, header, show_loc
+
+
+def main():
+    devices, n, mode, header, show_loc = parse()
+
+    all_rows = []
+    for loc, dev in devices:
+        data = fetch(dev, n)
+        for r in data:
+            a = r["attributes"]
+            all_rows.append((loc, t(a["measured_at"]), a["temp"]))
+
+    all_rows.sort(key=lambda x: x[1], reverse=True)
+
+    if mode == "csv":
+        csv(all_rows, show_loc, header)
+    elif mode == "plot":
+        plot(all_rows, show_loc)
+    else:
+        table(all_rows, show_loc, header)
+
+
+if __name__ == "__main__":
+    main()
