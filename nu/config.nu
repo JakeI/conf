@@ -17,16 +17,16 @@
 # You can remove these comments if you want or leave
 # them for future reference.
 
-alias x="~/bin/batcat-extended"
-alias x="~/bin/modern-latexmk"
-alias l="ls"
-alias la="ls -a"
-alias t="lsd --tree"
-alias e="$env.EDITOR"
+alias b = "~/bin/batcat-extended"
+alias x = "~/bin/modern-latexmk"
+alias l = "ls"
+alias la = "ls -a"
+alias t = "lsd --tree"
+alias e = "$env.EDITOR"
 
-alias ms='dirmanager save'
-alias mc='dirmanager change'
-alias mp='dirmanager path'
-alias mreg='dirmanager list'
-alias mclear='dirmanager clear'
+alias ms = 'dirmanager save'
+alias mc = 'dirmanager change'
+alias mp = 'dirmanager path'
+alias mreg = 'dirmanager list'
+alias mclear = 'dirmanager clear'
 
