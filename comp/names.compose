@@ -1,5 +1,4 @@
 <Multi_key> <apostrophe> <quotedbl> 	: "´"   acute # ACUTE ACCENT
-<Multi_key> <asciicircum> <minus> : "¯"   macron # MACRON
 <Multi_key> <parenleft> <space> 		: "˘"   breve # BREVE
 <Multi_key> <quotedbl> <quotedbl> 	: "¨"   diaeresis # DIAERESIS
 <Multi_key> <less> <space> 	: "ˇ"   caron # CARON
@@ -8,7 +7,6 @@
 # ASCII characters that may be difficult to access
 # on some keyboards.
 #<Multi_key> <plus> <plus>        	: "#"   numbersign # NUMBER SIGN
-<Multi_key> <apostrophe> <space> 	: "'"   apostrophe # APOSTROPHE
 <Multi_key> <apostrophe> <space> 	: "'"   apostrophe # APOSTROPHE
 <Multi_key> <A> <T>              	: "@"   at # COMMERCIAL AT
 <Multi_key> <parenleft> <parenleft> 	: "["   bracketleft # LEFT SQUARE BRACKET
@@ -37,9 +35,8 @@
 <Multi_key> <period> <less>      	: "‹"   U2039 # SINGLE LEFT-POINTING ANGLE QUOTATION MARK
 <Multi_key> <period> <period>    	: "…"   ellipsis # HORIZONTAL ELLIPSIS
 <Multi_key> <period> <minus>    	: "·"   periodcentered # MIDDLE DOT
-<Multi_key> <period> <asciicircum> 	: "·"   periodcentered # MIDDLE DOT
 <Multi_key> <period> <equal>    	: "•"   enfilledcircbullet # BULLET
-<Multi_key> <exclam> <asciicircum> 	: "¦"   brokenbar # BROKEN BAR
+<Multi_key> <exclam> <bar> 	: "¦"   brokenbar # BROKEN BAR  
 <Multi_key> <exclam> <exclam>    	: "¡"   exclamdown # INVERTED EXCLAMATION MARK
 <Multi_key> <p> <exclam>         	: "¶"   paragraph # PILCROW SIGN
 <Multi_key> <P> <exclam>         	: "¶"   paragraph # PILCROW SIGN
@@ -80,7 +77,7 @@
 <Multi_key> <C> <E>              	: "₠"   U20a0 # EURO-CURRENCY SIGN
 <Multi_key> <slash> <C>          	: "₡"   U20a1 # COLON SIGN
 <Multi_key> <C> <r>              	: "₢"   U20a2 # CRUZEIRO SIGN
-<Multi_key> <F> <r>              	: "₣"   U20a3 # FRENCH FRANC SIGN
+<Multi_key> <F> <minus>            	: "₣"   U20a3 # FRENCH FRANC SIGN
 <Multi_key> <equal> <L>          	: "₤"   U20a4 # LIRA SIGN
 <Multi_key> <slash> <m>          	: "₥"   U20a5 # MILL SIGN
 <Multi_key> <equal> <N>          	: "₦"   U20a6 # NAIRA SIGN
@@ -102,7 +99,6 @@
 # "₵" U20b5 CEDI SIGN
 <Multi_key> <equal> <R>          	: "₹" U20b9 # INDIAN RUPEE SIGN
 
-<Multi_key> <bar> <c>			: "¢"   cent # CENT SIGN
 <Multi_key> <minus> <L>          	: "£"   sterling # POUND SIGN
 <Multi_key> <equal> <Y>          	: "¥"   yen # YEN SIGN
 
@@ -187,7 +183,7 @@
 
 <Multi_key> <backslash> <grave>	: "̀"  U0300   # COMBINING GRAVE ACCENT
 <Multi_key> <backslash> <apostrophe>    : "́"   U0301   # COMBINING ACUTE ACCENT
-<Multi_key> <backslash> <asciicircum>    : "̂"   U0302   # COMBINING CIRCUMFLEX ACCENT
+<Multi_key> <backslash> <asciicircum> <asciicircum>    : "̂"   U0302   # COMBINING CIRCUMFLEX ACCENT
 <Multi_key> <backslash> <asciitilde>       : "̃"   U0303	# COMBINING TILDE
 <Multi_key> <backslash> <equal>		: "̄"	U0304	# COMBINING MACRON
 <Multi_key> <backslash> <backslash> <equal>		: "̅"	U0305	# COMBINING OVERLINE -- ???
@@ -207,7 +203,7 @@
 <Multi_key> <backslash> <2> <grave>	: "̏"	U030f	# COMBINING DOUBLE GRAVE ACCENT
 # For writing PSILI and DASIA in Greek
 # Ugh, better key-coding?  I may need @ for BELOW.
-<Multi_key> <backslash> <backslash> <backslash> <comma>	:	"̒"  U0312   # COMBINING TURNED COMMA ABOVE
+<Multi_key> <backslash> <comma>	:	"̒"  U0312   # COMBINING TURNED COMMA ABOVE
 <Multi_key> <backslash> <backslash> <comma>	:	"̓"  U0313   # COMBINING COMMA ABOVE
 <Multi_key> <backslash> <backslash> <less> <comma>	:	"̔"   U0314   # COMBINING REVERSED COMMA ABOVE
 <Multi_key> <backslash> <f> <m>                 : "͒"   U0352   # COMBINING FERMATA
@@ -236,7 +232,7 @@
 # With only one underscore it conflicts with stuff.
 <Multi_key> <backslash> <underscore> <underscore>	: "̱"	U0331	# COMBINING MACRON BELOW
 <Multi_key> <backslash> <backslash> <underscore>	: "̲"	U0332	# COMBINING LOW LINE
-<Multi_key> <backslash> <backslash> <backslash> <underscore>	: "̳"	U0333	# COMBINING DOUBLE LOW LINE
+<Multi_key> <backslash> <asciicircum> <underscore>	: "̳"	U0333	# COMBINING DOUBLE LOW LINE
 
 # The @ sign will signify reversal to the bottom of the glyph, 'kay?
 
@@ -274,18 +270,17 @@
 
 <Multi_key> <colon> <parenright>        : "☺"   U263A # WHITE SMILING FACE
 <Multi_key> <colon> <parenleft>         : "☹"   U2639 # WHITE FROWNING FACE
-<Multi_key> <backslash> <o> <slash>		: "🙌"		# PERSON RAISING BOTH HANDS IN CELEBRATION
+<Multi_key> <G> <o> <d>		: "🙌"		# PERSON RAISING BOTH HANDS IN CELEBRATION
 
 <Multi_key> <L> <L> <A> <P>             : "🖖"  U1F596 # RAISED HAND WITH PART BETWEEN MIDDLE AND RING FINGERS
 
 <Multi_key> <ampersand> <at>    :   "⅋" U214B   # TURNED AMPERSAND
-<Multi_key> <backslash> <space>		: "␣"	U2423		# OPEN BOX
+<Multi_key> <backslash> <space> <underscore>		: "␣"	U2423		# OPEN BOX
 <Multi_key> <space> <minus> <space>             : " — "                 # EM DASH surrounded by THIN SPACEs.
 
 # Convenience shortcuts for quotation marks.
-<Multi_key> <quotedbl> <space>         : " “"                  # space followed by LEFT DOUBLE QUOTATION MARK
-<Multi_key> <quotedbl> <space>         : "” "                  # RIGHT DOUBLE QUOTATION MARK followed by space
-<Multi_key> <apostrophe> <space>       : " ‘"                # space followed by LEFT SINGLE QUOTATION MARK
+<Multi_key> <quotedbl> <less> <space>         : "“"                  # space followed by LEFT DOUBLE QUOTATION MARK
+<Multi_key> <quotedbl> <greater> <space>         : "”"                  # RIGHT DOUBLE QUOTATION MARK followed by space
 
 <Multi_key> <comma> <at>		: "⸲"	U2E32		# TURNED COMMA
 # Conflicts with system def? (·)
@@ -296,7 +291,7 @@
 # Convlicts with system def? (⍭)
 <Multi_key> <asciitilde> <bar>		: "ⸯ"	U2E2F		# VERTICAL TILDE
 <Multi_key> <minus> <equal>		: "⹀"	U2E40		# DOUBLE HYPHEN
-<Multi_key> <comma> <less>		: "⹁"	U2E41		# REVERSED COMMA
+<Multi_key> <less> <comma>		: "⹁"	U2E41		# REVERSED COMMA
 <Multi_key> <less> <bar>		: "↵"	U21B5		# DOWNWARDS ARROW WITH CORNER LEFTWARDS
 # The bullet was <o> <period>, but it clashes with ꙭ
 <Multi_key> <asterisk> <1>		: "•"	U2022		# BULLET
@@ -313,7 +308,7 @@
 # <Multi_key> <space> <numbersign> :   " "      U2007             # FIGURE SPACE
 # We used to have THIN SPACE as <space> <apostrophe>, but now that’s remapped
 # to " ‘", for conveniently enclosing things in proper single-quotes.
-<Multi_key> <backslash> <comma>		: " "	U2009		# THIN SPACE
+<Multi_key> <backslash> <space> <space>		: " "	U2009		# THIN SPACE
 # (heh, heh... space bar)
 # <Multi_key> <space> <bar>               : " "   U200A           # HAIR SPACE
 <Multi_key> <d> <a> <g>			: "†"	U2020		# DAGGER
@@ -377,14 +372,14 @@
 <Multi_key> <equal> <greater>		: "⇒"	U21D2		# RIGHTWARDS DOUBLE ARROW
 <Multi_key> <equal> <less>		: "⇐"	U21D0		# LEFTWARDS DOUBLE ARROW
 <Multi_key> <less> <minus> <equal> <greater> : "⇔" U21D4 # LEFT RIGHT DOUBLE ARROW 
-<Multi_key> <equal> <Right> <Right>	: "⇒"	U21D2		# RIGHTWARDS DOUBLE ARROW
-<Multi_key> <equal> <Left> <Left>	: "⇐"	U21D0		# LEFTWARDS DOUBLE ARROW
-<Multi_key> <equal> <Left> <Right>	: "⇔"	U21D4	# LEFT RIGHT DOUBLE ARROW
-<Multi_key> <equal> <Right> <Left>	: "⇔"	U21D4	# LEFT RIGHT DOUBLE ARROW
-<Multi_key> <equal> <Up> <Up>		: "⇑"	U21D1	# UPWARDS DOUBLE ARROW
-<Multi_key> <equal> <Down> <Down>	: "⇓"	U21D3	# DOWNWARDS DOUBLE ARROW
-<Multi_key> <equal> <Up> <Down>		: "⇕"	U21D5	# UP DOWN DOUBLE ARROW
-<Multi_key> <equal> <Down> <Left>	: "⏎"	U23CE	# RETURN SYMBOL
+<Multi_key> <Right> <equal> <Right>	: "⇒"	U21D2		# RIGHTWARDS DOUBLE ARROW
+<Multi_key> <Left> <equal> <Left>	: "⇐"	U21D0		# LEFTWARDS DOUBLE ARROW
+<Multi_key> <Left> <equal> <Right>	: "⇔"	U21D4	# LEFT RIGHT DOUBLE ARROW
+<Multi_key> <Right> <equal> <Left>	: "⇔"	U21D4	# LEFT RIGHT DOUBLE ARROW
+<Multi_key> <Up> <equal> <Up>		: "⇑"	U21D1	# UPWARDS DOUBLE ARROW
+<Multi_key> <Down> <equal> <Down>	: "⇓"	U21D3	# DOWNWARDS DOUBLE ARROW
+<Multi_key> <Up> <equal> <Down>		: "⇕"	U21D5	# UP DOWN DOUBLE ARROW
+<Multi_key> <Down> <equal> <Left>	: "⏎"	U23CE	# RETURN SYMBOL
 # These are just too cool-looking not to have (if your font supports them)
 <Multi_key> <equal> <period> <equal>	: "⸎"	U2E0E		# EDITORIAL CORONIS
 
@@ -393,7 +388,7 @@
 
 <Multi_key> <c> <period>    : "⋅" # ASTERISK OPERATOR
 <Multi_key> <asterisk> <period>    : "∗"   U2217 # ASTERISK OPERATOR
-<Multi_key> <backslash> <backslash> : "∖"
+<Multi_key> <backslash> <backslash> <backslash> : "∖"
 <Multi_key> <bar> <minus> <greater>    : "▷"
 <Multi_key> <bracketleft> <p> <bracketright> : "■"
 <Multi_key> <bracketleft> <i> <bracketright> : "□"
@@ -480,7 +475,6 @@
 <Multi_key> <Multi_key> <l> : "⎕"
 <Multi_key> <Multi_key> <semicolon> : "⍎"
 <Multi_key> <Multi_key> <apostrophe> : "⍕"
-<Multi_key> <Multi_key> <numbersign> : "⊢"
 
 <Multi_key> <Multi_key> <A> : "⍶"
 <Multi_key> <Multi_key> <S> : "⌈"
@@ -569,11 +563,11 @@
 <Multi_key> <h> <w> <i> 			: "ゐ" #WI this one is almost unused now
 <Multi_key> <h> <w> <e> 			: "ゑ" #WE same as above
 <Multi_key> <h> <w> <o> 			: "を" #WO
-<Multi_key> <h> <n>         	: "ん" #N
+<Multi_key> <h> <n> <n>         	: "ん" #N
 ### these 3 are used as modifiers to create Digraphs
-<Multi_key> <h> <y> <a> <s>			: "ゃ" #small YA
-<Multi_key> <h> <y> <u> <s>			: "ゅ" #small YU
-<Multi_key> <h> <y> <o> <s>			: "ょ" #small YO
+<Multi_key> <h> <bar> <y> <a>			: "ゃ" #small YA
+<Multi_key> <h> <bar> <y> <u>			: "ゅ" #small YU
+<Multi_key> <h> <bar> <y> <o>			: "ょ" #small YO
 ### Diacritics
 <Multi_key> <h> <g> <a>			: "が" #GA
 <Multi_key> <h> <g> <i>			: "ぎ" #GI
@@ -650,11 +644,11 @@
 <Multi_key> <k> <w> <i> 			: "ヰ" #WI this one is almost unused now
 <Multi_key> <k> <w> <e> 			: "ヱ" #WE same as above
 <Multi_key> <k> <w> <o> 			: "ヲ" #WO
-<Multi_key> <k> <n>              	: "ン" #N
+<Multi_key> <k> <n> <n>            	: "ン" #N
 ### these 3 are used as modifiers to create Digraphs
-<Multi_key> <k> <y> <a> <s>			: "ャ" #small YA
-<Multi_key> <k> <y> <u> <s>			: "ュ" #small YU
-<Multi_key> <k> <y> <o> <s>			: "ョ" #small YO
+<Multi_key> <k> <bar> <y> <a>			: "ャ" #small YA
+<Multi_key> <k> <bar> <y> <u>			: "ュ" #small YU
+<Multi_key> <k> <bar> <y> <o>			: "ョ" #small YO
 ### Diacritics
 <Multi_key> <k> <g> <a> 			: "ガ" #GA
 <Multi_key> <k> <g> <i> 			: "ギ" #GI

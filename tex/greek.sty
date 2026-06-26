@@ -132,7 +132,7 @@
 
 % for other possible choices of special parens see https://www.compart.com/en/unicode/block/U+3000
 \providecommand{\symc}[2]{\OpnTortoise #1 , #2 \ClsTortoise}
-\newunicodechar{〔}{\OpnTortoise}  % §([  〔A,B〕
+\newunicodechar{〔}{\OpnTortoise}  % §[(  〔A,B〕
 \newunicodechar{〕}{\ClsTortoise}  % §])
 
 % Special vector arrows -> Not needed use package overarrows instead
@@ -160,7 +160,7 @@
 % \newcommand{\overgroup}[1]{\aoverbrace[L1R]{#1}[U]}
 % \newcommand{\groupdot}[1]{\aoverbrace[l1r]{#1}[U]^{\cdot}}
 
-\newunicodechar{←}{\leftarrow}  % §<-
+\newunicodechar{←}{\leftarrow}  % §-<
 \newunicodechar{↓}{\downarrow}  % §v|
 \newunicodechar{↑}{\uparrow}    % §^|
 \newunicodechar{→}{\rightarrow} % §->
@@ -199,7 +199,7 @@
 % \newunicodechar{̂}{}            % §^^  â \^
 % \newunicodechar{⃒}{}            % §|   a⃒   % TODO: add \vertoverlay
 % \newunicodechar{⃐}{}            % §hl  a⃐   % TODO: add \leftharpoonaccent (or maybe using stuff from \hm (half matrix))
-% \newunicodechar{⃑}{}            % §hr  a⃑   % TODO: add \rightharpoonaccent (or maybe using stuff from \hv (half vector))
+% \newunicodechar{⃑}{}            % §>h  a⃑   % TODO: add \rightharpoonaccent (or maybe using stuff from \hv (half vector))
 
 % TODO: Add remaining accent marks starting at 0x030B
 
@@ -911,7 +911,7 @@
 
 % \newunicodechar{€}{\notimplemented}  % §C=
 % \newunicodechar{元}{\notimplemented}  % §P=
-% \newunicodechar{£}{\notimplemented}  % §L-
+% \newunicodechar{£}{\notimplemented}  % §-L
 % \newunicodechar{¥}{\notimplemented}  % §Y=
 
 % Sparkline drawing (inpuere latex prefere the spark package over the spark script)
@@ -939,7 +939,7 @@
 
 % Those tow look the same in constant width fonts not ideal so just define them
 % to be the same thisn
-\newunicodechar{―}{---} % §hb  % Horizontal bar
+\newunicodechar{―}{---} % §H|  % Horizontal bar
 \newunicodechar{–}{---} % §-_  % EM Dash
 
 
@@ -948,7 +948,7 @@
 %   ㎠	㎡	㎢	㎣	㎤	㎥	㎦	㎧	㎨	㎩	㎪	㎫	㎬	㎭	㎮	㎯	㎰	㎱	㎲	㎳	㎴	㎵	㎶	㎷	㎸	㎹	㎺	㎻	㎼	㎽	㎾	㎿
 %   ㏀	㏁	㏂	㏃	㏄	㏅	㏆	㏇	㏈	㏉	㏊	㏋	㏌	㏍	㏎	㏏	㏐	㏑	㏒	㏓	㏔	㏕	㏖	㏗	㏘	㏙	㏚	㏛	㏜	㏝	㏞	㏟
 \newunicodechar{㏑}{\ln} % §ln
-\newunicodechar{㏒}{\ln} % §lg
+\newunicodechar{㏒}{\log} % §lg
 
 \usepackage{iftex}
 \ifLuaTeX
@@ -1253,3 +1253,17 @@
 % \newunicodechar{╚}{} % §;1
 % \newunicodechar{╩}{} % §;2
 % \newunicodechar{╝}{} % §;3
+
+\newunicodechar{☾}{\moonwaningoutline}  % §p9     moon,    monday,  Silver,
+
+\newunicodechar{☉}{\sun}                % §p0      sun,    sunday,    Gold,
+\newunicodechar{☿}{\mercury}            % §p1  mercury, wednesday, Mercury,
+\newunicodechar{♀}{\venus}              % §p2    venus,    friday,  Copper,
+\newunicodechar{♁}{\earth}              % §d3    Earth
+\newunicodechar{♂}{\mars}               % §p4     Mars,    tusday,    Iron,
+\newunicodechar{♃}{\jupiter}            % §p5  jupiter,  thursday,     Tin,
+\newunicodechar{♄}{\saturn}             % §p6   saturn,  saturday,    Lead,
+\newunicodechar{⛢}{\uranus}             % §d7   Uranus
+\newunicodechar{♆}{\neptune}            % §d8   Neptun
+
+% \newunicodechar{⚥}{\notimplemented} % §mf male female
