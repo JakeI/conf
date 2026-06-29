@@ -1,69 +1,38 @@
 #!/usr/bin/env -S uv run --script
-# /// script
-# dependencies = []
-# ///
 
 import json
 from urllib.request import urlopen
-
-
-def tri(v, ok, bad):
-    return "🙂" if v in ok else "⚠" if v in bad else "😐"
-
-
 def build_rows(d):
-    t = d["temperature"]["value"]
-
     return [
-        ("🌡 ", "Temp",
-         f'{t}{d["temperature"]["unit"]}',
-         "🔥" if t >= 30 else "🌤" if t >= 20 else "🧊"),
-
-        ("💧", "Dew Point",
-         f'{d["dewpoint"]["value"]}{d["dewpoint"]["unit"]}',
-         "🙂" if d["dewpoint"]["value"] < 18 else "😐"),
-
-        ("💦", "Humidity",
-         f'{d["humidity"]["value"]}{d["humidity"]["unit"]}',
-         tri(d["humidity"]["value"], range(30, 61), range(0, 30))),
-
-        ("🧭", "Pressure",
-         f'{d["pressure"]["value"]}{d["pressure"]["unit"]} / '
-         f'{d["ground-pressure"]["value"]}{d["ground-pressure"]["unit"]}',
-         "  "),
-
-        ("🌬 ", "Wind",
-         f'{d["wind_direction"]["string"]} {d["wind_speed"]["value"]}{d["wind_speed"]["unit"]}',
-         "🍃" if d["wind_speed"]["value"] < 10 else "💨"),
-
-        ("☀ ", "UV",
-         f'{d["uv"]["value"]}{d["uv"]["unit"]}',
-         "🟢" if d["uv"]["value"] == 0 else "🟡" if d["uv"]["value"] < 3 else "🔴"),
-
-        ("☁ ", "Cloud Base",
-         f'{int(d["cbh_cur"]["string"])/1000:.1f} km',
-         "  "),
-
-        ("🌧 ", "Rain",
-         f'{d["precip"]["precip_last_hour"]["value"]}{d["precip"]["precip_last_hour"]["unit"]}',
-         "🙂" if d["precip"]["precip_last_hour"]["value"] == 0 else "🌧"),
-
-        ("🫧", "Ozone",
-         f'{d["ozone"]["value"]}{d["ozone"]["unit"]}',
-         "🙂" if d["ozone"]["value"] < 80 else "⚠"),
+        ("Temperature",   f'{d["temperature"]["value"]}{d["temperature"]["unit"]}'),
+        ("Dew Point",     f'{d["dewpoint"]["value"]}{d["dewpoint"]["unit"]}'),
+        ("Humidity",      f'{d["humidity"]["value"]}{d["humidity"]["unit"]}'),
+        ("Pressure",      f'{d["pressure"]["value"]}{d["pressure"]["unit"]}'),
+        ("Ground Press.", f'{d["ground-pressure"]["value"]}{d["ground-pressure"]["unit"]}'),
+        ("Wind",          f'{d["wind_direction"]["string"]} ({d["wind_direction"]["value"]:.0f}°) '
+                          f'{d["wind_speed"]["value"]}{d["wind_speed"]["unit"]}'),
+        ("UV Index",      str(d["uv"]["value"])),
+        ("Radiation",     f'{d["global_radiation"]["value"]}{d["global_radiation"]["unit"]}'),
+        ("Cloud Base",    f'{d["cbh_cur"]["string"]}{d["cbh_cur"]["unit"]}'),
+        ("Rain (1h)",     f'{d["precip"]["precip_last_hour"]["value"]}'
+                          f'{d["precip"]["precip_last_hour"]["unit"]}'),
+        ("Rain Rate",     f'{d["precip"]["precip_rate"]["value"]}'
+                          f'{d["precip"]["precip_rate"]["unit"]}'),
+        ("Rain Type",     d["precip"]["precip_type"]["value"]),
+        ("Ozone",         f'{d["ozone"]["value"]}{d["ozone"]["unit"]}'),
     ]
 
 
 def render_table(rows, title):
-    name_w = max(len(r[1]) for r in rows)
-    val_w = max(len(r[2]) for r in rows)
+    name_w = max(len(name) for name, _ in rows)
+    val_w = max(len(value) for _, value in rows)
 
-    print(f"┌─ {title} ─{'─' * (name_w + val_w - len(title) + 6)}┐")
+    print(f"{title}")
+    print(f"{'─' * (name_w + 1)}┬{'─' * (val_w + 1)}")
 
-    for icon, name, value, hint in rows:
-        print(f"│ {icon} {name:<{name_w}} │ {value:<{val_w}} {hint} │")
+    for name, value in rows:
+        print(f"{name:<{name_w}} │ {value}")
 
-    print(f"└{'─' * (name_w + 5)}┴{'─' * ( val_w + 5)}┘")
 
 
 d = json.load(urlopen(
@@ -71,4 +40,4 @@ d = json.load(urlopen(
     timeout=5
 ))
 
-render_table(build_rows(d), f"⌛ {d["datetime"]}")
+render_table(build_rows(d), d["datetime"])
