@@ -1,11 +1,12 @@
 GIMP Palette
 Name: kit-color-palatte
+# Source: https://kit-cd.km.kit.edu/farben-internet.php
 #
   0   0   0 BLACK
-  0 135 108 #00876C
-  7 158 222 #079EDE
- 64  64  64 #404040
- 70 100 170 #4664AA
-119 162   0 #77A200
-163  16 124 #A3107C
-167 130  46 #A7822E
+  0 135 108 kit gruen
+  7 158 222 kit cyan
+ 64  64  64 kit schwarz
+ 70 100 170 kit blau
+119 162   0 kit maigruen
+163  16 124 kit lila
+167 130  46 kit braun
