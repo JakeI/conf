@@ -69,6 +69,7 @@ ln nu/config.nu                      $HOME/.config/nushell/config.nu
 ln nu/env.nu                         $HOME/.config/nushell/env.nu
 ln utt/utt-reporter.py               $HOME/bin/utt-reporter
 cp colors/kit-color-palatte.gpl      /mnt/c/Users/dm5635/AppData/Roaming/inkscape/palettes/kit-color-palatte.gpl
+cp jmedia/jmedia-uri.ps1             /mnt/c/Users/dm5635/bin/jmedia-uri.ps1
 EOF
 )
 
