@@ -1,0 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% compdf = combine pdf or compose pdf template for combining other pdf into one document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% vim: foldmethod=marker foldmarker=#region,#endregion
+% BEGIN: compdf Header {{{ #region
+\documentclass[12pt]{article}
+\renewcommand\contentsname{}
+\providecommand\phantomsection{}
+\usepackage[T1]{fontenc}
+\usepackage{tikz, pdfpages,pdftexcmds}
+% fix pax for modern latex See https://tex.stackexchange.com/a/60211
+\makeatletter\let\pdfescapename=\pdf@escapename\let\pdfstrcmp=\pdf@strcmp\makeatother
+\usepackage{luatex85}% also use \pdfannot in pax See https://tex.stackexchange.com/q/337142
+\usepackage{pax}
+\usepackage[bookmarks,breaklinks]{hyperref}
+\hypersetup{filebordercolor={1 1 0}, pdftitle={}, pdfsubject={}, pdfauthor={}, pdfkeywords={}}
+\usepackage{bookmark, lastpage, titling, longtable,booktabs, graphicx}
+\newcommand{\tightlist}{\null}
+\evensidemargin 0mm
+\oddsidemargin 0mm
+\textwidth 175mm
+\textheight 260mm
+\topmargin -30mm
+\newcommand{\genframe}[1]{\thispagestyle{empty}\begin{tikzpicture}[remember picture,overlay]
+	\node [rectangle, anchor=center, draw, dashed,
+		minimum width=\paperwidth-5mm, minimum height=\paperheight-5mm]
+		(box) at (current page) {};
+	\node [anchor=north west] (text) at (box.north west) {#1};
+	\node [anchor=north east] (text) at (box.north east) {\thepage{} von \pageref{LastPage}};
+\end{tikzpicture}}
+% Helpers for input without toc entries
+\makeatletter
+% gobblers (LaTeX has \@gobble and \@gobbletwo; define the others if missing)
+\providecommand\@gobblethree[3]{}
+\providecommand\@gobblefive[5]{}
+% Core wrapper: disable TOC/bookmarks while inputting a file
+\newcommand{\inputnotoc}[1]{%
+  \begingroup
+    \let\addcontentsline\@gobblethree
+    \let\addtocontents\@gobbletwo
+    \@ifundefined{Hy@writebookmark}{}{%
+      \let\Hy@writebookmark\@gobblefive
+    }%
+    \setcounter{secnumdepth}{-1}%
+    \input{#1}%
+  \endgroup
+}
+\makeatother
+\def\thesec{}
+\newcommand{\mysec}[1]{\phantomsection\addcontentsline{toc}{section}{#1}\def\mythesection{#1}\def\mythesubsection{}}
+\def\mythesection{}
+\newcommand{\mysection}[1]{\phantomsection\addcontentsline{toc}{subsection}{#1}\def\mythesection{#1}\def\mythesubsection{}}
+\def\mythesubsection{}
+\newcommand{\mysubsection}[1]{\phantomsection\addcontentsline{toc}{subsubsection}{#1}\def\mythesubsection{#1}}
+\newcommand{\titleline}{\thetitle~\textbullet~\mythesection\ifx\mythesubsection\empty\else ~$\rightarrow$ \mythesubsection\fi}
+\newcommand{\framedpage}{\genframe{\titleline}}
+\newcommand{\pdfpages}[2]{
+	\includepdf[%
+            trim=-5mm -4mm -5mm -10mm,%
+            pages=#1,%
+            pagecommand={\framedpage}%
+        ]{#2}
+}
+\newcommand{\pdf}[1]{\pdfpages{-}{#1}}
+\newcommand{\png}[1]{\framedpage\includegraphics[width=\textwidth]{#1}\newpage}
+\newcommand{\tex}[1]{\framedpage\input{#1}\newpage}
+\newcommand{\texnotoc}[1]{\framedpage\inputnotoc{#1}\newpage}
+% END: compdf Header }}} #endregion
+
+
+\title{Some nice title}
+\date{YYYY-MM-DD}
+
+\begin{document}
+
+\mysec{Table of Contents}
+\framedpage
+\tableofcontents
+
+\mysec{Major title}
+\mysection{Pdf page 1}
+\pdfpages{1}{path/to/doc.pdf}
+\mysection{Pdf page 2}
+\pdfpages{2}{path/to/doc.pdf}
+
+\mysec{Another major section}
+\mysection{Where we include some text}
+\texnotoc{path/to/note.tex}
+\mysection{And the full pdf without picking pages}
+\pdf{path/to/full.pdf}
+
+\end{document}

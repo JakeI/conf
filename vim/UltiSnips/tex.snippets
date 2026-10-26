@@ -1,4 +1,6 @@
 global !p
+from pathlib import Path
+
 texMathZones = ['texMathZone' + x for x in ['A', 'AS', 'B', 'BS', 'C', 'CS', 'D', 'DS', 'E', 'ES', 'F', 'FS', 'G', 'GS', 'H', 'HS', 'I', 'IS', 'J', 'JS', 'K', 'KS', 'L', 'LS', 'DS', 'V', 'W', 'X', 'Y', 'Z', 'AmsA', 'AmsB', 'AmsC', 'AmsD', 'AmsE', 'AmsF', 'AmsG', 'AmsAS', 'AmsBS', 'AmsCS', 'AmsDS', 'AmsES', 'AmsFS', 'AmsGS' ]]
 
 texIgnoreMathZones = ['texMathText']
@@ -17,12 +19,40 @@ def math():
 		return False
 endglobal
 
-snippet irs "Insert template.tex content" b
-`!p snip.rv = open('/mnt/f/Vorlagen/TEX/simple-note/template.tex', 'r').read()`
+snippet note "note template defualts to irs for now" b
+`!p snip.rv = open(Path.home() ' / ' 'conf' / 'texlates' / 'note' / 'note.tex', 'r').read()`
 endsnippet
 
-snippet combine-pdf "Insert template.tex content" b
-`!p snip.rv = open('/mnt/d/val/vorlagen/pdf-combining/combining.tex', 'r').read()`
+snippet irs "irs flavored simple note template" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'note' / 'note.tex').read_text()`
+endsnippet
+
+snippet letter "Insert letter tmplate defaults to kitter for now" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'kitter' / 'kitter.tex').read_text()`
+endsnippet
+
+snippet kitter "Insert kitter = kit letter template" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'kitter' / 'kitter.tex').read_text()`
+endsnippet
+
+snippet combine-pdf "insert template for combining pdf together" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'compdf' / 'compdf.tex').read_text()`
+endsnippet
+
+snippet compdf "insert template for combining pdf together" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'compdf' / 'compdf.tex').read_text()`
+endsnippet
+
+snippet irs-logo "insert code for generating the irs logo" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'logos' / 'irs.tex').read_text()`
+endsnippet
+
+snippet kit-logo "insert code for generating the kit logo" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'logos' / 'kit.tex').read_text()`
+endsnippet
+
+snippet signature-logo "insert code for generating the signature logo" b
+`!p snip.rv = (Path.home() / 'conf' / 'texlates' / 'logos' / 'signature.tex').read_text()`
 endsnippet
 
 snippet lualatex "tell vimtex to use lualatex" b
