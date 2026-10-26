@@ -64,7 +64,7 @@ except FontNotFound:
 endsnippet
 
 snippet py "python code block for evaluation" w
-py $1 py$0
+py ${1:${VISUAL}} py$0
 endsnippet
 
 priority 10000
@@ -84,34 +84,54 @@ endsnippet
 priority 0
 
 snippet tex "asciiTeX code block"
-tex $1 tex$0
+tex ${1:${VISUAL}} tex$0
 endsnippet
 
 priority 1000
-snippet 'tex(.*)tex' "feed code trough asciiTeX" wr
+snippet 'tex(.*)tex' "format TeX using utftex" wr
 `!p
 from subprocess import run
-args = ['asciiTeX', '-f', '/dev/stdin', '-ll', vim.eval('&tw')]
-snip.rv = run(args, capture_output=True, input=match.group(1).encode()).stdout.decode()
+result = run(
+    ['utftex', match.group(1)],
+    capture_output=True,
+    text=True,
+    check=True,
+)
+snip.rv = result.stdout.rstrip()
 `$0
 endsnippet
 priority 0
 
 snippet julia "julia code block" w
-julia $1 julia$0
+julia ${1:${VISUAL}} julia$0
 endsnippet
 
 priority 1000
-snippet 'julia(.*)julia' "feed code trough julia" wr
+snippet 'julia(.*)julia' "evaluate Julia expression" wr
 `!p
-cmd = ['julia', '--print', match.group(1)]
-snip.rv = subprocess.check_output(cmd).decode("utf-8")
+import shutil
+import subprocess
+
+julia = shutil.which('julia') or shutil.which('julia.exe')
+
+if julia is None:
+    snip.rv = '[Julia executable not found]'
+else:
+    cmd = [
+	    julia,
+	    '--startup-file=no',
+	    '--history-file=no',
+	    '--compile=min',
+	    '--print',
+	    match.group(1),
+	]
+    snip.rv = subprocess.check_output(cmd).decode('utf-8').rstrip()
 `
 endsnippet
 priority 0
 
 snippet math "mathematica block" w
-math $1 math$0
+math ${1:${VISUAL}} math$0
 endsnippet
 
 priority 1000
@@ -287,4 +307,16 @@ endsnippet
 snippet clangd "standard setup for .clangd file of meson project" b
 CompileFlags:
   CompilationDatabase: build/       # Search build/ directory for compile_commands.json
+endsnippet
+
+snippet lorem "lorem dummy text"
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sem risus, convallis non imperdiet sit amet, placerat non nulla. Duis ut nulla efficitur, vehicula diam eget, convallis ante. Vivamus egestas urna tristique, convallis est at, tempus velit. Proin viverra tellus at facilisis sollicitudin. Aliquam efficitur molestie neque sed maximus. Etiam nec rutrum augue. Vestibulum quis tortor sed ex viverra tempus scelerisque et ipsum. Praesent ante justo, dapibus ut augue sed, pretium lacinia lorem. Suspendisse fringilla iaculis ex, ac faucibus libero semper posuere. Nullam ut eros et risus iaculis mattis. Donec in est non urna rhoncus iaculis vel vel lectus. Maecenas vestibulum eget ex vitae semper. In quis ornare leo. Phasellus malesuada pellentesque mi a lobortis.
+
+Sed at ante nec mi porttitor maximus. Nulla luctus pharetra turpis, sed vestibulum lacus iaculis vel. Ut condimentum dolor at libero lobortis, nec egestas metus faucibus. Nullam blandit lorem in lorem cursus rhoncus. Proin sit amet nibh condimentum, finibus tellus eu, suscipit nunc. Fusce in elit ut erat pretium feugiat. Morbi vel ligula vehicula, pretium justo sed, ullamcorper dui. Ut nec aliquam metus. Suspendisse congue tellus vitae justo molestie scelerisque. Donec condimentum mi vitae nibh dictum, ut suscipit mauris sollicitudin. Maecenas bibendum interdum tortor. Sed ultrices urna sed velit efficitur condimentum. Phasellus vel facilisis quam. Nullam lobortis a massa eu tincidunt.
+
+Integer sit amet eros vitae mi sodales auctor vitae at lacus. Sed ante lacus, pellentesque vitae tempus pellentesque, vestibulum vel sapien. Morbi vehicula dictum tristique. Integer luctus sit amet mi et mollis. Ut bibendum magna vel rutrum pharetra. Duis vitae elit sit amet diam luctus luctus quis tincidunt massa. Mauris tincidunt massa tellus, pulvinar porta nisi viverra sed. Ut auctor ipsum tortor, sed viverra turpis lacinia ut. Curabitur non sapien ut velit laoreet suscipit. Donec elit odio, volutpat a hendrerit nec, lacinia ut ante.
+
+Donec non tempus mi. Quisque tincidunt nisi commodo lorem tincidunt, ut feugiat elit tincidunt. Sed sollicitudin laoreet tellus vitae auctor. Proin porttitor commodo ante in volutpat. In augue eros, vestibulum eu cursus non, euismod at diam. Suspendisse convallis consequat nulla, vitae venenatis leo tristique sed. Sed velit velit, tristique id nibh id, posuere faucibus tellus. Proin ut iaculis neque. Integer venenatis libero eu ipsum iaculis, sit amet ultrices nisi ultricies. Integer ac urna nec ante porta ornare.
+
+Donec dapibus condimentum elit at iaculis. Nam sed hendrerit nibh, sed auctor quam. Donec arcu arcu, pellentesque quis porttitor ut, lobortis eu urna. Donec et nulla fermentum, bibendum neque et, cursus sapien. Donec sodales erat nunc, sit amet facilisis urna laoreet quis. Nullam nisl ipsum, pulvinar nec eros a, consequat pharetra lacus. Quisque mollis eleifend tristique. Pellentesque accumsan, sem in sodales lacinia, lacus est malesuada ligula, in pulvinar mi enim vel urna. Nulla facilisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Cras pretium urna eu hendrerit tincidunt. Cras tempus, libero id aliquam venenatis, metus mi efficitur mi, eget ornare orci leo non augue. Ut tempus mi vel orci gravida pharetra.
 endsnippet
