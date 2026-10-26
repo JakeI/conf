@@ -115,7 +115,11 @@
 <Multi_key> <Multi_key> <Multi_key> <p> <e> <n> : "✏" # pen
 <Multi_key> <Multi_key> <Multi_key> <p> <o> <o> : "💩" # poo
 <Multi_key> <Multi_key> <Multi_key> <e> <a> <t> : "🍽️" # eat
-
+<Multi_key> <Multi_key> <Multi_key> <b> <o> <o> <k> : "📖" # book TODO fix prefix of bookwark
+<Multi_key> <Multi_key> <Multi_key> <r> <e> <d> <b> <o> <o> <k> : "📕" # reedbook
+<Multi_key> <Multi_key> <Multi_key> <g> <r> <e> <e> <n> <b> <o> <o> <k> : "📗" # greenbook
+<Multi_key> <Multi_key> <Multi_key> <b> <l> <u> <e> <b> <o> <o> <k> : "📘" # bluebook
+<Multi_key> <Multi_key> <Multi_key> <o> <r> <a> <n> <g> <b> <o> <o> <k> : "📙" # orangebook
 <Multi_key> <Multi_key> <Multi_key> <backslash> <parenleft> <parenright> : "🗨️" # \()
 <Multi_key> <Multi_key> <Multi_key> <slash> <parenleft> <parenright> : "💬" # /()
 
