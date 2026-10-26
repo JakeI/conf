@@ -702,3 +702,6 @@ fi
 # [ -f "~/bin/extraterm-commands-0.66.0/setup_extraterm_zsh.zsh" ] && source ~/bin/extraterm-commands-0.66.0/setup_extraterm_zsh.zsh
 #  }}}
 #  }}}
+
+# opencode
+export PATH=/home/dm5635/.opencode/bin:$PATH
