@@ -1,0 +1,8 @@
+set adjust-open "best-fit"
+set selection-clipboard clipboard
+set guioptions ""
+set recolor
+set recolor-lightcolor rgba(255,255,255,0)
+set recolor-keephue
+set default-bg rgba(0,0,0,0.7)
+set vertical-center true

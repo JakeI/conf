@@ -1,0 +1,322 @@
+priority -1
+snippet # "Bang statement" b
+#!/usr/bin/env`!p os.path.isfile(path) and os.chmod(path, os.stat(path).st_mode | 0o111)` $0
+endsnippet
+
+priority 0
+snippet mfg "Mit freudlichen Grüßen" b
+Mit freundlichen Grüßen
+
+Jochen K. Illerhaus
+endsnippet
+
+snippet td "to do"
+TODO: 
+endsnippet
+
+snippet todo "TODO comment" bw
+`!p snip.rv=get_comment_format()[0]` ${2:TODO}: $0${3: <${4:`!v strftime('%d-%m-%y')`}${5:, `!v g:snips_author`}>} `!p snip.rv=get_comment_format()[2]`
+endsnippet
+
+global !p
+from pyfiglet import figlet_format, FontNotFound
+import os
+
+import subprocess
+import datetime
+def fmt_date(date):
+	names = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+	return f"{names[date.weekday()]}_{date.strftime('%y-%m-%d')}"
+endglobal
+
+snippet "banner(|_[^\s]+) ([^\.]*)" "banner comment using figlet" r
+`!p 
+try:
+	line_comment_char = vim.eval("split(&commentstring, '%s')[0]")
+	nice = {
+		"0": "Calvin S",
+		"1": "maxiwi",
+		"2": "miniwi",
+		"3": "amc3line",
+		"4": "Short",
+		"5": "3d",
+		"6": "ANSI Regular",
+		"7": "ANSI Shadow"
+	}
+	nice_filter = lambda key: nice.get(key, key)
+	snip.rv = "\n".join([
+			"{0:} {1:}".format(line_comment_char, l) 
+			for l in 
+			figlet_format(
+				match.group(2),
+				font=("/usr/share/figlet/" + nice_filter(
+					"Calvin S" 
+					if match.group(1) == "" 
+					else match.group(1)[1:].replace("§", " ")
+				))
+			).split("\n")
+		][:-1]
+	) + "\n"
+except FontNotFound:
+    	snip.rv = "{0:} ERROR: Font {1:} not found\nbanner {2:}".format(
+			line_comment_char, match.group(1)[1:], match.group(2)
+		)`
+endsnippet
+
+snippet py "python code block for evaluation" w
+py ${1:${VISUAL}} py$0
+endsnippet
+
+priority 10000
+snippet 'py(.*)py' "evaluate (sym)py" wr
+`!p
+from sympy import *
+x, y, z, t = symbols('x y z t')
+k, m, n = symbols('k m n', integer=True)
+f, g, h = symbols('f g h', cls=Function)
+init_printing()
+snip.rv = eval('latex(' + match.group(1).replace('\\', '') \
+    .replace('^', '**') \
+    .replace('{', '(') \
+    .replace('}', ')') + ')')
+`
+endsnippet
+priority 0
+
+snippet tex "asciiTeX code block"
+tex ${1:${VISUAL}} tex$0
+endsnippet
+
+priority 1000
+snippet 'tex(.*)tex' "format TeX using utftex" wr
+`!p
+from subprocess import run
+result = run(
+    ['utftex', match.group(1)],
+    capture_output=True,
+    text=True,
+    check=True,
+)
+snip.rv = result.stdout.rstrip()
+`$0
+endsnippet
+priority 0
+
+snippet julia "julia code block" w
+julia ${1:${VISUAL}} julia$0
+endsnippet
+
+priority 1000
+snippet 'julia(.*)julia' "evaluate Julia expression" wr
+`!p
+import shutil
+import subprocess
+
+julia = shutil.which('julia') or shutil.which('julia.exe')
+
+if julia is None:
+    snip.rv = '[Julia executable not found]'
+else:
+    cmd = [
+	    julia,
+	    '--startup-file=no',
+	    '--history-file=no',
+	    '--compile=min',
+	    '--print',
+	    match.group(1),
+	]
+    snip.rv = subprocess.check_output(cmd).decode('utf-8').rstrip()
+`
+endsnippet
+priority 0
+
+snippet math "mathematica block" w
+math ${1:${VISUAL}} math$0
+endsnippet
+
+priority 1000
+snippet 'math(.*)math' "evaluate mathematica" wr
+`!p
+cmd = ['wolframscript', '-code', 'ToString[TeXForm[' + match.group(1) + ']]']
+snip.rv = subprocess.check_output(cmd).decode("utf-8")
+`
+endsnippet
+priority 0
+
+snippet fold "fold marker pair" b
+`!p snip.rv = vim.eval("split(&commentstring, '%s')[0]")
+` ${1} `!p snip.rv = vim.eval("split(&foldmarker, ',')[0]")`
+${2:${VISUAL}}
+`!p snip.rv = vim.eval("split(&commentstring, '%s')[0]")` `!p
+snip.rv = vim.eval("split(&foldmarker, ',')[1]")`
+$0
+endsnippet
+
+snippet foldo "fold opening marker" b
+`!p snip.rv = vim.eval("split(&commentstring, '%s')[0]")
+` ${1} `!p snip.rv = vim.eval("split(&foldmarker, ',')[0]")`$0
+endsnippet
+
+snippet foldc "fold closing marker" b
+`!p snip.rv = vim.eval("split(&commentstring, '%s')[0]")` `!p
+snip.rv = vim.eval("split(&foldmarker, ',')[1]")`
+$0
+endsnippet
+
+snippet box* "banner comment with comment chars" b
+`!p snip.rv = "".join([vim.eval("split(&commentstring, '%s')[0]")]*int(vim.eval("&tw")))`
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2
+snip.rv = "".join([cs] * ll)
+` $1 `!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2 + (len(t[1]) % 2)
+snip.rv = "".join([cs] * ll)
+`
+`!p snip.rv = "".join([vim.eval("split(&commentstring, '%s')[0]")]*int(vim.eval("&tw")))`
+$0
+endsnippet
+
+snippet box= "banner comment with equalgnes" b
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["─"]*(tw - len(cs)))
+`
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2 - len(cs)
+snip.rv = cs + "".join(["─"] * ll)
+` $1 `!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2 + (len(t[1]) % 2)
+snip.rv = "".join(["─"] * ll)
+`
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["─"]*(tw - len(cs)))
+`
+$0
+endsnippet
+
+snippet boxu "banner comment with unicode single rule box drawing chars" b
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["─"]*(tw - len(cs)))
+`
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2 - len(cs)
+snip.rv = cs + "".join(["─"] * ll)
+` $1 `!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2 + (len(t[1]) % 2)
+snip.rv = "".join(["─"] * ll)
+`
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["─"]*(tw - len(cs)))
+`
+$0
+endsnippet
+
+snippet boxU "banner comment with unicode double rule box drawing chars" b
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["═"]*(tw - len(cs)))
+`
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2 - len(cs)
+snip.rv = cs + "".join(["═"] * ll)
+` $1 `!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+ll      = (tw - len(t[1]) - 2) // 2 + (len(t[1]) % 2)
+snip.rv = "".join(["═"] * ll)
+`
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["═"]*(tw - len(cs)))
+`
+$0
+endsnippet
+snippet --* "horizontal rule of comment chars" b
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = "".join([cs]*tw)
+`
+$0
+endsnippet
+
+snippet --= "horizontal rule of equalsigns" b
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["="]*(tw - len(cs)))
+`
+$0
+endsnippet
+
+snippet --u "horizontal single rule of uncode box drawing characters" b
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["─"]*(tw - len(cs)))
+`
+$0
+endsnippet
+
+snippet --U "horizontal double rule of uncode box drawing characters" b
+`!p 
+cs      = vim.eval("split(&commentstring, '%s')[0]")
+tw      = int(vim.eval("&tw"))
+snip.rv = cs + "".join(["═"]*(tw - len(cs)))
+`
+$0
+endsnippet
+
+snippet today "Insert todays date"
+`!p snip.rv = fmt_date(datetime.datetime.today())`
+endsnippet
+
+snippet "(Mo_|Di_|Mi_|Do_|Fr_|Sa_|So_|)(\d\d\d\d|\d\d)-(\d\d)-(\d\d)( \d+|)" "continue list on next day" r
+`!p
+date = datetime.date(*(int(match.group(k)) for k in range(2, 5)))
+one = datetime.timedelta(days=1)
+snip.rv = fmt_date(date)
+for _ in range(1 if match.group(5) == "" else int(match.group(5).strip())):
+	snip.rv += "\n" + fmt_date(date := date + one)
+`
+endsnippet
+
+snippet clangd "standard setup for .clangd file of meson project" b
+CompileFlags:
+  CompilationDatabase: build/       # Search build/ directory for compile_commands.json
+endsnippet
+
+snippet lorem "lorem dummy text"
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sem risus, convallis non imperdiet sit amet, placerat non nulla. Duis ut nulla efficitur, vehicula diam eget, convallis ante. Vivamus egestas urna tristique, convallis est at, tempus velit. Proin viverra tellus at facilisis sollicitudin. Aliquam efficitur molestie neque sed maximus. Etiam nec rutrum augue. Vestibulum quis tortor sed ex viverra tempus scelerisque et ipsum. Praesent ante justo, dapibus ut augue sed, pretium lacinia lorem. Suspendisse fringilla iaculis ex, ac faucibus libero semper posuere. Nullam ut eros et risus iaculis mattis. Donec in est non urna rhoncus iaculis vel vel lectus. Maecenas vestibulum eget ex vitae semper. In quis ornare leo. Phasellus malesuada pellentesque mi a lobortis.
+
+Sed at ante nec mi porttitor maximus. Nulla luctus pharetra turpis, sed vestibulum lacus iaculis vel. Ut condimentum dolor at libero lobortis, nec egestas metus faucibus. Nullam blandit lorem in lorem cursus rhoncus. Proin sit amet nibh condimentum, finibus tellus eu, suscipit nunc. Fusce in elit ut erat pretium feugiat. Morbi vel ligula vehicula, pretium justo sed, ullamcorper dui. Ut nec aliquam metus. Suspendisse congue tellus vitae justo molestie scelerisque. Donec condimentum mi vitae nibh dictum, ut suscipit mauris sollicitudin. Maecenas bibendum interdum tortor. Sed ultrices urna sed velit efficitur condimentum. Phasellus vel facilisis quam. Nullam lobortis a massa eu tincidunt.
+
+Integer sit amet eros vitae mi sodales auctor vitae at lacus. Sed ante lacus, pellentesque vitae tempus pellentesque, vestibulum vel sapien. Morbi vehicula dictum tristique. Integer luctus sit amet mi et mollis. Ut bibendum magna vel rutrum pharetra. Duis vitae elit sit amet diam luctus luctus quis tincidunt massa. Mauris tincidunt massa tellus, pulvinar porta nisi viverra sed. Ut auctor ipsum tortor, sed viverra turpis lacinia ut. Curabitur non sapien ut velit laoreet suscipit. Donec elit odio, volutpat a hendrerit nec, lacinia ut ante.
+
+Donec non tempus mi. Quisque tincidunt nisi commodo lorem tincidunt, ut feugiat elit tincidunt. Sed sollicitudin laoreet tellus vitae auctor. Proin porttitor commodo ante in volutpat. In augue eros, vestibulum eu cursus non, euismod at diam. Suspendisse convallis consequat nulla, vitae venenatis leo tristique sed. Sed velit velit, tristique id nibh id, posuere faucibus tellus. Proin ut iaculis neque. Integer venenatis libero eu ipsum iaculis, sit amet ultrices nisi ultricies. Integer ac urna nec ante porta ornare.
+
+Donec dapibus condimentum elit at iaculis. Nam sed hendrerit nibh, sed auctor quam. Donec arcu arcu, pellentesque quis porttitor ut, lobortis eu urna. Donec et nulla fermentum, bibendum neque et, cursus sapien. Donec sodales erat nunc, sit amet facilisis urna laoreet quis. Nullam nisl ipsum, pulvinar nec eros a, consequat pharetra lacus. Quisque mollis eleifend tristique. Pellentesque accumsan, sem in sodales lacinia, lacus est malesuada ligula, in pulvinar mi enim vel urna. Nulla facilisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Cras pretium urna eu hendrerit tincidunt. Cras tempus, libero id aliquam venenatis, metus mi efficitur mi, eget ornare orci leo non augue. Ut tempus mi vel orci gravida pharetra.
+endsnippet

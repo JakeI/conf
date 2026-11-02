@@ -1,0 +1,175 @@
+snippet "^function ?\[([^\]]*)\] ?= ?([^\(]+)\(([^\)]*)\)" "Define a new funktion" r
+function [`!p 
+snip.rv = ", ".join(map(lambda x: x.strip(), match.group(1).split(",")))
+`] = `!p snip.rv = match.group(2)`(`!p
+snip.rv = ", ".join(map(lambda x: x.strip(), match.group(3).split(",")))`)
+% `!p snip.rv = match.group(2).upper()``!p 
+def lst(i, s):
+	arg = [s.strip() for s in match.group(i).split(",")]
+	if len(arg) == 0 or (len(arg) == 1 and arg[0] == ""):
+		return ""
+	n   = max([len(a) for a in arg])
+    l   = " - \n%  ".join([s + "".join([" "]*(n-len(s))) for s in arg])
+	return "\n% {0:}\n%  {1:} - ".format(s, l)
+snip.rv = lst(3, "INPUTS") + lst(1, "OUTPUTS")`
+	$1
+end
+endsnippet
+
+snippet save_fig "insert helpers for save figure system"
+global config;
+config = struct( ...
+    'a', true, ...
+    'save_fig', false ...
+);
+
+
+
+function [] = save_current_figure(name)
+    global config
+    if config.save_fig
+        path = "../../formeln/img/ex5/res-";
+        ext  = ".eps";
+        file = strcat(path, name, ext);
+        saveas(gcf(), file, 'epsc');
+        close(gcf());
+    end
+end
+endsnippet
+	
+
+snippet helpers "Insert some common sense helper funktions"
+% ██████╗ ███████╗███████╗ █████╗ ██╗   ██╗██╗  ████████╗
+% ██╔══██╗██╔════╝██╔════╝██╔══██╗██║   ██║██║  ╚══██╔══╝
+% ██║  ██║█████╗  █████╗  ███████║██║   ██║██║     ██║   
+% ██║  ██║██╔══╝  ██╔══╝  ██╔══██║██║   ██║██║     ██║   
+% ██████╔╝███████╗██║     ██║  ██║╚██████╔╝███████╗██║   
+% ╚═════╝ ╚══════╝╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝   
+%                                                        
+% ██╗  ██╗███████╗██╗     ██████╗ ███████╗██████╗ ███████╗
+% ██║  ██║██╔════╝██║     ██╔══██╗██╔════╝██╔══██╗██╔════╝
+% ███████║█████╗  ██║     ██████╔╝█████╗  ██████╔╝███████╗
+% ██╔══██║██╔══╝  ██║     ██╔═══╝ ██╔══╝  ██╔══██╗╚════██║
+% ██║  ██║███████╗███████╗██║     ███████╗██║  ██║███████║
+% ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝
+
+function [i] = argmax(x)
+    [y, i] = max(x);
+end
+
+function [i] = argmin(x)
+    [y, i] = min(x);
+end
+
+function [h] = head(arr)
+    h = arr(1);
+end
+
+function [t] = tail(arr)
+    t = arr(end);
+end
+
+function [y] = at(f, varargin)
+    % MATLAB?? Why would you make me write that WTF?
+    y = f(varargin{:});
+end
+
+function [y] = step(x)
+    if length(x) == 1
+        if x < 0
+            y = 0;
+        else
+            y = 1;
+        end
+    else
+        y = ones(size(x));
+        y(x < 0) = 0;
+    end
+end
+
+function [out] = map(f, in)
+    if iscell(in)
+        n   = length(in);
+        out = cell(n, 1);
+        for i = 1:n
+            out{i} = f(in{i});
+        end
+    else
+        out = arrayfun(f, in, 'UniformOutput', false);
+    end
+end
+
+function [interleaved] = interleave(varargin)
+    n           = min(cell2mat(map(@length, varargin)));
+    stride      = length(varargin);
+    interleaved = cell(n, 1);
+    for i = 1:n
+        for j = 1:stride
+            interleaved{stride*i + j - stride} = varargin{j}{i};
+        end
+    end
+end
+
+function [s] = stringify(v, varargin)
+    sep = "";
+    fmt = "1.1e";
+    
+    n = length(varargin);
+    assert(mod(n, 2) == 0, "arguments must be key value pairs");
+    for i = 1:2:n
+        key = varargin{i};
+        val = varargin{i+1};
+        switch key
+            case { 'sep', 'seperator' }
+                sep = val;
+            case { 'fmt', 'format' }
+                fmt = val;
+            otherwise
+                warning(sprintf("Unexpected key %s will be ignored", key))
+		end
+	end
+    
+    s = sprintf(strcat(sep, "%", fmt), v);
+    s = s(length(sep)+1:end);
+end
+
+function [hs] = color_plot(x, y, c)
+%     % See: https://stackoverflow.com/a/45556308/10283566
+%     scatter(x, y, [], c, 'fill');
+
+    % See: https://stackoverflow.com/a/31699594/10283566
+    % And: https://stackoverflow.com/a/45556258/10283566
+    xx = [x; x];
+    yy = [y; y];
+    zz = zeros(size(xx));
+    cc = [c; c];
+    hs = surf(xx, yy, zz, cc, ...
+        'EdgeColor', 'interp', ...
+        'FaceColor', 'none', ...
+        'LineWidth', 4 ...
+    );
+end
+
+function [y] = colarrayfun(func, x);
+    Y = func(x(1));
+    y = zeros(length(Y), length(x));
+    y(:, 1) = Y;
+    for i = 2:length(x)
+        y(:, i) = func(x(i));
+    end
+end
+
+function [] = cols2(func, cols, varargin)
+    func(cols(1, :), cols(2, :), varargin{:});
+end
+
+function [z] = pack2(func, varargin)
+    [x, y] = func(varargin{:});
+    z = [x; y];
+end
+
+function [y] = second(func, varargin)
+    [x, y] = func(varargin{:});
+end
+endsnippet
+	

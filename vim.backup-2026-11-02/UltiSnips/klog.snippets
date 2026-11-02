@@ -1,0 +1,202 @@
+global !p
+import datetime
+
+def fmt_date(date):
+    return date.strftime('%Y-%m-%d')
+
+def get_day_of_week(day_name, delta_days=0):
+    today = datetime.datetime.today()
+    weekday = today.weekday()  # Monday is 0 and Sunday is 6
+    target_weekday = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].index(day_name.lower())
+    days_ahead = (target_weekday - weekday + delta_days) % 7
+    target_date = today + datetime.timedelta(days=days_ahead if days_ahead > 0 else days_ahead + (7 if delta_days else 0))
+    return fmt_date(target_date)
+
+def get_last_or_next_week(day_name, delta_weeks):
+    today = datetime.datetime.today()
+    target_date = today + datetime.timedelta(weeks=delta_weeks)
+    weekday_delta = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].index(day_name.lower()) - target_date.weekday()
+    return fmt_date(target_date + datetime.timedelta(days=weekday_delta))
+
+# generation script for running block of snippets in the end
+# days_of_week = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+# for day in days_of_week:
+#     print(f"snippet {day} \"Insert this {day}\"\n`!p snip.rv = get_day_of_week(\"{day}\")`\nendsnippet")
+#     print(f"snippet this-{day} \"Insert this {day}\"\n`!p snip.rv = get_day_of_week(\"{day}\")`\nendsnippet")
+#     print(f"snippet last-{day} \"Insert last {day}\"\n`!p snip.rv = get_last_or_next_week(\"{day}\", -1)`\nendsnippet")
+#     print(f"snippet next-{day} \"Insert next {day}\"\n`!p snip.rv = get_last_or_next_week(\"{day}\", 1)`\nendsnippet")
+# days_of_week = ["mo", "di", "mi", "do", "fr", "sa", "so"]
+# for day in days_of_week:
+#     print(f"snippet {day} \"Insert this {day}\"\n`!p snip.rv = get_day_of_week(\"{day}\")`\nendsnippet")
+#     print(f"snippet {day}- \"Insert last {day}\"\n`!p snip.rv = get_last_or_next_week(\"{day}\", -1)`\nendsnippet")
+#     print(f"snippet {day}+ \"Insert next {day}\"\n`!p snip.rv = get_last_or_next_week(\"{day}\", 1)`\nendsnippet")
+
+def fmt_time(time):
+	return time.strftime('%H:%M')
+endglobal
+
+priority 100
+snippet today "Insert today's date"
+`!p snip.rv = fmt_date(datetime.datetime.today())`
+endsnippet
+
+snippet yesterday "Insert yesterday's date"
+`!p snip.rv = fmt_date(datetime.datetime.today() - datetime.timedelta(days=1))`
+endsnippet
+
+snippet tomorrow "Insert tomorrow's date"
+`!p snip.rv = fmt_date(datetime.datetime.today() + datetime.timedelta(days=1))`
+endsnippet
+
+snippet now "Insert current time"
+`!p snip.rv = fmt_time(datetime.datetime.now())`
+endsnippet
+
+
+snippet monday "Insert this monday"
+`!p snip.rv = get_day_of_week("monday")`
+endsnippet
+snippet this-monday "Insert this monday"
+`!p snip.rv = get_day_of_week("monday")`
+endsnippet
+snippet last-monday "Insert last monday"
+`!p snip.rv = get_last_or_next_week("monday", -1)`
+endsnippet
+snippet next-monday "Insert next monday"
+`!p snip.rv = get_last_or_next_week("monday", 1)`
+endsnippet
+snippet tuesday "Insert this tuesday"
+`!p snip.rv = get_day_of_week("tuesday")`
+endsnippet
+snippet this-tuesday "Insert this tuesday"
+`!p snip.rv = get_day_of_week("tuesday")`
+endsnippet
+snippet last-tuesday "Insert last tuesday"
+`!p snip.rv = get_last_or_next_week("tuesday", -1)`
+endsnippet
+snippet next-tuesday "Insert next tuesday"
+`!p snip.rv = get_last_or_next_week("tuesday", 1)`
+endsnippet
+snippet wednesday "Insert this wednesday"
+`!p snip.rv = get_day_of_week("wednesday")`
+endsnippet
+snippet this-wednesday "Insert this wednesday"
+`!p snip.rv = get_day_of_week("wednesday")`
+endsnippet
+snippet last-wednesday "Insert last wednesday"
+`!p snip.rv = get_last_or_next_week("wednesday", -1)`
+endsnippet
+snippet next-wednesday "Insert next wednesday"
+`!p snip.rv = get_last_or_next_week("wednesday", 1)`
+endsnippet
+snippet thursday "Insert this thursday"
+`!p snip.rv = get_day_of_week("thursday")`
+endsnippet
+snippet this-thursday "Insert this thursday"
+`!p snip.rv = get_day_of_week("thursday")`
+endsnippet
+snippet last-thursday "Insert last thursday"
+`!p snip.rv = get_last_or_next_week("thursday", -1)`
+endsnippet
+snippet next-thursday "Insert next thursday"
+`!p snip.rv = get_last_or_next_week("thursday", 1)`
+endsnippet
+snippet friday "Insert this friday"
+`!p snip.rv = get_day_of_week("friday")`
+endsnippet
+snippet this-friday "Insert this friday"
+`!p snip.rv = get_day_of_week("friday")`
+endsnippet
+snippet last-friday "Insert last friday"
+`!p snip.rv = get_last_or_next_week("friday", -1)`
+endsnippet
+snippet next-friday "Insert next friday"
+`!p snip.rv = get_last_or_next_week("friday", 1)`
+endsnippet
+snippet saturday "Insert this saturday"
+`!p snip.rv = get_day_of_week("saturday")`
+endsnippet
+snippet this-saturday "Insert this saturday"
+`!p snip.rv = get_day_of_week("saturday")`
+endsnippet
+snippet last-saturday "Insert last saturday"
+`!p snip.rv = get_last_or_next_week("saturday", -1)`
+endsnippet
+snippet next-saturday "Insert next saturday"
+`!p snip.rv = get_last_or_next_week("saturday", 1)`
+endsnippet
+snippet sunday "Insert this sunday"
+`!p snip.rv = get_day_of_week("sunday")`
+endsnippet
+snippet this-sunday "Insert this sunday"
+`!p snip.rv = get_day_of_week("sunday")`
+endsnippet
+snippet last-sunday "Insert last sunday"
+`!p snip.rv = get_last_or_next_week("sunday", -1)`
+endsnippet
+snippet next-sunday "Insert next sunday"
+`!p snip.rv = get_last_or_next_week("sunday", 1)`
+endsnippet
+snippet mo "Insert this mo"
+`!p snip.rv = get_day_of_week("mo")`
+endsnippet
+snippet mo- "Insert last mo"
+`!p snip.rv = get_last_or_next_week("mo", -1)`
+endsnippet
+snippet mo+ "Insert next mo"
+`!p snip.rv = get_last_or_next_week("mo", 1)`
+endsnippet
+snippet di "Insert this di"
+`!p snip.rv = get_day_of_week("di")`
+endsnippet
+snippet di- "Insert last di"
+`!p snip.rv = get_last_or_next_week("di", -1)`
+endsnippet
+snippet di+ "Insert next di"
+`!p snip.rv = get_last_or_next_week("di", 1)`
+endsnippet
+snippet mi "Insert this mi"
+`!p snip.rv = get_day_of_week("mi")`
+endsnippet
+snippet mi- "Insert last mi"
+`!p snip.rv = get_last_or_next_week("mi", -1)`
+endsnippet
+snippet mi+ "Insert next mi"
+`!p snip.rv = get_last_or_next_week("mi", 1)`
+endsnippet
+snippet do "Insert this do"
+`!p snip.rv = get_day_of_week("do")`
+endsnippet
+snippet do- "Insert last do"
+`!p snip.rv = get_last_or_next_week("do", -1)`
+endsnippet
+snippet do+ "Insert next do"
+`!p snip.rv = get_last_or_next_week("do", 1)`
+endsnippet
+snippet fr "Insert this fr"
+`!p snip.rv = get_day_of_week("fr")`
+endsnippet
+snippet fr- "Insert last fr"
+`!p snip.rv = get_last_or_next_week("fr", -1)`
+endsnippet
+snippet fr+ "Insert next fr"
+`!p snip.rv = get_last_or_next_week("fr", 1)`
+endsnippet
+snippet sa "Insert this sa"
+`!p snip.rv = get_day_of_week("sa")`
+endsnippet
+snippet sa- "Insert last sa"
+`!p snip.rv = get_last_or_next_week("sa", -1)`
+endsnippet
+snippet sa+ "Insert next sa"
+`!p snip.rv = get_last_or_next_week("sa", 1)`
+endsnippet
+snippet so "Insert this so"
+`!p snip.rv = get_day_of_week("so")`
+endsnippet
+snippet so- "Insert last so"
+`!p snip.rv = get_last_or_next_week("so", -1)`
+endsnippet
+snippet so+ "Insert next so"
+`!p snip.rv = get_last_or_next_week("so", 1)`
+endsnippet
