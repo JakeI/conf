@@ -485,7 +485,6 @@ omap ac <Plug>(GitGutterTextObjectOuterPending)
 xmap ic <Plug>(GitGutterTextObjectInnerVisual)
 xmap ac <Plug>(GitGutterTextObjectOuterVisual)
 
-
 if full
     " add tagbar support
     let g:tagbar_type_gams = {
@@ -1577,6 +1576,9 @@ if full
     let g:leader_keymap.e.c = 'Copy to System Clipboard'
     map <leader>ep :-1r !xclip -o -sel clip<CR>
     let g:leader_keymap.e.p = 'Paste from system Clipboard'
+
+    " Clipboard method for handy (voice to text) that inserts using Shift+Insert
+    inoremap <S-D-Insert> <C-R>+
 
     " fzf mapping
 
