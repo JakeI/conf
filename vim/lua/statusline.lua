@@ -30,6 +30,24 @@ local function diagnostics()
   return " [" .. table.concat(s, " ") .. "]"
 end
 
+-- spell languages as compact emoji flags (en→🇬🇧, de→🇩🇪, …), plain code as fallback
+local spell_flags = {
+  en = "🇬🇧", de = "🇩🇪", fr = "🇫🇷", es = "🇪🇸", it = "🇮🇹", nl = "🇳🇱",
+  ru = "🇷🇺", pt = "🇵🇹", sv = "🇸🇪", da = "🇩🇰", no = "🇳🇴", fi = "🇫🇮",
+  pl = "🇵🇱", cs = "🇨🇿", hu = "🇭🇺", tr = "🇹🇷", ca = "🇨🇦", sl = "🇸🇮",
+}
+local function spell()
+  if not vim.wo.spell then return "" end
+  local out = {}
+  for lang in vim.gsplit(vim.bo.spelllang, ",", true) do
+    if lang ~= "" then
+      local code = lang:match("^(%a%a)")
+      out[#out + 1] = spell_flags[code] or lang
+    end
+  end
+  return " " .. table.concat(out)
+end
+
 local function encoding()
   local enc = vim.bo.fileencoding ~= "" and vim.bo.fileencoding or vim.o.encoding
   local ff = vim.bo.fileformat
@@ -40,7 +58,7 @@ end
 function M.statusline()
   local mode = modes[vim.fn.mode()] or vim.fn.mode():upper()
 
-  local spell = vim.wo.spell and (" SPELL:" .. vim.o.spelllang) or ""
+  local spell_txt = spell()
   local tablemode = vim.g.table_mode_enabled and " TABLE" or ""
 
   local fname = "%f%m%r"
@@ -57,17 +75,35 @@ function M.statusline()
   end
 
   return table.concat({
-    "%#StatusLine#", mode, spell, tablemode,
+    "%#StatusLine#", mode, spell_txt, tablemode,
     "%#StatusLineNC#  ", fname, branch, diag,
     "%#StatusLine#  ", table.concat(right, "  "),
   })
 end
 
 -- =============================================================================
---  Tabline: buffer list, like the old airline tabline
+--  Tabline: buffers when a single tab is open, tabs when multiple tabs exist
 -- =============================================================================
 function M.tabline()
   local s = {}
+  if #vim.fn.gettabinfo() > 1 then
+    -- multiple tabs: show tabs only
+    for _, t in ipairs(vim.fn.gettabinfo()) do
+      local cur = t.tabnr == vim.fn.tabpagenr()
+      local name = ""
+      for _, b in ipairs(vim.fn.tabpagebuflist(t.tabnr)) do
+        local ft = vim.bo[b].filetype
+        if ft ~= "netrw" then name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(b), ":t") break end
+      end
+      if name == "" then name = "[No Name]" end
+      local hl = cur and "%#TabLineSel#" or "%#TabLine#"
+      s[#s + 1] = hl .. " " .. t.tabnr .. ":" .. name
+      s[#s + 1] = "%T"
+    end
+    s[#s + 1] = "%#TabLineFill#%=%#TabLine# " .. #vim.fn.gettabinfo() .. " tabs"
+    return table.concat(s)
+  end
+  -- single tab: show buffers (like the old airline tabline)
   local cur = vim.api.nvim_get_current_buf()
   local n = 0
   for _, b in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do

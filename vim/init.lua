@@ -253,7 +253,7 @@ vim.keymap.set("n", "<leader>lc", "<Cmd>lclose<CR>", { desc = "close location li
 vim.keymap.set("n", "<leader>lC", function() vim.fn.setloclist(0, {}) end, { desc = "clear location list" })
 
 -- --- n: Navigation ----------------------------------------------------------------
-vim.keymap.set("n", "<leader>nn", "<Cmd>Explore<CR>", { desc = "explore in netrw" })
+vim.keymap.set("n", "<leader>nn", "<Cmd>Lex 30<CR>", { desc = "toggle netrw sidebar [:Lexplore]" })
 
 -- --- git (searching; hunk navigation is set up by gitsigns) ------------------------
 vim.keymap.set("n", "<leader>gg", [[/^[>=<][>=<][>=<][>=<][>=<][>=<][>=<]<CR>]],
@@ -378,11 +378,11 @@ vim.cmd([[command! -complete=shellcmd -nargs=+ Shell call v:lua.require('extras'
 -- terminal buffers -------------------------------------------------------------
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function()
-    vim.opt_local.nonumber = true
-    vim.opt_local.norelativenumber = true
-    vim.opt_local.nospell = true
-    vim.opt_local.nocursorline = true
-    vim.opt_local.nocursorcolumn = true
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+    vim.opt_local.spell = false
+    vim.opt_local.cursorline = false
+    vim.opt_local.cursorcolumn = false
     vim.opt_local.scrolloff = 0
   end,
 })
@@ -393,11 +393,7 @@ vim.keymap.set("t", "<C-e>", function()
   return "<C-\\><C-n>\"" .. c .. "pi"
 end, { expr = true, desc = "paste register in terminal" })
 
--- floating terminal (replaces floaterm; same F-keys)
-vim.keymap.set({ "n", "t" }, "<F12>", function() extras.floatterm_toggle() end, { desc = "toggle floating terminal" })
-vim.keymap.set({ "n", "t" }, "<F8>",  function() extras.floatterm_new()    end, { desc = "open new floating terminal" })
-vim.keymap.set({ "n", "t" }, "<F9>",  function() extras.floatterm_cycle(-1) end, { desc = "previous floating terminal" })
-vim.keymap.set({ "n", "t" }, "<F10>", function() extras.floatterm_cycle(1)  end, { desc = "next floating terminal" })
+-- (floating terminals removed — unused; use <leader>bt / <leader>bT for split terminals)
 
 -- fold helper (treesitter folding, replaces old nvim_treesitter#foldexpr)
 vim.keymap.set("n", "<leader>bs", function()

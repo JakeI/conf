@@ -68,6 +68,10 @@ leader scheme:
 
 # Removed (candidates you may want to skim)
 
+## Removed in second pass (2026-11-02, after your review)
+- **Floating terminals (F8/F9/F10/F12)** — the floaterm replacement was removed entirely;
+  you no longer use float terms. Split terminals remain: `<leader>bt` / `<leader>bT`.
+
 ## Dead weight / was already commented out
 - **coc.nvim**, **coq_nvim** (+ coq.artifacts, coq.thirdparty) — completion/LSP blocks were
   commented out. LSP is now manual (`:LspStart`), no completion engine installed.
@@ -80,7 +84,7 @@ leader scheme:
 - **vim-airline** (+ themes, airline-tablemode) → built-in `statusline`/`tabline`
   (`lua/statusline.lua`). No plugin at all.
 - **vim-floaterm** (+ fzf-floaterm) → built-in floating terminals (`lua/extras.lua`,
-  F8/F9/F10/F12).
+  F8/F9/F10/F12) — **removed again in second pass** (unused).
 - **vim-which-key / WhichKey** → `folke/which-key.nvim` (already maintained for Neovim,
   loaded lazy; `<leader>sh` opens the hint popup).
 - **vim-sensible**, **vim-vinegar** — sensible defaults are in `init.lua`; vinegar folded
@@ -135,11 +139,10 @@ leader scheme:
 
 Kept exactly as before: `<space>` leader groups `f`/`s`/`g`/`n`/`c`/`b`/`e`/`r`/`w`/`d`/`t`/
 `x`/`l`/`q`/`v`/`F`/`S` (minus items below), `ü`=z=, `s`=update, `<A-h/j/k/l>` window
-navigation, `<A-n/p>`/`<A-N/P>` tabs & buffers, `<A-J/K/H/L>` line/char move, F8/F9/F10/F12
-terminal family, resize mode `<C-w>. , > <`, `gs`, `go`=xdg-open, `gA`, `gm`, `gZ`, `gz`
-(tags picker), quickfix/location `[q ]q [l ]l` groups, `K` matlab help, UltiSnips keybinds,
-vimtex `<leader>x*` family (extended), markdown `!`=medieval, `ga`=EasyAlign, comment/surround
-keys.
+navigation, `<A-n/p>`/`<A-N/P>` tabs & buffers, `<A-J/K/H/L>` line/char move, resize mode
+`<C-w>. , > <`, `gs`, `go`=xdg-open, `gA`, `gm`, `gZ`, `gz` (tags picker), quickfix/location
+`[q ]q [l ]l` groups, `K` matlab help, UltiSnips keybinds, vimtex `<leader>x*` family
+(extended), markdown `!`=medieval, `ga`=EasyAlign, comment/surround keys.
 
 | Key | Old | New |
 |---|---|---|
@@ -150,14 +153,50 @@ keys.
 | `<leader>nj` | echo b:terminal_job_id | unbound (floaterm gone) |
 | `<leader>fx` | vimtex fzf `ctli` picker | unbound (vimtex has richer `<leader>x*` maps) |
 | `<leader>gF` | `:GitGutterFold` | unbound (gitgutter removed) |
-| `<leader>nn` | fern | `:Explore` (netrw) |
+| `<leader>gG` | `:GitGutterToggle` | gitsigns `toggle_signs` (same semantics) |
+| `<leader>nn` | fern | netrw **sidebar** (`:Lex 30`, 30-col left panel, toggle) |
 | `<leader>sh` | WhichKey popup | which-key.nvim hint loop (same purpose) |
-| `<F8>` | floaterm new/cycle (`:Floaterms`) | new floating terminal |
-| `<F9>` / `<F10>` | floaterm prev / next | previous / next floating terminal (same semantics, new engine) |
-| `<F12>` | floaterm toggle | toggle floating terminal (same) |
+| `<F8>` | floaterm new/cycle (`:Floaterms`) | **removed** (unused) |
+| `<F9>` / `<F10>` | floaterm prev / next | **removed** (unused) |
+| `<F12>` | floaterm toggle | **removed** (unused) |
 | `Plug*` commands | `:PlugInstall` etc. | `:Lazy` (`:Lazy install`, `:Lazy update`, `:Lazy sync`) |
 | (new) | — | `<leader>aa/ai/ab/ad/as/ac/ap/ao` OpenCode |
 | (new) | — | `<leader>bf`, `<leader>gs` aliases for buffer/git pickers |
+
+## Color schemes
+
+The old `:Colors` command came from a removed picker plugin. Options now:
+
+- `:colorscheme atom` — set a scheme at runtime (replace `atom` with any installed scheme;
+  your `colors/atom.vim` still loads). Same interactive picker still exists as
+  `<leader>fS` (Telescope colorscheme), though you don't need it.
+- To change the default permanently, edit `init.lua` line ~114:
+  `pcall(vim.cmd.colorscheme, "atom")` — built-in fallbacks like `habamax`, `vim`, `quiet`
+  also work.
+
+## Second-pass fixes (2026-11-02, after your review)
+
+- **gitsigns attach error fixed** (`rhs: expected string|function, got nil` on open/save):
+  `<leader>gG` now maps `gitsigns.toggle_signs` (the function `toggle_current_line_highlights`
+  does not exist in gitsigns).
+- **OpenCode TUI crash fixed** (`Unknown option 'nonumber'`): the `TermOpen` autocmd used
+  `vim.opt_local.nonumber = true` — the `no`-prefixed names aren't valid option keys in Lua;
+  it now sets `number = false` etc. `<leader>aa` works.
+- **Statusline spell indicator compacted**: ` SPELL:en_us,de_de` → emoji flags with no
+  punctuation, e.g. ` 🇬🇧🇩🇪` (`en→🇬🇧, de→🇩🇪, fr→🇫🇷 …`; unknown langs fall back to the
+  plain code). Still on the left, right after the mode.
+- **Tabline adaptive**: with one tab open it lists buffers (as before); as soon as more
+  than one tab exists it shows tabs only (name of first non-netrw buffer per tab).
+- **which-key modernized**: `preset = "helix"` — compact bottom panel like Helix editor /
+  LunarVim instead of the floating classic popup. (No plugin switch needed; alternatives
+  like mini.clue or hydra.nvim were considered but which-key's helix preset is exactly
+  that look.)
+- **which-key spec curated**: groups plus a meaningful set of leaf mappings added for
+  Telescope find keys, OpenCode, gitsigns, buffer/window/config/edit/misc groups —
+  deliberately not exhaustive.
+- **`<leader>nn` opens a netrw sidebar** (`:Lex 30`, left, 30 columns, toggles) instead of
+  replacing the whole window.
+- **Floating terminals removed** (F8/F9/F10/F12 + `lua/extras.lua` implementation).
 
 # Known limitations
 

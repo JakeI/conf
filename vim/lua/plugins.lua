@@ -131,15 +131,17 @@ return {
   },
 
   ---------------------------------------------------------------------------
-  -- which-key: same popup UX as vim-which-key, descriptions come from
-  -- the `desc` field of every mapping in init.lua
+  -- which-key: helix-style bottom panel; descriptions come from the `desc`
+  -- field of every mapping in init.lua. Leaf entries below cover mappings
+  -- that only exist after their plugin lazy-loads (telescope/opencode/git).
   ---------------------------------------------------------------------------
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
     config = function()
+      require("which-key").setup({ preset = "helix" })
       require("which-key").add({
-        { "<leader>",  group = "general commands: general commands" },
+        { "<leader>",  group = "general commands" },
         { "<leader>a", group = "OpenCode" },
         { "<leader>b", group = "Buffer" },
         { "<leader>c", group = "Configuration" },
@@ -159,6 +161,82 @@ return {
         { "<leader>x", group = "VimTeX" },
         { "<C-w>",     group = "window commands" },
         { "z",         group = "z key" },
+        -- find (telescope — only registered once telescope has loaded)
+        { "<leader>ff", desc = "Find files" },
+        { "<leader>fg", desc = "Git files (git ls-files)" },
+        { "<leader>fG", desc = "Git files git status" },
+        { "<leader>fb", desc = "Open buffers" },
+        { "<leader>bf", desc = "Find buffers" },
+        { "<leader>fS", desc = "Color schemes" },
+        { "<leader>fl", desc = "Lines (project-wide)" },
+        { "<leader>fL", desc = "Lines in current buffer" },
+        { "<leader>ft", desc = "Tags" },
+        { "<leader>fT", desc = "Tags in current buffer" },
+        { "<leader>fm", desc = "Marks" },
+        { "<leader>fw", desc = "Windows" },
+        { "<leader>fh", desc = "History" },
+        { "<leader>f:", desc = "Command history" },
+        { "<leader>f/", desc = "Search history" },
+        { "<leader>fs", desc = "Snippets" },
+        { "<leader>fc", desc = "Commits" },
+        { "<leader>fC", desc = "Commits for current buffer" },
+        { "<leader>fM", desc = "Keyboard mappings" },
+        { "<leader>fH", desc = "Helptags" },
+        { "<leader>fF", desc = "Filetypes" },
+        { "<leader>nr", desc = "grep word under cursor" },
+        { "<leader>nf", desc = "tags for word under cursor" },
+        { "gz",         desc = "tags for word under cursor" },
+        -- OpenCode
+        { "<leader>aa", desc = "toggle OpenCode TUI" },
+        { "<leader>ai", desc = "ask OpenCode about selection/cursor" },
+        { "<leader>ab", desc = "ask OpenCode about buffer" },
+        { "<leader>ad", desc = "ask OpenCode about diagnostics" },
+        { "<leader>as", desc = "select OpenCode action" },
+        { "<leader>ac", desc = "run OpenCode command" },
+        { "<leader>ap", mode = "x", desc = "send selection to OpenCode" },
+        { "<leader>ao", desc = "send range to OpenCode (operator)" },
+        -- git (gitsigns — buffer-local, shown for git buffers once loaded)
+        { "<leader>gG", desc = "toggle git gutter visibility" },
+        { "<leader>gu", desc = "git undo current hunk" },
+        { "<leader>gp", desc = "git preview current hunk" },
+        { "<leader>gg", desc = "jump to next conflict marker" },
+        { "gs",         desc = "swap character with next one" },
+        { "go",         desc = "open file under cursor in default viewer" },
+        { "gA",         desc = "print ascii of character under cursor" },
+        { "gZ",         desc = "jump through ctags" },
+        -- buffer / window / config / misc (visible keys, useful reminders)
+        { "<leader>bd", desc = "delete buffer" },
+        { "<leader>bn", desc = "next buffer" },
+        { "<leader>bp", desc = "previous buffer" },
+        { "<leader>be", desc = "reload buffer" },
+        { "<leader>bt", desc = "new terminal" },
+        { "<leader>bT", desc = "new terminal (vertical split)" },
+        { "<leader>bw", desc = "write buffer as sudo" },
+        { "<leader>bs", desc = "toggle treesitter folding" },
+        { "<leader>cl", desc = "reload configuration" },
+        { "<leader>cv", desc = "toggle column highlighting" },
+        { "<leader>co", desc = "toggle spell checking" },
+        { "<leader>cr", desc = "toggle relative line numbers" },
+        { "<leader>cw", desc = "toggle line wrapping" },
+        { "<leader>ch", desc = "stop highlighting search results" },
+        { "<leader>cC", desc = "disable conceal" },
+        { "<leader>sh", desc = "which-key popup (stay in loop)" },
+        { "<leader>sP", desc = "open current markdown preview in zathura" },
+        { "<leader>se", desc = "lookup current word on Pons" },
+        { "<leader>rw", desc = "remove trailing whitespace" },
+        { "<leader>ri", desc = "reindent selection" },
+        { "<leader>rx", desc = "make current file executable" },
+        { "<leader>et", desc = "insert current time" },
+        { "<leader>ed", desc = "insert current date" },
+        { "<leader>eD", desc = "insert current date & time" },
+        { "<leader>ec", mode = "x", desc = "copy selection to system clipboard" },
+        { "<A-n>",      desc = "next tab" },
+        { "<A-p>",      desc = "previous tab" },
+        { "<A-N>",      desc = "next buffer" },
+        { "<A-P>",      desc = "previous buffer" },
+        { "<A-J>",      desc = "move line/selection down" },
+        { "<A-K>",      desc = "move line/selection up" },
+        { "ü",          desc = "suggest spelling [z=]" },
         { "zZ",        desc = "center current line in screen (zz)" },
         { "za",        desc = "open/close current fold" },
         { "zg",        desc = "add current word to dictionary" },
@@ -191,7 +269,7 @@ return {
           end
           m("n", "]c", function() gs.nav_hunk("next") end, "next git hunk")
           m("n", "[c", function() gs.nav_hunk("prev") end, "previous git hunk")
-          m("n", "<leader>gG", gs.toggle_current_line_highlights, "toggle git gutter visibility")
+          m("n", "<leader>gG", gs.toggle_signs, "toggle git gutter visibility")
           m("n", "<leader>gu", gs.reset_hunk,        "git undo current hunk")
           m("v", "<leader>gu", function() gs.reset_hunk({}) end, "git undo selected hunks")
           m("n", "<leader>gp", gs.preview_hunk,      "git preview current hunk")
