@@ -15,7 +15,9 @@ The old files (`vim/vimrc`, `vim/init.vim`, `vim/simple_vimrc`, …) were not mo
 | `vim/lua/plugins.lua` | All plugin specs (38 plugins) + plugin keymaps |
 | `vim/lua/lsp.lua` | Manual LSP: `:LspStart` / `:LspStop`, mason, on-attach maps |
 | `vim/lua/statusline.lua` | Built-in statusline + tabline (no plugin) |
-| `vim/lua/extras.lua` | Resize mode, floating terminals, digraph helpers, ExecuteInShell, matlab_run, move_char |
+| `vim/lua/extras.lua` | Resize mode, digraph helpers, ExecuteInShell, matlab_run, move_char |
+| `vim/lazy-lock.json` | Snapshot of existing plugin revisions; no upgrades made during review |
+| `vim/tests/check.lua` | Regression checks using the real config and installed plugins |
 
 Entry: `~/.config/nvim/init.lua` is a symlink to `~/conf/vim/init.lua`. The old
 `~/.config/nvim/init.vim` symlink was **removed** (Neovim aborts with "E5422: Conflicting
@@ -30,7 +32,8 @@ keeps the existing `UltiSnips/`, `colors/atom.vim`, `syntax/`, `ftdetect/` asset
 | New config | **127–157 ms** | **213–353 ms** |
 
 Roughly 4–5× faster. Lazy loading: Telescope/GitSigns/etc. load on first use or on `VeryLazy`;
-filetype plugins (vimtex, julia, matlab, csv, APL, BQN, just) load only for those buffers.
+filetype plugins (vimtex, matlab, csv, APL, BQN, just) load only for those buffers.
+Julia currently loads on `VeryLazy` because of its global Unicode-completion hooks.
 
 ## LSP: manual only
 
@@ -44,9 +47,10 @@ configured server, or `:LspStart clangd` names one:
 | python | pyright |
 | tex / markdown / text | ltex |
 
-`gd` and other LSP navigation maps only exist while a client is attached, so normal buffers
-behave exactly as before. Mason binaries live in `~/.local/share/nvim/mason/bin`, which the
-config prepends to `PATH` at `:LspStart` time.
+`gd` and other LSP navigation maps are installed on attachment (they currently remain in
+that buffer after stopping the server). Mason binaries live in
+`~/.local/share/nvim/mason/bin`; Mason adds this to `PATH` at `:LspStart` time.
+Starting a server enables it for matching buffers until `:LspStop`; it is not per-buffer.
 
 ## OpenCode integration (opencode v2.2.1)
 
@@ -89,7 +93,8 @@ leader scheme:
   loaded lazy; `<leader>sh` opens the hint popup).
 - **vim-sensible**, **vim-vinegar** — sensible defaults are in `init.lua`; vinegar folded
   into kept netrw.
-- **vim-expand-region** → Treesitter incremental selection (`gnn`).
+- **vim-expand-region** → removed; no replacement incremental-selection mapping is
+  currently configured (`gnn` was incorrectly listed here previously).
 - **vim-json**, **haskell-vim**, **vim-glsl**, **julia-syntax.vim**, **vim-pandoc(-syntax)** →
   Treesitter parsers / existing ftplugins cover highlighting.
 - **suda.vim** → built-in `<leader>bw` (`:w !sudo tee`) kept from old config.
@@ -108,7 +113,7 @@ leader scheme:
 ## File managers consolidated to netrw
 - **nerdtree**, **fern** (+ fern-mapping-fzf, fern-hijack, fern-preview), **nvim-tree**,
   **chadtree**, **broot.nvim**, **vifm.vim**, **vim-vinegar** — all removed. Netrw is kept:
-  `<leader>nn` = `:Explore`. Icons/dirs plugins (vim-devicons, nvim-web-devicons) dropped
+  `<leader>nn` = `:Lexplore 30` sidebar toggle. Icons/dirs plugins (vim-devicons, nvim-web-devicons) dropped
   with them.
 
 ## UI chrome / appearance
@@ -117,10 +122,14 @@ leader scheme:
   **space-vim-theme** — removed; `colors/atom.vim` stays as colorscheme.
   (tagbar: `<leader>nB`/`<leader>nb` now unbound — treesitter symbols via LSP if wanted.)
 
-## Privacy / data-security (per your requirement: no phone-home)
-- **firenvim** — browser extension bridges page content out of the editor; removed.
-- **YouCompleteMe** — external compilation, ycmd server; removed.
-- **vimspeak**, **klog**, **kmonad-vim** — niche/unmaintained; removed.
+## Other removed integrations
+- **firenvim** — browser/editor bridge, no longer part of this setup.
+- **YouCompleteMe** — compilation and a local ycmd server no longer needed.
+- **vimspeak**, **klog**, **kmonad-vim** — omitted niche integrations.
+
+These removals are not evidence that those plugins contain telemetry. Background update
+checks are disabled; explicit installs/updates, language-server installation and OpenCode
+can use the network. This configuration review is not a full security audit of dependencies.
 
 ## Misc
 - **vim-move** → custom `<A-J/K/H/L>` move maps kept in `init.lua` (same keys).
@@ -203,15 +212,108 @@ The old `:Colors` command came from a removed picker plugin. Options now:
 - **LaTeX treesitter parser skipped**: the `latex` parser build fails against the system
   tree-sitter CLI (ABI mismatch on this 0.12.0-dev build). vimtex's own syntax highlighting
   covers tex files; revisit after the next nvim stable update.
-- **vimtex version gate**: vimtex ≥ 2024 requires nvim ≥ 0.12.4 (or Vim 9.2); this
-  0.12.0-dev build is newer than the check knows, so `g:vimtex_version_check = 0` is set
-  (the documented opt-out, see `:h vimtex_version_check`). Remove after updating nvim.
+- **vimtex version gate**: the installed VimTeX requires nvim ≥ 0.12.4 (or Vim 9.2).
+  This 0.12.0-dev build is **below** that minimum. `g:vimtex_version_check = 0` bypasses
+  the check, but doesn't guarantee compatibility. Upgrade Neovim, or pin a supported
+  VimTeX release; no dependency upgrades/downgrades were made during this review.
+- **vimtex inverse search**: upstream advises against filetype-only lazy loading because
+  the global inverse-search command may be needed before a TeX buffer is open. This
+  loading policy is unchanged; revisit if you use PDF-to-editor inverse search.
 - **julia-vim** loads on `VeryLazy` rather than on `ft=julia` because its ftdetect registers
   global `BufEnter *` autocmds that error when the plugin is ft-gated.
 - Old `~/.local/share/nvim` still contains leftover `tree-sitter-*` plugin dirs from the old
   setup — safe to delete manually.
-- `:LspStart` must be run after `Lazy` has loaded mason (first `:LspStart` may take a second
-  while mason initializes).
+- The first `:LspStart` explicitly loads/configures the LSP stack; later calls reuse it.
+- `<leader>cl` reapplies main options/mappings/autocommands. Plugin configuration/module
+  changes still require a fresh Neovim instance; it is not a full plugin hot-reloader.
+
+## Performance / code-quality review (2026-11-04)
+
+The current architecture is worth keeping. There is no justification for replacing the
+plugin stack or changing shortcuts just to chase startup milliseconds. The useful gains
+were in frequently executed rendering code and fixing lazy-loading/reload correctness.
+
+### Applied
+
+- **Word-count cache:** `wordcount()` scans the entire buffer on every invocation. Cache
+  the total by buffer + changedtick, invalidate after edits, and release on buffer wipe.
+  In a 50,000-line / 500,000-word stress test, unchanged redraws went from about **12.3 ms
+  to 0.07 ms**. The first count after an edit still scans the buffer.
+- **Cheaper tabline:** avoid `getbufinfo()`/`gettabinfo()` copying all buffer/tab variables
+  on every redraw. Use focused APIs, keep the existing 15-buffer display limit, and count
+  listed buffers in one pass. Stress test with 202 buffers (200 with 10 KB metadata): about
+  **3.13 ms → 0.65 ms** per render; two buffers: **0.034 ms → 0.010 ms**.
+- **Correct rendering:** diagnostic counts use numeric severity keys, inactive windows
+  show their own metadata, literal `%` in names/branches is escaped, tab labels have
+  proper click targets, and TABLE reflects the displayed buffer's actual table mode.
+- **Filetype mappings:** Markdown/table/image/medieval/VimTeX shortcuts now apply to every
+  matching buffer, not just whichever buffer triggered the plugin's one-time `config()`.
+- **Safe reload:** named autocommand groups avoid accumulating duplicate callbacks;
+  don't rerun `lazy.setup()` after initial setup. Removed unused helpers.
+- **Mapping maintenance:** which-key reads actual mapping descriptions and lazy key
+  stubs rather than a second, easily-stale copy. Telescope keys/descriptions live together;
+  plugin functionality is still lazy. Existing snippet-list keys now call UltiSnips's
+  actual list function instead of the removed fzf `:Snippets` command.
+- **Manual LSP:** explicitly load the stack, preserve our commands after lspconfig loads,
+  surface setup failures, avoid deprecated `require('lspconfig')`, and avoid replaying
+  unrelated FileType hooks on every start. Start/stop and repeated start tested with clangd.
+- **Other small fixes:** preserve OpenCode's terminal job across toggles; register visual
+  lazy triggers; pass the visual range when resetting Git hunks; fix the Shell output
+  buffer's invalid `noswapfile` Lua option, refresh/reuse it correctly, and parse UTF-8
+  digraph characters correctly. Quote/pass filenames literally in chmod/open/sudo-write
+  helpers (sudo itself was not invoked during testing).
+- **Reproducibility:** `lazy-lock.json` is now beside the config. It is an exact copy of
+  the previous lockfile; plugin revisions were not changed. Keep it in version control
+  and use `:Lazy restore` if needed, rather than blindly updating dependencies.
+
+### Startup measurements
+
+Five same-machine headless samples per case; median through `NVIM STARTED`:
+
+| Case | Before review | After review |
+|---|---:|---:|
+| Empty | 135 ms | 131 ms |
+| `REVIEW.md` | 220 ms | 237 ms |
+
+Treat startup as essentially unchanged, not a claimed speedup; the samples vary. These
+headless timings exclude deferred UI work. An attached-UI smoke test separately checked
+Telescope, the Helix-style which-key panel, Git attachment, initial Treesitter highlighting
+and OpenCode terminal reuse. OpenCode used a local fake executable for that test, so no
+model request was sent.
+
+### Deliberately left alone
+
+- Keep the existing shortcuts, theme, sidebar, tab/buffer policy, spell flags and manual LSP.
+- Leave spelling/syntax/highlighting enabled as requested. Disabling them, or loading fewer
+  Markdown helpers, could save more time but would be a feature/behaviour tradeoff.
+- `:Shell`/Matlab helpers still run synchronously. Making them asynchronous is worthwhile
+  only if you use slow commands there; it needs cancellation/lifecycle handling, not just
+  a mechanical substitution.
+- Avoid broad caching and extra abstraction elsewhere: most remaining setup code runs
+  once, not per redraw. No additional plugins or background workers were introduced.
+
+### Repeatable checks
+
+From `~/conf/vim`, with plugins/parsers already installed:
+
+```sh
+nvim --headless -n "+lua dofile('tests/check.lua')"
+# Also exercise installed clangd (starts a real local language server):
+NVIM_TEST_LSP=1 nvim --headless -n "+lua dofile('tests/check.lua')"
+```
+
+The extended run passes 16 checks, including multi-buffer mappings, cache invalidation,
+inactive-window metadata, tabline escaping/targets, real Git attachment, sidebar/terminals,
+literal shell filenames, repeat reloads, snippet precedence and manual LSP. No plugin update
+or model completion is part of these checks.
+
+### TeX snippet-priority fix
+
+The `bar`/`hat` overrides left `priority 100` active for later TeX snippets. This let the
+derivative regex `([^dn])d` beat the global `fold` snippet (priority 10), producing
+`fol{𝒹÷𝒹}`. Reset priority after the math overrides, keeping the fold definition unchanged.
+Actual insert-mode tests checked `fold`, indented `fold`, `foldo`, `foldc` and the existing
+` d`/`dd`/`nd` derivative expansions with Ctrl-J, including first-use lazy loading.
 
 # Rollback
 

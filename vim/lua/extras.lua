@@ -59,20 +59,25 @@ end
 function M.execute_in_shell(command)
   -- expand % like the old version did
   command = command:gsub("%%", function() return vim.fn.expand("%") end)
-  local winnr = vim.fn.bufwinnr("^" .. command .. "$")
-  if winnr < 0 then
+  local win
+  for _, candidate in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(candidate)
+    if vim.b[buf].shell_command == command then win = candidate break end
+  end
+  if not win then
     vim.cmd("botright new | resize 15")
     vim.api.nvim_buf_set_name(0, command)
     vim.bo.buftype = "nowrite"
     vim.bo.bufhidden = "wipe"
-    vim.bo.noswapfile = true
+    vim.bo.swapfile = false
     vim.bo.buflisted = false
     vim.opt_local.wrap = false
     vim.bo.filetype = "output"
+    vim.b.shell_command = command
   else
-    vim.cmd(winnr .. "wincmd w")
+    vim.api.nvim_set_current_win(win)
   end
-  vim.fn.setline(1, vim.fn.systemlist(command))
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(command))
   vim.keymap.set("n", "r", function() M.execute_in_shell(command) end, { buffer = true, desc = "rerun command" })
 end
 
@@ -101,8 +106,8 @@ function M.digraphs()
   local path = vim.env.HOME .. "/conf/tex/greek.sty"
   if vim.fn.filereadable(path) == 0 then return end
   for _, line in ipairs(vim.fn.readfile(path)) do
-    if line:match("\\newunicodechar{.}") and line:match("§..") then
-      local chr = line:match("\\newunicodechar{(.)}")
+    if line:match("\\newunicodechar{[^}]+}") and line:match("§..") then
+      local chr = line:match("\\newunicodechar{([^}]+)}")
       local dig = line:match("§(..)")
       if chr and dig then pcall(vim.fn.digraph_set, dig, chr) end
     end

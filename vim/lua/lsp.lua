@@ -17,31 +17,25 @@ local servers_configured = false
 
 local function configure_servers()
   if servers_configured then return end
-  servers_configured = true
-
-  -- mason installs binaries to its own bin dir; make them reachable
-  local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
-  if vim.fn.isdirectory(mason_bin) == 1 then
-    vim.env.PATH = mason_bin .. ":" .. vim.env.PATH
-  end
-
-  -- nvim-lspconfig registers its server configs with vim.lsp.config
-  pcall(function() require("lspconfig") end)
+  require("lazy").load({ plugins = { "nvim-lspconfig" } })
+  -- nvim-lspconfig defines commands of its own while loading. Keep ours for
+  -- subsequent calls too, rather than silently changing behaviour after first use.
+  M.commands()
 
   -- mason installs/updates the LSP binaries locally (~/.local/share/nvim/mason)
-  pcall(function()
-    require("mason").setup({ ui = { icons = {
-      package_installed = "✓", package_pending = "➜", package_uninstalled = "✗" } } })
-    require("mason-lspconfig").setup({
-      ensure_installed = { "ltex", "clangd", "julials" },
-      automatic_enable = false,   -- manual only, per user request
-    })
-  end)
+  -- Mason adds its bin directory to PATH. Server configs are discovered from
+  -- nvim-lspconfig's lsp/ directory by Neovim; the deprecated require isn't needed.
+  require("mason").setup({ ui = { icons = {
+    package_installed = "✓", package_pending = "➜", package_uninstalled = "✗" } } })
+  require("mason-lspconfig").setup({
+    ensure_installed = { "ltex", "clangd", "julials" },
+    automatic_enable = false,   -- manual only, per user request
+  })
 
   -- ltex: same settings as the old config
   vim.lsp.config("ltex", {
     cmd = { "ltex-ls" },
-    filetypes = { "tex", "text", "markdown" },
+    filetypes = { "tex", "plaintex", "text", "markdown" },
     settings = {
       ltex = {
         configurationTarget = "workspace",
@@ -55,10 +49,12 @@ local function configure_servers()
       },
     },
   })
+  servers_configured = true
 end
 
 -- on_attach: same keymaps as the old config
 vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("ConfigLsp", { clear = true }),
   callback = function(args)
     local buf = args.buf
     local function map(lhs, fn, desc)
@@ -100,7 +96,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 function M.commands()
   vim.api.nvim_create_user_command("LspStart", function(o)
-    configure_servers()
+    local configured, err = pcall(configure_servers)
+    if not configured then
+      vim.notify("LspStart: " .. tostring(err), vim.log.levels.ERROR)
+      return
+    end
     local names = #o.args > 0 and { o.args }
       or (ft_servers[vim.bo.filetype] or {})
     if #names == 0 then
@@ -112,8 +112,8 @@ function M.commands()
       local ok, err = pcall(vim.lsp.enable, n)
       if not ok then vim.notify("LspStart: could not enable " .. n .. " (" .. tostring(err) .. ")") end
     end
-    -- make sure the current buffer attaches even if FileType already fired
-    vim.api.nvim_exec_autocmds("FileType", { buffer = vim.api.nvim_get_current_buf() })
+    -- vim.lsp.enable handles existing buffers itself. Replaying all FileType
+    -- autocommands also reruns unrelated ftplugins and can reset local options.
   end, { nargs = "?", complete = function()
     return { "clangd", "ltex", "julials", "pyright", "rust_analyzer", "bashls", "vimls" }
   end })

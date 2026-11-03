@@ -1,8 +1,34 @@
 -- plugins.lua – lazy.nvim spec. Everything is lazy-loaded:
---   * nothing loads for a plain markdown/text file except the statusline
+--   * markdown helpers load for markdown; general helpers defer to VeryLazy
 --   * picker/pickers load on first <leader>f keypress
 --   * LSP stack loads only via :LspStart
 --   * tex/csv/… load only for those filetypes
+local function picker(name, word)
+  return function()
+    require("telescope.builtin")[name](word and { default_text = vim.fn.expand("<cword>") } or nil)
+  end
+end
+
+-- Plugin config() runs once, but buffer-local shortcuts must be installed for every
+-- matching buffer. Also cover already-open buffers when the plugin is first loaded.
+local function filetype_maps(name, filetypes, mappings)
+  local function apply(buf)
+    for _, m in ipairs(mappings) do
+      vim.keymap.set("n", m[1], m[2], { buffer = buf, silent = true, desc = m[3] })
+    end
+  end
+  vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("ConfigMaps_" .. name, { clear = true }),
+    pattern = filetypes,
+    callback = function(args) apply(args.buf) end,
+  })
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and vim.tbl_contains(filetypes, vim.bo[buf].filetype) then
+      apply(buf)
+    end
+  end
+end
+
 return {
   ---------------------------------------------------------------------------
   -- Picker: Telescope (replaces fzf.vim; same <leader>f* keys)
@@ -12,12 +38,31 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     cmd = "Telescope",
     keys = {
-      "<leader>ff", "<leader>fg", "<leader>fG", "<leader>fb", "<leader>fS",
-      "<leader>fl", "<leader>fL", "<leader>ft", "<leader>fT", "<leader>fm",
-      "<leader>fw", "<leader>fh", "<leader>f:", "<leader>f/", "<leader>fc",
-      "<leader>fC", "<leader>fM", "<leader>fH", "<leader>fF",
-      "<leader>bf", "<leader>nr", "<leader>nf", "gz", "<leader>gs",
-      { "<C-x><C-r>", mode = "i" },
+      { "<leader>ff", picker("find_files"), desc = "Find files" },
+      { "<leader>fg", picker("git_files"), desc = "Git files (git ls-files)" },
+      { "<leader>fG", picker("git_status"), desc = "Git files git status" },
+      { "<leader>gs", picker("git_status"), desc = "Git files git status" },
+      { "<leader>fb", picker("buffers"), desc = "Open buffers" },
+      { "<leader>bf", picker("buffers"), desc = "Find buffers" },
+      { "<leader>fS", picker("colorscheme"), desc = "Color schemes" },
+      { "<leader>fl", picker("live_grep"), desc = "Lines (project-wide)" },
+      { "<leader>fL", picker("current_buffer_fuzzy_find"), desc = "Lines in current buffer" },
+      { "<leader>ft", picker("tags"), desc = "Tags" },
+      { "<leader>fT", picker("current_buffer_tags"), desc = "Tags in current buffer" },
+      { "<leader>fm", picker("marks"), desc = "Marks" },
+      { "<leader>fw", desc = "Windows" },
+      { "<leader>fh", picker("oldfiles"), desc = "History" },
+      { "<leader>f:", picker("command_history"), desc = "Command history" },
+      { "<leader>f/", picker("search_history"), desc = "Search history" },
+      { "<leader>fc", picker("git_commits"), desc = "Commits" },
+      { "<leader>fC", picker("git_bcommits"), desc = "Commits for current buffer" },
+      { "<leader>fM", picker("keymaps"), desc = "Keyboard mappings" },
+      { "<leader>fH", picker("help_tags"), desc = "Helptags" },
+      { "<leader>fF", picker("filetypes"), desc = "Filetypes" },
+      { "<leader>nr", picker("live_grep", true), desc = "search for current word" },
+      { "<leader>nf", picker("tags", true), desc = "find tags for word under cursor" },
+      { "gz", picker("tags", true), desc = "find tags for word under cursor" },
+      { "<C-x><C-r>", mode = "i", desc = "bibtex completion" },
     },
     config = function()
       local actions = require("telescope.actions")
@@ -29,7 +74,6 @@ return {
           },
         },
       })
-      local tb = require("telescope.builtin")
       local map = function(lhs, rhs, desc)
         vim.keymap.set("n", lhs, rhs, { desc = desc, silent = true })
       end
@@ -71,39 +115,7 @@ return {
         }):find()
       end
 
-      map("<leader>ff", tb.find_files,                "Find files")
-      map("<leader>fg", tb.git_files,                 "Git files (git ls-files)")
-      map("<leader>fG", tb.git_status,                "Git files git status")
-      map("<leader>gs", tb.git_status,                "Git files git status")
-      map("<leader>fb", tb.buffers,                   "Open buffers")
-      map("<leader>bf", tb.buffers,                   "Find buffers")
-      map("<leader>fS", tb.colorscheme,               "Color schemes")
-      map("<leader>fl", tb.live_grep,                 "Lines (was: open buffers, now project-wide)")
-      map("<leader>fL", tb.current_buffer_fuzzy_find, "Lines in current buffer")
-      map("<leader>ft", tb.tags,                      "Tags")
-      map("<leader>fT", tb.current_buffer_tags,       "Tags in current buffer")
-      map("<leader>fm", tb.marks,                     "Marks")
       map("<leader>fw", windows_picker,               "Windows")
-      map("<leader>fh", tb.oldfiles,                  "History")
-      map("<leader>f:", tb.command_history,           "Command history")
-      map("<leader>f/", tb.search_history,            "Search history")
-      map("<leader>fs", "<Cmd>Snippets<CR>",          "Snippets")
-      map("<leader>fc", tb.git_commits,               "Commits")
-      map("<leader>fC", tb.git_bcommits,              "Commits for current buffer")
-      map("<leader>fM", tb.keymaps,                   "Keyboard mappings")
-      map("<leader>fH", tb.help_tags,                 "Helptags")
-      map("<leader>fF", tb.filetypes,                 "Filetypes")
-      map("<leader>nr", function() tb.live_grep({ default_text = vim.fn.expand("<cword>") }) end,
-        "search for current word")
-      map("<leader>nf", function() tb.tags({ default_text = vim.fn.expand("<cword>") }) end,
-        "find tags for word under cursor")
-      map("gz", function() tb.tags({ default_text = vim.fn.expand("<cword>") }) end,
-        "find tags for word under cursor")
-
-      -- insert-mode completion via <C-x>… (kept from old fzf config)
-      vim.keymap.set("i", "<C-x><C-p>", "<C-x><C-f>", { desc = "path completion" })
-      vim.keymap.set("i", "<C-x><C-s>", "<Cmd>Snippets<CR>", { desc = "snippet completion" })
-      vim.keymap.set("i", "<C-w>", "<C-x><C-k>", { desc = "dictionary word completion" })
 
       -- bibtex completion (was fzf grep over *.bib)
       vim.keymap.set("i", "<C-x><C-r>", function()
@@ -131,9 +143,8 @@ return {
   },
 
   ---------------------------------------------------------------------------
-  -- which-key: helix-style bottom panel; descriptions come from the `desc`
-  -- field of every mapping in init.lua. Leaf entries below cover mappings
-  -- that only exist after their plugin lazy-loads (telescope/opencode/git).
+  -- which-key: helix-style panel. Actual mappings (including lazy key stubs)
+  -- provide their own descriptions; keep only groups and built-in hints here.
   ---------------------------------------------------------------------------
   {
     "folke/which-key.nvim",
@@ -161,94 +172,14 @@ return {
         { "<leader>x", group = "VimTeX" },
         { "<C-w>",     group = "window commands" },
         { "z",         group = "z key" },
-        -- find (telescope — only registered once telescope has loaded)
-        { "<leader>ff", desc = "Find files" },
-        { "<leader>fg", desc = "Git files (git ls-files)" },
-        { "<leader>fG", desc = "Git files git status" },
-        { "<leader>fb", desc = "Open buffers" },
-        { "<leader>bf", desc = "Find buffers" },
-        { "<leader>fS", desc = "Color schemes" },
-        { "<leader>fl", desc = "Lines (project-wide)" },
-        { "<leader>fL", desc = "Lines in current buffer" },
-        { "<leader>ft", desc = "Tags" },
-        { "<leader>fT", desc = "Tags in current buffer" },
-        { "<leader>fm", desc = "Marks" },
-        { "<leader>fw", desc = "Windows" },
-        { "<leader>fh", desc = "History" },
-        { "<leader>f:", desc = "Command history" },
-        { "<leader>f/", desc = "Search history" },
-        { "<leader>fs", desc = "Snippets" },
-        { "<leader>fc", desc = "Commits" },
-        { "<leader>fC", desc = "Commits for current buffer" },
-        { "<leader>fM", desc = "Keyboard mappings" },
-        { "<leader>fH", desc = "Helptags" },
-        { "<leader>fF", desc = "Filetypes" },
-        { "<leader>nr", desc = "grep word under cursor" },
-        { "<leader>nf", desc = "tags for word under cursor" },
-        { "gz",         desc = "tags for word under cursor" },
-        -- OpenCode
-        { "<leader>aa", desc = "toggle OpenCode TUI" },
-        { "<leader>ai", desc = "ask OpenCode about selection/cursor" },
-        { "<leader>ab", desc = "ask OpenCode about buffer" },
-        { "<leader>ad", desc = "ask OpenCode about diagnostics" },
-        { "<leader>as", desc = "select OpenCode action" },
-        { "<leader>ac", desc = "run OpenCode command" },
-        { "<leader>ap", mode = "x", desc = "send selection to OpenCode" },
-        { "<leader>ao", desc = "send range to OpenCode (operator)" },
-        -- git (gitsigns — buffer-local, shown for git buffers once loaded)
-        { "<leader>gG", desc = "toggle git gutter visibility" },
-        { "<leader>gu", desc = "git undo current hunk" },
-        { "<leader>gp", desc = "git preview current hunk" },
-        { "<leader>gg", desc = "jump to next conflict marker" },
-        { "gs",         desc = "swap character with next one" },
-        { "go",         desc = "open file under cursor in default viewer" },
-        { "gA",         desc = "print ascii of character under cursor" },
-        { "gZ",         desc = "jump through ctags" },
-        -- buffer / window / config / misc (visible keys, useful reminders)
-        { "<leader>bd", desc = "delete buffer" },
-        { "<leader>bn", desc = "next buffer" },
-        { "<leader>bp", desc = "previous buffer" },
-        { "<leader>be", desc = "reload buffer" },
-        { "<leader>bt", desc = "new terminal" },
-        { "<leader>bT", desc = "new terminal (vertical split)" },
-        { "<leader>bw", desc = "write buffer as sudo" },
-        { "<leader>bs", desc = "toggle treesitter folding" },
-        { "<leader>cl", desc = "reload configuration" },
-        { "<leader>cv", desc = "toggle column highlighting" },
-        { "<leader>co", desc = "toggle spell checking" },
-        { "<leader>cr", desc = "toggle relative line numbers" },
-        { "<leader>cw", desc = "toggle line wrapping" },
-        { "<leader>ch", desc = "stop highlighting search results" },
-        { "<leader>cC", desc = "disable conceal" },
-        { "<leader>sh", desc = "which-key popup (stay in loop)" },
-        { "<leader>sP", desc = "open current markdown preview in zathura" },
-        { "<leader>se", desc = "lookup current word on Pons" },
-        { "<leader>rw", desc = "remove trailing whitespace" },
-        { "<leader>ri", desc = "reindent selection" },
-        { "<leader>rx", desc = "make current file executable" },
-        { "<leader>et", desc = "insert current time" },
-        { "<leader>ed", desc = "insert current date" },
-        { "<leader>eD", desc = "insert current date & time" },
-        { "<leader>ec", mode = "x", desc = "copy selection to system clipboard" },
-        { "<A-n>",      desc = "next tab" },
-        { "<A-p>",      desc = "previous tab" },
-        { "<A-N>",      desc = "next buffer" },
-        { "<A-P>",      desc = "previous buffer" },
-        { "<A-J>",      desc = "move line/selection down" },
-        { "<A-K>",      desc = "move line/selection up" },
-        { "ü",          desc = "suggest spelling [z=]" },
         { "zZ",        desc = "center current line in screen (zz)" },
         { "za",        desc = "open/close current fold" },
         { "zg",        desc = "add current word to dictionary" },
         { "zG",        desc = "add current word to internal wordlist" },
         { "zw",        desc = "mark current word as wrong" },
         { "zu",        group = "undo zg/zw" },
-        { "]c",        desc = "next git hunk" },
-        { "[c",        desc = "previous git hunk" },
         { "]d",        desc = "next lsp diagnostic (when LSP is running)" },
         { "[d",        desc = "previous lsp diagnostic (when LSP is running)" },
-        { "ic",        desc = "git hunk text object (inner)" },
-        { "ac",        desc = "git hunk text object (outer)" },
       })
     end,
   },
@@ -271,7 +202,9 @@ return {
           m("n", "[c", function() gs.nav_hunk("prev") end, "previous git hunk")
           m("n", "<leader>gG", gs.toggle_signs, "toggle git gutter visibility")
           m("n", "<leader>gu", gs.reset_hunk,        "git undo current hunk")
-          m("v", "<leader>gu", function() gs.reset_hunk({}) end, "git undo selected hunks")
+          m("x", "<leader>gu", function()
+            gs.reset_hunk({ vim.fn.line("v"), vim.fn.line(".") })
+          end, "git undo selected hunks")
           m("n", "<leader>gp", gs.preview_hunk,      "git preview current hunk")
           m({ "o", "x" }, "ic", gs.select_hunk, "git hunk text object (inner)")
           m({ "o", "x" }, "ac", gs.select_hunk, "git hunk text object (outer)")
@@ -318,10 +251,21 @@ return {
     event = "VeryLazy",
     build = ":TSUpdate",
     config = function()
-      -- highlight any filetype that has a parser installed
+      local function highlight(buf)
+        local ft = vim.bo[buf].filetype
+        -- VimTeX owns TeX syntax; don't run two competing highlighters there.
+        if vim.bo[buf].buftype == "" and ft ~= "" and ft ~= "tex" and ft ~= "plaintex" then
+          pcall(vim.treesitter.start, buf)
+        end
+      end
       vim.api.nvim_create_autocmd("FileType", {
-        callback = function() pcall(vim.treesitter.start) end,
+        group = vim.api.nvim_create_augroup("ConfigTreesitter", { clear = true }),
+        callback = function(args) highlight(args.buf) end,
       })
+      -- VeryLazy happens after the initial FileType event.
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(buf) then highlight(buf) end
+      end
     end,
   },
 
@@ -330,8 +274,12 @@ return {
   ---------------------------------------------------------------------------
   {
     "SirVer/ultisnips",
-    keys = { { "<C-j>", mode = "i" }, { "<C-j>", mode = "s" } },
-    cmd = { "Snippets", "UltiSnipsEdit" },
+    keys = {
+      { "<C-j>", mode = "i" }, { "<C-j>", mode = "s" },
+      { "<leader>fs", "<Cmd>call UltiSnips#ListSnippets()<CR>", desc = "Snippets" },
+      { "<C-x><C-s>", "<C-r>=UltiSnips#ListSnippets()<CR>", mode = "i", desc = "snippet completion" },
+    },
+    cmd = "UltiSnipsEdit",
     config = function()
       vim.keymap.set("n", "<leader>cs", function() vim.call("UltiSnips#RefreshSnippets") end,
         { desc = "reload snippets" })
@@ -346,14 +294,13 @@ return {
     ft = "markdown",
     dependencies = { "godlygeek/tabular" },
     config = function()
-      local m = function(lhs, rhs, desc)
-        vim.keymap.set("n", lhs, rhs, { buffer = true, silent = true, desc = desc })
-      end
-      m("<leader>nt", "<Cmd>Toc<CR>", "open markdown TOC in vsplit")
-      m("<leader>nT", "<Cmd>InsertToc 6<CR>", "write markdown TOC until h6 into buffer")
-      m("<leader>e<", "<Cmd>HeaderDecrease<CR>", "decrease markdown header")
-      m("<leader>e>", "<Cmd>HeaderIncrease<CR>", "increase markdown header")
-      m("<leader>nF", "<Cmd>setlocal foldmethod=syntax<CR>", "fold markdown document")
+      filetype_maps("Markdown", { "markdown" }, {
+        { "<leader>nt", "<Cmd>Toc<CR>", "open markdown TOC in vsplit" },
+        { "<leader>nT", "<Cmd>InsertToc 6<CR>", "write markdown TOC until h6 into buffer" },
+        { "<leader>e<", "<Cmd>HeaderDecrease<CR>", "decrease markdown header" },
+        { "<leader>e>", "<Cmd>HeaderIncrease<CR>", "increase markdown header" },
+        { "<leader>nF", "<Cmd>setlocal foldmethod=syntax<CR>", "fold markdown document" },
+      })
     end,
   },
   {
@@ -391,18 +338,6 @@ return {
       vim.g.table_mode_align_char = ":"
     end,
     config = function()
-      local function grid()
-        vim.g.table_mode_corner = "+"
-        vim.g.table_mode_corner_corner = "+"
-        vim.g.table_mode_header_fillchar = "="
-        vim.cmd("TableModeEnable")
-      end
-      local function pipe()
-        vim.g.table_mode_corner = "|"
-        vim.g.table_mode_corner_corner = "|"
-        vim.g.table_mode_header_fillchar = "-"
-        vim.cmd("TableModeEnable")
-      end
       vim.api.nvim_create_user_command("TableModeGridTable", function()
         vim.g.table_mode_corner = "+"
         vim.g.table_mode_corner_corner = "+"
@@ -415,13 +350,12 @@ return {
         vim.g.table_mode_header_fillchar = "-"
         vim.cmd("TableModeEnable")
       end, {})
-      local m = function(lhs, rhs, desc)
-        vim.keymap.set("n", lhs, rhs, { buffer = true, silent = true, desc = desc })
-      end
-      m("<leader>tg", "<Cmd>TableModeGridTable<CR>", "format grid table")
-      m("<leader>tp", "<Cmd>TableModePipeTable<CR>", "format pipe table")
-      m("<leader>tr", "<Cmd>TableModeRealign<CR>", "realign table")
-      m("<leader>te", "<Cmd>OpenInScim<CR>", "open markdown table in sc-im")
+      filetype_maps("Tables", { "markdown" }, {
+        { "<leader>tg", "<Cmd>TableModeGridTable<CR>", "format grid table" },
+        { "<leader>tp", "<Cmd>TableModePipeTable<CR>", "format pipe table" },
+        { "<leader>tr", "<Cmd>TableModeRealign<CR>", "realign table" },
+        { "<leader>te", "<Cmd>OpenInScim<CR>", "open markdown table in sc-im" },
+      })
     end,
   },
   { "mipmip/vim-scimark", ft = "markdown", cmd = "OpenInScim" },
@@ -435,15 +369,18 @@ return {
     end,
     config = function()
       vim.cmd([[command! MarkdownClipboardImagePaste call mdip#MarkdownClipboardImage()]])
-      vim.keymap.set("n", "<leader>ep", "<Cmd>MarkdownClipboardImagePaste<CR>",
-        { buffer = true, silent = true, desc = "paste image from clipboard as markdown" })
+      filetype_maps("Images", { "markdown" }, {
+        { "<leader>ep", "<Cmd>MarkdownClipboardImagePaste<CR>", "paste image from clipboard as markdown" },
+      })
     end,
   },
   {
     "gpanders/vim-medieval",
     ft = "markdown",
     config = function()
-      vim.keymap.set("n", "!", "<Plug>(medieval-eval)", { buffer = true, desc = "evaluate code block" })
+      filetype_maps("Medieval", { "markdown" }, {
+        { "!", "<Plug>(medieval-eval)", "evaluate code block" },
+      })
     end,
   },
 
@@ -453,37 +390,36 @@ return {
   {
     "lervag/vimtex",
     ft = { "tex", "bib" },
-    -- nvim 0.12.0-dev is newer than what the version gate knows about;
-    -- see :h vimtex_version_check
+    -- Compatibility override for the currently installed 0.12.0-dev build.
+    -- This is below upstream's supported minimum, not proof of compatibility.
     init = function()
       vim.g.vimtex_version_check = 0
     end,
     config = function()
-      local map = function(lhs, plug, desc)
-        vim.keymap.set("n", lhs, plug, { buffer = true, silent = true, desc = desc })
-      end
-      map("<leader>xi", "<plug>(vimtex-info)", "vimtex-info")
-      map("<leader>xI", "<plug>(vimtex-info-full)", "vimtex-info-full")
-      map("<leader>xt", "<plug>(vimtex-toc-open)", "vimtex-toc-open")
-      map("<leader>xT", "<plug>(vimtex-toc-toggle)", "vimtex-toc-toggle")
-      map("<leader>xq", "<plug>(vimtex-log)", "vimtex-log")
-      map("<leader>xv", "<plug>(vimtex-view)", "vimtex-view")
-      map("<leader>xr", "<plug>(vimtex-reverse-search)", "vimtex-reverse-search")
-      map("<leader>xl", "<plug>(vimtex-compile)", "vimtex-compile")
-      map("<leader>xL", "<plug>(vimtex-compile-selected)", "vimtex-compile-selected")
-      map("<leader>xk", "<plug>(vimtex-stop)", "vimtex-stop")
-      map("<leader>xK", "<plug>(vimtex-stop-all)", "vimtex-stop-all")
-      map("<leader>xe", "<plug>(vimtex-errors)", "vimtex-errors")
-      map("<leader>xo", "<plug>(vimtex-compile-output)", "vimtex-compile-output")
-      map("<leader>xg", "<plug>(vimtex-status)", "vimtex-status")
-      map("<leader>xG", "<plug>(vimtex-status-all)", "vimtex-status-all")
-      map("<leader>xc", "<plug>(vimtex-clean)", "vimtex-clean")
-      map("<leader>xC", "<plug>(vimtex-clean-full)", "vimtex-clean-full")
-      map("<leader>xm", "<plug>(vimtex-imaps-list)", "vimtex-imaps-list")
-      map("<leader>xx", "<plug>(vimtex-reload)", "vimtex-reload")
-      map("<leader>xX", "<plug>(vimtex-reload-state)", "vimtex-reload-state")
-      map("<leader>xs", "<plug>(vimtex-toggle-main)", "vimtex-toggle-main")
-      map("<leader>xa", "<plug>(vimtex-context-menu)", "vimtex-context-menu")
+      filetype_maps("Vimtex", { "tex", "bib" }, {
+        { "<leader>xi", "<plug>(vimtex-info)", "vimtex-info" },
+        { "<leader>xI", "<plug>(vimtex-info-full)", "vimtex-info-full" },
+        { "<leader>xt", "<plug>(vimtex-toc-open)", "vimtex-toc-open" },
+        { "<leader>xT", "<plug>(vimtex-toc-toggle)", "vimtex-toc-toggle" },
+        { "<leader>xq", "<plug>(vimtex-log)", "vimtex-log" },
+        { "<leader>xv", "<plug>(vimtex-view)", "vimtex-view" },
+        { "<leader>xr", "<plug>(vimtex-reverse-search)", "vimtex-reverse-search" },
+        { "<leader>xl", "<plug>(vimtex-compile)", "vimtex-compile" },
+        { "<leader>xL", "<plug>(vimtex-compile-selected)", "vimtex-compile-selected" },
+        { "<leader>xk", "<plug>(vimtex-stop)", "vimtex-stop" },
+        { "<leader>xK", "<plug>(vimtex-stop-all)", "vimtex-stop-all" },
+        { "<leader>xe", "<plug>(vimtex-errors)", "vimtex-errors" },
+        { "<leader>xo", "<plug>(vimtex-compile-output)", "vimtex-compile-output" },
+        { "<leader>xg", "<plug>(vimtex-status)", "vimtex-status" },
+        { "<leader>xG", "<plug>(vimtex-status-all)", "vimtex-status-all" },
+        { "<leader>xc", "<plug>(vimtex-clean)", "vimtex-clean" },
+        { "<leader>xC", "<plug>(vimtex-clean-full)", "vimtex-clean-full" },
+        { "<leader>xm", "<plug>(vimtex-imaps-list)", "vimtex-imaps-list" },
+        { "<leader>xx", "<plug>(vimtex-reload)", "vimtex-reload" },
+        { "<leader>xX", "<plug>(vimtex-reload-state)", "vimtex-reload-state" },
+        { "<leader>xs", "<plug>(vimtex-toggle-main)", "vimtex-toggle-main" },
+        { "<leader>xa", "<plug>(vimtex-context-menu)", "vimtex-context-menu" },
+      })
     end,
   },
   { "chomosuke/typst-preview.nvim", ft = "typst", version = "v1.*" },
@@ -493,7 +429,8 @@ return {
   ---------------------------------------------------------------------------
   {
     "neovim/nvim-lspconfig",
-    cmd = { "LspStart", "LspStop" },
+    -- lua/lsp.lua explicitly loads this stack; competing lazy command stubs
+    -- would otherwise overwrite our manual-only commands during first load.
     dependencies = {
       { "mason-org/mason.nvim" },
       { "mason-org/mason-lspconfig.nvim" },
@@ -563,27 +500,36 @@ return {
     "nickjvandyke/opencode.nvim",
     keys = {
       { "<leader>aa", desc = "toggle OpenCode TUI" },
-      { "<leader>ai", desc = "ask OpenCode about selection/cursor" },
-      { "<leader>ab", desc = "ask OpenCode about buffer" },
-      { "<leader>ad", desc = "ask OpenCode about diagnostics" },
-      { "<leader>as", desc = "select OpenCode action" },
-      { "<leader>ac", desc = "run OpenCode command" },
+      { "<leader>ai", mode = { "n", "x" }, desc = "ask OpenCode about selection/cursor" },
+      { "<leader>ab", mode = { "n", "x" }, desc = "ask OpenCode about buffer" },
+      { "<leader>ad", mode = { "n", "x" }, desc = "ask OpenCode about diagnostics" },
+      { "<leader>as", mode = { "n", "x" }, desc = "select OpenCode action" },
+      { "<leader>ac", mode = { "n", "x" }, desc = "run OpenCode command" },
       { "<leader>ap", mode = "x", desc = "send selection to OpenCode" },
       { "<leader>ao", desc = "send range to OpenCode (operator)" },
     },
     config = function()
-      -- configuration via vim.g.opencode_opts (no setup() call in this plugin)
-      -- toggle the opencode TUI in a vertical split (same split you'd get
-      -- from the plugin's default server start, but closable from both sides)
+      -- Keep the terminal buffer/job when hiding the split, so toggling doesn't
+      -- accumulate hidden TUIs. This doesn't change the server or model config.
+      local terminal
       local function opencode_toggle()
         for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
           local buf = vim.api.nvim_win_get_buf(w)
           if vim.api.nvim_buf_get_name(buf):match("^term://.*opencode") then
+            terminal = buf
             vim.api.nvim_win_close(w, true)
             return
           end
         end
-        vim.cmd("vsplit term://opencode")
+        local job = terminal and vim.api.nvim_buf_is_valid(terminal) and vim.b[terminal].terminal_job_id
+        if job and vim.fn.jobwait({ job }, 0)[1] == -1 then
+          vim.cmd("vsplit")
+          vim.api.nvim_win_set_buf(0, terminal)
+        else
+          vim.cmd("vsplit term://opencode")
+          terminal = vim.api.nvim_get_current_buf()
+        end
+        vim.cmd("startinsert")
       end
 
       local oc = function(fn) return function() require("opencode")[fn]() end end

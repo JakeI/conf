@@ -530,6 +530,10 @@ snippet "([a-zA-Z])hat" "hat" ri
 \hat{`!p snip.rv=match.group(1)`}
 endsnippet
 
+# Limit the priority override to bar/hat; suffix regexes below must not beat
+# full-word snippets such as the global "fold" snippet.
+priority 0
+
 snippet HH "H" i
 \mathbb{H}
 endsnippet

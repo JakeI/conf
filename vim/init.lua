@@ -4,14 +4,15 @@
 --    * fast startup: markdown / single files load almost nothing
 --    * LSP, tex, csv, ... only load when explicitly asked for (:LspStart etc.)
 --    * keyboard shortcuts preserved from the old vimrc (see REVIEW.md)
---    * no plugins with network/telemetry behaviour
+--    * no telemetry or background update checks; networked tools run on request
 -- =============================================================================
 
 -- Bootstrap lazy.nvim ----------------------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({ "git", "clone", "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git", lazypath })
+    "--branch=stable", "https://github.com/folke/lazy.nvim.git", lazypath })
+  if vim.v.shell_error ~= 0 then error("Could not install lazy.nvim; check git/network access") end
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -119,6 +120,7 @@ vim.api.nvim_set_hl(0, "texMathSuper", { fg = "#d78787", bg = "NONE", default = 
 -- filetype / syntax machinery is enabled by Neovim's defaults
 
 -- color column tied to 'textwidth' (ported from old config)
+local group = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 local function set_color_column()
   local tw = vim.opt_local.textwidth:get()
   local cols = {}
@@ -130,8 +132,9 @@ local function set_color_column()
     vim.opt_local.colorcolumn = ""
   end
 end
-vim.api.nvim_create_autocmd("BufWinEnter", { callback = set_color_column })
+vim.api.nvim_create_autocmd("BufWinEnter", { group = group, callback = set_color_column })
 vim.api.nvim_create_autocmd("OptionSet", {
+  group = group,
   pattern = "textwidth",
   callback = function()
     if vim.v.option_new and tonumber(vim.v.option_new) then set_color_column() end
@@ -148,20 +151,23 @@ vim.opt.tabline     = "%!v:lua.require('statusline').tabline()"
 -- =============================================================================
 --  Plugins (lazy-loaded, see lua/plugins.lua)
 -- =============================================================================
-require("lazy").setup("plugins", {
-  root = vim.fn.stdpath("data") .. "/lazy",
-  defaults = { lazy = true },
-  ui = { border = "rounded" },
-  checker = { enabled = false },   -- no phone-home
-  change_detection = { notify = false },
-  performance = {
-    rtp = {
-      reset = false,  -- keep conf/vim & ~/.vim on the runtimepath (UltiSnips, colors, syntax)
-      disabled_plugins = { "gzip", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
+if not vim.g.lazy_did_setup then
+  require("lazy").setup("plugins", {
+    root = vim.fn.stdpath("data") .. "/lazy",
+    lockfile = vim.env.HOME .. "/conf/vim/lazy-lock.json",
+    defaults = { lazy = true },
+    ui = { border = "rounded" },
+    checker = { enabled = false },   -- no phone-home
+    change_detection = { notify = false },
+    performance = {
+      rtp = {
+        reset = false,  -- keep conf/vim & ~/.vim on the runtimepath (UltiSnips, colors, syntax)
+        disabled_plugins = { "gzip", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
+      },
     },
-  },
-  install = { colorscheme = { "atom", "habamax" } },
-})
+    install = { colorscheme = { "atom", "habamax" } },
+  })
+end
 
 -- =============================================================================
 --  Mappings  (keys unchanged from the old vimrc)
@@ -260,7 +266,9 @@ vim.keymap.set("n", "<leader>gg", [[/^[>=<][>=<][>=<][>=<][>=<][>=<][>=<]<CR>]],
   { desc = "search next merge conflict" })
 
 -- --- misc editing -------------------------------------------------------------------
-vim.keymap.set("n", "<leader>bw", "<Cmd>w !sudo tee > /dev/null %<CR>", { desc = "write buffer as sudo" })
+vim.keymap.set("n", "<leader>bw", function()
+  vim.cmd("write !sudo tee -- " .. vim.fn.shellescape(vim.fn.expand("%:p")) .. " >/dev/null")
+end, { desc = "write buffer as sudo" })
 
 local function preserve(cmd)
   local view = vim.fn.winsaveview()
@@ -274,7 +282,12 @@ vim.keymap.set("x", "<leader>rw", function() preserve([[silent! '<,'>s/\s\+$//e]
 vim.keymap.set("x", "<leader>ri", function()
   preserve([[silent! '<,'>!awk '{ match($0, /^( *)([^ ].*)$/, arr); l=length(arr[1]); if(l%4==0){ print substr(arr[1], 1, l/2) arr[2] } else { print $0 }}']])
 end, { desc = "visually go from 4 to 2 space indent" })
-vim.cmd([[command! -nargs=1 Chmod call system('chmod ' . <args> . ' ' . expand('%'))]])
+vim.api.nvim_create_user_command("Chmod", function(args)
+  -- Accept the old :Chmod '+x' form as well as :Chmod +x; filenames stay literal.
+  local mode = args.args:gsub("^['\"](.-)['\"]$", "%1")
+  local result = vim.fn.system({ "chmod", mode, "--", vim.fn.expand("%:p") })
+  if vim.v.shell_error ~= 0 then vim.notify(result, vim.log.levels.ERROR) end
+end, { nargs = 1 })
 vim.keymap.set("n", "<leader>rx", "<Cmd>Chmod '+x'<CR>", { desc = "make current file executable" })
 
 -- move lines / chars with Alt+HJKL (replaces vim-move plugin)
@@ -296,10 +309,14 @@ vim.keymap.set("n", "<leader>eD", "a<C-r>=strftime('%Y-%m-%d %H:%M')<CR><Esc>", 
 vim.keymap.set("x", "<leader>ec", "!xclip -f -sel clip<CR>", { desc = "copy selection to system clipboard via xclip" })
 vim.keymap.set("n", "<leader>ep", ":-1r !xclip -o -sel clip<CR>", { desc = "paste from system clipboard via xclip" })
 vim.keymap.set("i", "<S-D-Insert>", "<C-R>+", { desc = "insert from clipboard (handy voice-to-text)" })
+vim.keymap.set("i", "<C-x><C-p>", "<C-x><C-f>", { desc = "path completion" })
+vim.keymap.set("i", "<C-w>", "<C-x><C-k>", { desc = "dictionary word completion" })
 
 -- character inspection / misc (g-prefixed, same as before)
 vim.keymap.set("n", "gs", "vdp", { desc = "switch current with next character" })
-vim.keymap.set("n", "go", "<Cmd>!xdg-open <cfile><CR>", { desc = "open path under cursor in default viewer" })
+vim.keymap.set("n", "go", function()
+  vim.ui.open(vim.fn.expand("<cfile>"))
+end, { desc = "open path under cursor in default viewer" })
 vim.keymap.set("n", "gA", "<Cmd>ascii<CR>", { desc = "print ascii of character under cursor" })
 vim.keymap.set("n", "gm", function()
   for _, id in ipairs(vim.fn.synstack(vim.fn.line("."), vim.fn.col("."))) do
@@ -315,14 +332,7 @@ vim.keymap.set("n", "<leader>dv", "<Cmd>set virtualedit+=all<CR>", { desc = "all
 -- combining characters / digraphs (ported from old config)
 extras.digraphs()
 
--- markdown -> pdf preview link (kept from old config)
-local function link_pdf_preview()
-  local name = vim.fn.expand("%:p:r") .. ".pdf"
-  if vim.fn.filereadable(name) == 1 then
-    vim.fn.system({ "ln", "-sf", name, "/tmp/nvim-current-md.pdf" })
-  end
-end
--- disabled for test
+-- markdown PDF preview (kept from old config)
 vim.keymap.set("n", "<leader>sP",
   function() vim.fn.system({ "zathura", "--fork", "/tmp/nvim-current-md.pdf" }) end,
   { desc = "open current markdown preview in zathura" })
@@ -334,6 +344,7 @@ vim.keymap.set("n", "<leader>se",
 
 -- GAMS -----------------------------------------------------------------------
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
+  group = group,
   pattern = { "*.gms", "*.lst" },
   callback = function(a)
     if a.match:match("%.gms$") then
@@ -350,6 +361,7 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
   end,
 })
 vim.api.nvim_create_autocmd("FileType", {
+  group = group,
   pattern = { "gams", "gamslst" },
   callback = function()
     vim.keymap.set("n", "<leader>se", [[/\*\*\*\*\s*\(\$[0-9,]*\s*\)\+\s*$<CR>]],
@@ -357,13 +369,14 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "<leader>ss", "<Cmd>edit %:r.lst<CR>", { buffer = true, desc = "edit lst/gms" })
   end,
 })
-vim.cmd([[command GamsMakeSetup set efm=%f;%l;%c;%n;%m makeprg=gamserror\ %:r.lst]])
+vim.cmd([[command! GamsMakeSetup set efm=%f;%l;%c;%n;%m makeprg=gamserror\ %:r.lst]])
 vim.keymap.set("n", "<leader>sg", "<Cmd>GamsMakeSetup<CR>", { desc = "setup make for GAMS" })
 
 -- Matlab ----------------------------------------------------------------------
 vim.keymap.set("n", "<leader>rm", function() extras.matlab_run(vim.fn.expand("<cword>")) end,
   { desc = "run word under cursor in Matlab environment" })
 vim.api.nvim_create_autocmd("FileType", {
+  group = group,
   pattern = "matlab",
   callback = function()
     vim.opt_local.commentstring = "%%%s"
@@ -377,6 +390,7 @@ vim.cmd([[command! -complete=shellcmd -nargs=+ Shell call v:lua.require('extras'
 
 -- terminal buffers -------------------------------------------------------------
 vim.api.nvim_create_autocmd("TermOpen", {
+  group = group,
   callback = function()
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
@@ -386,7 +400,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.opt_local.scrolloff = 0
   end,
 })
-vim.api.nvim_create_autocmd("BufEnter", { pattern = "term://*", command = "startinsert" })
+vim.api.nvim_create_autocmd("BufEnter", { group = group, pattern = "term://*", command = "startinsert" })
 vim.keymap.set("t", "<C-g>", "<C-\\><C-n>", { desc = "leave terminal to normal mode" })
 vim.keymap.set("t", "<C-e>", function()
   local c = vim.fn.nr2char(vim.fn.getchar())

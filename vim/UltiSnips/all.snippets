@@ -143,6 +143,7 @@ snip.rv = subprocess.check_output(cmd).decode("utf-8")
 endsnippet
 priority 0
 
+priority 10
 snippet fold "fold marker pair" b
 `!p snip.rv = vim.eval("split(&commentstring, '%s')[0]")
 ` ${1} `!p snip.rv = vim.eval("split(&foldmarker, ',')[0]")`
@@ -151,6 +152,7 @@ ${2:${VISUAL}}
 snip.rv = vim.eval("split(&foldmarker, ',')[1]")`
 $0
 endsnippet
+priority 0
 
 snippet foldo "fold opening marker" b
 `!p snip.rv = vim.eval("split(&commentstring, '%s')[0]")

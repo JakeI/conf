@@ -24,3 +24,4 @@ tenpo/target/*
 **/Cargo.lock
 comp/*.warning
 *.uuid
+vim/lazy-lock.json
