@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""OpenCode usage profiler.
+
+Reads a (copy of) ~/.local/share/opencode/opencode.db and reports:
+  - usage totals: sessions, prompts, steps, tokens, cost, per-model breakdown
+  - time profile: waiting (to first token) vs LLM generating vs tool/command execution
+  - per-tool estimated execution time and call counts
+  - daily activity
+
+Usage: python3 oc-profile.py [days]
+"""
+import json, shutil, sqlite3, sys, tempfile, os
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+DB = os.path.expanduser("~/.local/share/opencode/opencode.db")
+days = int(sys.argv[1]) if len(sys.argv) > 1 else None
+
+tmp = os.path.join(tempfile.gettempdir(), "oc-profile-copy.db")
+shutil.copy2(DB, tmp)
+con = sqlite3.connect(tmp)
+if days:
+    cutoff = int((datetime.now() - timedelta(days=days)).timestamp() * 1000)
+    msgs = con.execute(
+        "select session_id, type, data, time_created from session_message where time_created >= ? order by session_id, time_created",
+        (cutoff,)).fetchall()
+else:
+    msgs = con.execute(
+        "select session_id, type, data, time_created from session_message order by session_id, time_created").fetchall()
+con.close(); os.remove(tmp)
+
+fmt = lambda ms: (f"{ms/3600000:.1f}h" if ms >= 3600000 else f"{ms/60000:.1f}m" if ms >= 60000 else f"{ms/1000:.1f}s")
+
+def tok(t):
+    c = t.get("cache") or {}
+    return t.get("input",0)+t.get("output",0)+t.get("reasoning",0)+c.get("read",0)+c.get("write",0)
+
+# group by session, walk in order
+sessions = defaultdict(list)
+for sid, mtype, data, _ in msgs:
+    m = json.loads(data)
+    m["type"] = mtype
+    sessions[sid].append(m)
+
+tot = dict(sessions=set(), prompts=0, steps=0, tokens=0, cost=0.0,
+           wait=0, gen=0, tools=0)
+models = defaultdict(lambda: dict(steps=0, tokens=0, cost=0.0, wait=0, gen=0))
+tools = defaultdict(lambda: dict(calls=0, ok=0, failed=0, time=0))
+daily = defaultdict(lambda: dict(steps=0, wait=0, gen=0, tools=0))
+
+for sid, seq in sessions.items():
+    tot["sessions"].add(sid)
+    prev_asst = None  # (end_time, tool_names)
+    for m in seq:
+        day = datetime.fromtimestamp(m["time"]["created"]/1000).strftime("%Y-%m-%d")
+        if m["type"] == "user":
+            tot["prompts"] += 1
+            prev_asst = None
+        elif m["type"] == "assistant":
+            tot["steps"] += 1
+            t = m["time"]
+            created, streamed, completed = t["created"], t.get("streamed") or 0, t.get("completed") or 0
+            if streamed and completed:
+                wait, gen = streamed - created, completed - streamed
+            elif completed:
+                wait, gen = 0, completed - created
+            else:
+                wait, gen = 0, 0
+            tot["wait"] += max(wait, 0); tot["gen"] += max(gen, 0)
+            daily[day]["wait"] += max(wait, 0); daily[day]["gen"] += max(gen, 0)
+            tk = tok(m.get("tokens") or {})
+            tot["tokens"] += tk; tot["cost"] += m.get("cost") or 0
+            mid = (m.get("model") or {}).get("providerID", "?") + "/" + (m.get("model") or {}).get("id", "?")
+            mm = models[mid]
+            mm["steps"] += 1; mm["tokens"] += tk; mm["cost"] += m.get("cost") or 0
+            mm["wait"] += max(wait, 0); mm["gen"] += max(gen, 0)
+            daily[day]["steps"] += 1
+            # tool calls in this message
+            names = []
+            for c in m.get("content") or []:
+                if c.get("type") == "tool":
+                    st = c.get("state") or {}
+                    key = c.get("tool") or c.get("name") or "?"
+                    names.append(key)
+                    tools[key]["calls"] += 1
+                    if st.get("status") == "completed": tools[key]["ok"] += 1
+                    elif st.get("status") in ("error", "failed"): tools[key]["failed"] += 1
+            # time between previous step finishing and this one starting = tool/command execution
+            if prev_asst and prev_asst[0] and created > prev_asst[0]:
+                gap = created - prev_asst[0]
+                tot["tools"] += gap; daily[day]["tools"] += gap
+                for n in prev_asst[1] or ["(no recorded tool)"]:
+                    tools[n]["time"] += gap / len(prev_asst[1] or ["(no recorded tool)"])
+            prev_asst = (completed, names) if completed else prev_asst
+
+print(f"OpenCode usage profile  (last {days} days)" if days else "OpenCode usage profile  (all history)")
+print("=" * 60)
+n = len(tot["sessions"])
+print(f"sessions {n}   prompts {tot['prompts']}   steps {tot['steps']}   "
+      f"tokens {tot['tokens']/1e6:.1f}M   cost ${tot['cost']:.2f}")
+busy = tot["wait"] + tot["gen"] + tot["tools"]
+print(f"\nTIME PROFILE (session-busy time, {fmt(busy)} total):")
+print(f"  {'waiting for LLM (to first token)':<42} {fmt(tot['wait']):>8}  {100*tot['wait']/max(busy,1):5.1f}%")
+print(f"  {'LLM generating':<42} {fmt(tot['gen']):>8}  {100*tot['gen']/max(busy,1):5.1f}%")
+print(f"  {'tool/command execution & overhead':<42} {fmt(tot['tools']):>8}  {100*tot['tools']/max(busy,1):5.1f}%")
+
+print(f"\nPER MODEL:")
+print(f"  {'model':<34} {'steps':>6} {'tokens':>10} {'cost':>9} {'LLM time':>9} {'wait':>9}")
+for mid, m in sorted(models.items(), key=lambda x: -x[1]["steps"]):
+    print(f"  {mid:<34} {m['steps']:>6} {m['tokens']/1e6:>8.1f}M ${m['cost']:>7.2f} {fmt(m['gen']):>9} {fmt(m['wait']):>9}")
+
+print(f"\nTOP TOOLS (time is estimated from inter-step gaps):")
+print(f"  {'tool':<22} {'calls':>6} {'ok':>6} {'fail':>5} {'est. time':>10}")
+for name, t in sorted(tools.items(), key=lambda x: -x[1]["time"])[:15]:
+    print(f"  {name:<22} {t['calls']:>6} {t['ok']:>6} {t['failed']:>5} {fmt(t['time']):>10}")
+
+print(f"\nDAILY:")
+print(f"  {'date':<12} {'steps':>6} {'LLM':>9} {'wait':>9} {'tools':>9}")
+for day, d in sorted(daily.items()):
+    print(f"  {day:<12} {d['steps']:>6} {fmt(d['gen']):>9} {fmt(d['wait']):>9} {fmt(d['tools']):>9}")
