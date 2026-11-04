@@ -7,7 +7,7 @@ ln vim/UltiSnips                     $HOME/.vim/UltiSnips
 ln vim/syntax                        $HOME/.vim/syntax
 ln vim/ftdetect                      $HOME/.vim/ftdetect
 ln vim/colors                        $HOME/.vim/colors
-ln vim/init.vim                      $HOME/.config/nvim/init.vim
+ln vim/init.lua                      $HOME/.config/nvim/init.lua
 ln vim/standalone                    $HOME/bin/standalone
 ln comp/XCompose                     $HOME/.XCompose
 ln keys/remap                        $HOME/bin/remap-all
@@ -95,11 +95,21 @@ SCRIPT=$(realpath "$0")
 CONFIGDIR=$(dirname "$SCRIPT")
 LOGFILE="$CONFIGDIR/install.log"
 
+# Migrate only our old startup symlink; preserve unrelated/user-owned configs.
+LEGACY_NVIM_INIT="$HOME/.config/nvim/init.vim"
+if [[ -L "$LEGACY_NVIM_INIT" && "$LEGACY_NVIM_INIT" -ef "$CONFIGDIR/vim/init.vim" ]]; then
+    unlink "$LEGACY_NVIM_INIT"
+fi
+
 echo "Attempt to link config files"
 echo "" >> $LOGFILE
 date    >> $LOGFILE
 
 maybe_link () {
+    if [[ "$3" = "$HOME/.config/nvim/init.lua" && ( -e "$LEGACY_NVIM_INIT" || -L "$LEGACY_NVIM_INIT" ) ]]; then
+        echo 'skip: move existing init.vim aside before installing the Lua config'
+        return
+    fi
     if [[ ! $1 =~ gams/ || "$(uname -m)" =~ x86_64 ]]
     then
         (test "$2" -ef "$3"                  && echo 'already setup'            ) || \
