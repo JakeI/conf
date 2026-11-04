@@ -7,6 +7,7 @@
 # if the existing session has the same root directory, it is just switched to.
 
 # Search locations -- one directory per line, `~` and `$HOME` both work.
+# Each location itself and its subdirectories are selectable.
 # Add more lines here to extend the list.
 ROOTS="
 /mnt/d/val
@@ -31,6 +32,8 @@ list=$(
             "~")   root="$HOME" ;;
             "~"/*) root="$HOME/${root#\~\/}" ;;
         esac
+        [ -d "$root" ] || continue
+        printf '%s\n' "$root"
         fd $FD_OPTS . "$root" 2>/dev/null
     done |
     sed -e 's:/\+$::' -e "s:^$HOME:~:" |
