@@ -1,91 +1,403 @@
 #!/bin/bash
 
+PROGRAM_NAME="${BASH_SOURCE[0]##*/}"
+VERBOSE=false
+PAGING=auto
+
 help_message() {
-    cat <<EOF
-Usage: $(basename "$0") [options] <files/directories>
+    printf '%s\n' "Usage: $PROGRAM_NAME [options] [--] [files/directories ...]
 
 Options:
-  -h, --help       Show this help message
+  -h, --help          Show this help message
+  -v, --verbose       Explain optional fallbacks on standard error
+      --check-health  Check external programs without opening any inputs
+      --paging MODE   Set paging to auto (default), always, or never
+  -P, --no-pager      Alias for --paging=never
+      --             Treat all remaining arguments as paths
 
-Description:
-This script provides enhanced viewing for various file types and directories.
-Supported features include:
-  - CSV files viewed with tabular formatting
-  - PNG/JPG/JPEG files displayed as images
-  - PDF files opened with modern-latexmk or zathura
-  - GraphML files rendered as Unicode graphs
-  - Directories displayed as detailed trees
-  - Multiple inputs handled with clear headers
-EOF
+View CSV tables, Markdown, PNG/JPG/JPEG images, PDFs, GraphML graphs,
+SQLite databases, spreadsheets, tabular data, HTML, and directory trees.
+Extensions are case-insensitive; other files are shown as source code.
+Markdown uses mdcat when available, otherwise quietly shows its source.
+PDFs use tdf, falling back to pdftotext and paged text. Images use viu,
+falling back to explorer.exe on WSL or xdg-open on Linux.
+
+VisiData (vd) opens SQLite (.db/.db3/.sqlite/.sqlite3/.s3db/.sl3), TSV/TAB,
+PSV, XLS/XLSX/XLSB/ODS, Parquet, Arrow, and JSONL/NDJSON files. Some formats
+need extra VisiData Python packages. Nonempty directories containing only
+CSV files open all files as CSV tables with comma delimiters and one header
+row, including hidden files. Without vd these directories show a tree.
+
+HTML/HTM uses terminal-browser only with terminal output and Kitty graphics
+support; otherwise its source is shown. Support is queried directly from
+the terminal, with a short timeout; stty is needed for this check.
+
+With no paths, show the current directory if stdin is a terminal, or view
+stdin otherwise. Use - to read stdin explicitly, and ./- for a file named -.
+Paths must be readable regular files or readable, searchable directories.
+
+Automatic paging is enabled only for terminal output. Markdown defaults to
+less -FRX, which exits immediately if the document fits on one screen.
+MDCAT_PAGER or PAGER overrides the Markdown pager; an empty value disables it.
+Headers are terminal-only; NO_COLOR disables colors.
+
+Health checks exit 1 if a feature's required viewer is missing. Missing
+optional enhancements do not fail the check. --check-health takes no paths."
+}
+
+print_error() {
+    printf '%s: %s\n' "$PROGRAM_NAME" "$*" >&2
+}
+
+usage_error() {
+    print_error "$1"
+    printf "Try '%s --help' for usage.\n" "$PROGRAM_NAME" >&2
+    return 2
+}
+
+verbose() {
+    if [[ "$VERBOSE" == true ]]; then
+        printf '%s: %s\n' "$PROGRAM_NAME" "$*" >&2
+    fi
+}
+
+terminal_output() {
+    [[ -t 1 && -n "${TERM:-}" && "${TERM:-}" != dumb ]]
+}
+
+color_enabled() {
+    terminal_output && [[ -z "${NO_COLOR:-}" ]]
+}
+
+should_page() {
+    [[ "$PAGING" == always ]] || { [[ "$PAGING" == auto ]] && terminal_output; }
+}
+
+is_wsl() {
+    [[ -n "${WSL_DISTRO_NAME:-}" || -n "${WSL_INTEROP:-}" ]] && return 0
+    local release=''
+    if [[ -r /proc/sys/kernel/osrelease ]]; then
+        IFS= read -r release < /proc/sys/kernel/osrelease
+    fi
+    [[ "${release,,}" == *microsoft* ]]
+}
+
+supports_kitty_graphics() (
+    terminal_output || return 1
+    command -v stty &> /dev/null || return 1
+    local tty_fd tty_state response query expected
+    { exec {tty_fd}<> /dev/tty; } 2>/dev/null || return 1
+    tty_state=$(stty -g <&"$tty_fd" 2>/dev/null) || return 1
+    # Always restore terminal settings, including on interrupted/timed-out reads.
+    trap 'stty "$tty_state" <&"$tty_fd" 2>/dev/null' EXIT
+    trap 'exit 1' HUP INT TERM
+    stty -echo -icanon <&"$tty_fd" 2>/dev/null || return 1
+
+    # a=q queries a one-pixel image without displaying it. No stdin is consumed.
+    printf -v query '\033_Gi=%s,a=q,t=d,f=24,s=1,v=1;AAAA\033\\' "$BASHPID"
+    expected=$'\033_Gi='"$BASHPID"$';OK\033'
+    if [[ -n "${TMUX:-}" ]]; then
+        query=$'\033Ptmux;'"${query//$'\033'/$'\033\033'}"$'\033\\'
+    fi
+    printf '%s' "$query" >&"$tty_fd"
+    IFS= read -r -d '\' -t 0.5 response <&"$tty_fd" || return 1
+    [[ "$response" == *"$expected" ]]
+)
+
+find_program() {
+    local program="$1"
+    if command -v "$program" &> /dev/null; then
+        command -v "$program"
+    elif [[ "$program" == mdcat && -f "$HOME/bin/mdcat/mdcat" && -x "$HOME/bin/mdcat/mdcat" ]]; then
+        # Match the mdcat alias in zsh/zshrc; Bash does not inherit aliases.
+        printf '%s\n' "$HOME/bin/mdcat/mdcat"
+    else
+        return 1
+    fi
+}
+
+require_program() {
+    if ! command -v "$1" &> /dev/null; then
+        print_error "required program '$1' not found ($2)"
+        return 127
+    fi
+}
+
+check_program_health() {
+    local program="$1" purpose="$2" importance="$3" resolved
+    if resolved=$(find_program "$program"); then
+        printf 'OK       %-17s %s (%s)\n' "$program" "$resolved" "$purpose"
+    elif [[ "$importance" == optional ]]; then
+        printf 'OPTIONAL %-17s not found (%s)\n' "$program" "$purpose"
+    else
+        printf 'MISSING  %-17s not found (%s)\n' "$program" "$purpose"
+        return 1
+    fi
+}
+
+check_health() {
+    local status=0
+    local pdf_fallback=optional image_fallback=optional
+    command -v tdf &> /dev/null || pdf_fallback=required
+    command -v viu &> /dev/null || image_fallback=required
+    printf 'External programs (viewers are required only for their listed feature):\n'
+    check_program_health batcat 'text/source viewing' required || status=1
+    check_program_health eza 'directory trees' required || status=1
+    check_program_health tv 'CSV tables' required || status=1
+    check_program_health vd 'SQLite, tabular data, and CSV-only directories' required || status=1
+    check_program_health tdf 'PDF viewer; otherwise extracts text' optional
+    check_program_health pdftotext 'PDF text fallback' "$pdf_fallback" || status=1
+    check_program_health viu 'terminal images; otherwise uses system opener' optional
+    if is_wsl; then
+        check_program_health explorer.exe 'WSL default image opener' "$image_fallback" || status=1
+        check_program_health wslpath 'convert image paths for explorer.exe' "$image_fallback" || status=1
+    else
+        check_program_health xdg-open 'Linux default image opener' "$image_fallback" || status=1
+    fi
+    check_program_health graphml2unicode 'GraphML graphs' required || status=1
+    check_program_health sed 'strip colors from redirected tables/graphs' required || status=1
+    check_program_health mdcat 'Markdown rendering; otherwise shows source' optional
+    check_program_health less 'default Markdown/text pager' optional
+    check_program_health terminal-browser 'HTML in Kitty-compatible terminals; otherwise source' optional
+    check_program_health stty 'Kitty graphics detection for HTML' optional
+    check_program_health figlet 'large terminal headers' optional
+    check_program_health tput 'terminal header colors' optional
+    return "$status"
 }
 
 display_unicode_header() {
-    local text="$1"
-    local color_code=$(tput setaf 2)  # Green color
+    terminal_output || return 0
 
-    # Check if figlet is installed
-    if command -v figlet &> /dev/null; then
-        banner=$(figlet "$text")
-    else
-        # Fallback implementation
-        local text_length=${#text}
-        local border=$(printf '%*s' "$((text_length + 2))" | sed 's/ /━/g')
-        banner="┏${border}┓\n┃ ${text} ┃\n┗${border}┛"
+    local text="$1" banner border
+    local color_code='' reset=''
+    if color_enabled && command -v tput &> /dev/null; then
+        if ! { color_code=$(tput setaf 2 2>/dev/null) && reset=$(tput sgr0 2>/dev/null); }; then
+            color_code=''
+            reset=''
+        fi
     fi
 
-    echo -e "${color_code}${banner}$(tput sgr0)"
+    if command -v figlet &> /dev/null && banner=$(printf '%s\n' "$text" | figlet 2>/dev/null); then
+        printf '%s%s%s\n' "$color_code" "$banner" "$reset"
+    else
+        printf -v border '%*s' "$((${#text} + 2))" ''
+        border="${border// /━}"
+        printf '%s┏%s┓\n┃ %s ┃\n┗%s┛%s\n' "$color_code" "$border" "$text" "$border" "$reset"
+    fi
 }
 
-handle_directory() {
-    local directory="$1"
-    exa --git --icons --tree -l --time-style=long-iso --color=always "$directory" | batcat --style=plain
+run_batcat() {
+    require_program batcat 'text/source viewing' || return
+    local color=never
+    color_enabled && color=always
+    batcat --color="$color" --decorations=auto --paging="$PAGING" "$@"
 }
+
+view_formatted_text() {
+    if color_enabled; then
+        run_batcat --style=plain
+    else
+        require_program sed 'plain rendered output' || return
+        # These renderers emit SGR colors even when their stdout is a pipe.
+        sed $'s/\033\\[[0-9;]*m//g' | run_batcat --style=plain
+    fi
+}
+
+handle_directory() (
+    local directory="$1"
+    local file ext all_csv=true
+    local -a files=()
+    # Keep glob settings local to this subshell, and include hidden CSV files.
+    shopt -s nullglob dotglob
+    files=("$directory"/*)
+    for file in "${files[@]}"; do
+        ext="${file##*.}"
+        if [[ ! -f "$file" || "${ext,,}" != csv ]]; then
+            all_csv=false
+            break
+        fi
+    done
+    if [[ "$all_csv" == true && ${#files[@]} -gt 0 ]]; then
+        if command -v vd &> /dev/null; then
+            for file in "${files[@]}"; do
+                validate_item "$file" || return
+            done
+            # Passing the directory itself opens a file listing, not CSV sheets.
+            vd --filetype=csv --csv-delimiter=, --header=1 -- "${files[@]}"
+            return
+        fi
+        verbose "vd not found; showing a directory tree for $directory"
+    fi
+
+    local color=never icons=never
+    require_program eza 'directory trees' || return
+    color_enabled && color=always
+    terminal_output && icons=always
+    eza --git --icons="$icons" --tree -l --time-style=long-iso --color="$color" -- "$directory" | view_formatted_text
+)
 
 handle_csv() {
     local file="$1"
-    tv -- "$file" | batcat --style=plain
+    require_program tv 'CSV tables' || return
+    tv -- "$file" | view_formatted_text
+}
+
+handle_markdown() {
+    local file="$1" renderer
+    if ! renderer=$(find_program mdcat); then
+        verbose "mdcat not found; showing Markdown source for $file"
+        run_batcat --language=markdown -- "$file"
+        return
+    fi
+
+    local pager="${MDCAT_PAGER-${PAGER-}}"
+    local -a options=()
+    if should_page; then
+        if [[ -z "${MDCAT_PAGER+x}" && -z "${PAGER+x}" ]]; then
+            if command -v less &> /dev/null; then
+                pager='less -RX'
+                [[ "$PAGING" == auto ]] && pager='less -FRX'
+            else
+                verbose 'less not found; rendering Markdown without a pager'
+            fi
+        fi
+    else
+        pager=''
+    fi
+
+    if [[ -n "$pager" ]]; then
+        options+=(--paginate)
+    else
+        options+=(--no-pager)
+    fi
+    if ! color_enabled; then
+        options+=(--no-colour)
+    fi
+    MDCAT_PAGER="$pager" "$renderer" "${options[@]}" -- "$file"
 }
 
 handle_image() {
     local file="$1"
-    viu --name -- "$file"
+    if command -v viu &> /dev/null; then
+        viu --name -- "$file"
+    elif is_wsl; then
+        require_program explorer.exe 'WSL default image opener' || return
+        require_program wslpath 'Windows image path conversion' || return
+        local windows_path
+        windows_path=$(wslpath -a -w "$file") || return
+        verbose "viu not found; opening $file with explorer.exe"
+        explorer.exe "$windows_path"
+    else
+        require_program xdg-open 'Linux default image opener' || return
+        verbose "viu not found; opening $file with xdg-open"
+        xdg-open "$file"
+    fi
 }
 
 handle_pdf() {
     local file="$1"
-    if command -v modern-latexmk &> /dev/null; then
-        modern-latexmk show "$file"
+    if command -v tdf &> /dev/null; then
+        tdf "$file"
     else
-        zathura --fork "$file"
+        require_program pdftotext 'PDF text extraction when tdf is unavailable' || return
+        verbose "tdf not found; showing extracted PDF text for $file"
+        pdftotext -layout -nopgbrk "$file" - | run_batcat --language=txt --style=plain
+    fi
+}
+
+handle_tabular() {
+    local file="$1" filetype="$2"
+    local -a options=(--filetype="$filetype")
+    require_program vd 'SQLite and tabular data' || return
+    case "$filetype" in
+        tsv) options+=(--delimiter=$'\t' --header=1) ;;
+        psv) options+=(--header=1) ;;
+    esac
+    vd "${options[@]}" -- "$file"
+}
+
+handle_html() {
+    local file="$1"
+    if command -v terminal-browser &> /dev/null && supports_kitty_graphics; then
+        [[ "$file" != /* ]] && file="$PWD/$file"
+        terminal-browser open "$file"
+    else
+        verbose "terminal-browser or Kitty graphics unavailable; showing HTML source for $file"
+        handle_default "$file"
     fi
 }
 
 handle_graphml() {
     local file="$1"
-    graphml2unicode "$file" | batcat --style=plain
+    require_program graphml2unicode 'GraphML graphs' || return
+    graphml2unicode -- "$file" | view_formatted_text
 }
 
 handle_default() {
     local file="$1"
-    batcat "$file"
+    run_batcat -- "$file"
+}
+
+validate_item() {
+    local item="$1"
+    if [[ "$item" == - ]]; then
+        return 0
+    elif [[ ! -e "$item" ]]; then
+        print_error "path does not exist: $item"
+    elif [[ -d "$item" ]]; then
+        if [[ -r "$item" && -x "$item" ]]; then
+            return 0
+        fi
+        print_error "directory is not readable/searchable: $item"
+    elif [[ ! -f "$item" ]]; then
+        print_error "not a regular file or directory: $item (use - for stdin)"
+    elif [[ ! -r "$item" ]]; then
+        print_error "file is not readable: $item"
+    else
+        return 0
+    fi
+    return 1
 }
 
 view_item() {
     local item="$1"
-    local ext=$(echo "${item##*.}" | tr '[:upper:]' '[:lower:]')
+    local ext
+
+    # Some viewers (notably pdftotext and xdg-open) do not accept --.
+    [[ "$item" == -* && "$item" != - ]] && item="./$item"
 
     if [[ -d "$item" ]]; then
         handle_directory "$item"
     else
+        ext="${item##*.}"
+        ext="${ext,,}"
         case "$ext" in
         "csv")
             handle_csv "$item"
+            ;;
+        "md"|"markdown")
+            handle_markdown "$item"
             ;;
         "png"|"jpg"|"jpeg")
             handle_image "$item"
             ;;
         "pdf")
             handle_pdf "$item"
+            ;;
+        "db"|"db3"|"sqlite"|"sqlite3"|"s3db"|"sl3")
+            handle_tabular "$item" sqlite
+            ;;
+        "tsv"|"tab")
+            handle_tabular "$item" tsv
+            ;;
+        "ndjson")
+            handle_tabular "$item" jsonl
+            ;;
+        "psv"|"xls"|"xlsx"|"xlsb"|"ods"|"parquet"|"arrow"|"arrows"|"jsonl")
+            handle_tabular "$item" "$ext"
+            ;;
+        "html"|"htm")
+            handle_html "$item"
             ;;
         "graphml")
             handle_graphml "$item"
@@ -98,6 +410,11 @@ view_item() {
 }
 
 process_arguments() {
+    local item
+    # Validate all paths before opening viewers, rather than showing partial input.
+    for item in "$@"; do
+        validate_item "$item" || return
+    done
     for item in "$@"; do
         display_unicode_header "$item"
         view_item "$item"
@@ -105,25 +422,86 @@ process_arguments() {
 }
 
 process_no_arguments() {
-    if [ -t 0 ]; then
+    if [[ -t 0 ]]; then
+        validate_item . || return
         handle_directory .
     else
-        batcat
+        run_batcat
     fi
 }
 
 main() {
-    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    local show_help=false health=false
+    local -a items=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        -h|--help)
+            show_help=true
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            ;;
+        --check-health)
+            health=true
+            ;;
+        --paging)
+            if [[ $# -lt 2 ]]; then
+                usage_error '--paging requires auto, always, or never'
+                return 2
+            fi
+            PAGING="$2"
+            shift
+            ;;
+        --paging=*)
+            PAGING="${1#*=}"
+            ;;
+        -P|--no-pager)
+            PAGING=never
+            ;;
+        --)
+            shift
+            items+=("$@")
+            break
+            ;;
+        -)
+            items+=("$1")
+            ;;
+        -*)
+            usage_error "unknown option: $1"
+            return 2
+            ;;
+        *)
+            items+=("$1")
+            ;;
+        esac
+        shift
+    done
+
+    case "$PAGING" in
+        auto|always|never) ;;
+        *) usage_error "invalid paging mode: $PAGING"; return 2 ;;
+    esac
+
+    if [[ "$show_help" == true ]]; then
         help_message
-        exit 0
+        return 0
+    fi
+    if [[ "$health" == true ]]; then
+        if [[ ${#items[@]} -gt 0 ]]; then
+            usage_error '--check-health does not accept file operands'
+            return 2
+        fi
+        check_health
+        return
     fi
 
-    if [[ $# -eq 0 ]]; then
+    if [[ ${#items[@]} -eq 0 ]]; then
         process_no_arguments
     else
-        process_arguments "$@"
+        process_arguments "${items[@]}"
     fi
 }
 
-main "$@"
-
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
